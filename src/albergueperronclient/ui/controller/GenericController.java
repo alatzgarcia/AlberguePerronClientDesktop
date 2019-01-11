@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package albergueperronclient.gui.controller;
+package albergueperronclient.ui.controller;
 
+import albergueperronclient.logic.UsersManager;
 import java.util.logging.Logger;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -23,6 +24,9 @@ public class GenericController {
     protected final int fullNameMaxLength = 50;
     
     protected Stage stage;
+    
+    //The interface that links the UI with the Logic
+    protected UsersManager usersManager;
 
     /**
      * Shows an alert with an error message
@@ -42,9 +46,9 @@ public class GenericController {
      * Sets the logic Manager
      * @param logicManager 
      */
-    public void setLogicManager(ILogic logicManager){
+    /*public void setLogicManager(ILogic logicManager){
         this.logicManager = logicManager;
-    }
+    }*/
     
     /**
      * Sets the stage
@@ -57,10 +61,10 @@ public class GenericController {
      * Sets the user
      * @param user 
      */
-    public void setUser(User user){
+    /*public void setUser(User user){
         this.user=user;
         
-    }
+    }*/
 
     
 }
