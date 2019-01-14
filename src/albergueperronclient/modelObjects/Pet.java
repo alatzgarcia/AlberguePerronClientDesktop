@@ -6,112 +6,117 @@
 package albergueperronclient.modelObjects;
 
 import java.io.Serializable;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author Alatz
  */
+@XmlRootElement(name="pet")
 public class Pet implements Serializable {
     private static long serialVersionUID = 1L;
     
-    private Integer id;
-    private User owner;
-    private String specie;
-    private String race;
-    private String name;
-    private String colour;
-    private String description;
+    private SimpleIntegerProperty id;
+    private SimpleObjectProperty<User> owner;
+    private SimpleStringProperty specie;
+    private SimpleStringProperty race;
+    private SimpleStringProperty name;
+    private SimpleStringProperty colour;
+    private SimpleStringProperty description;
 
     public Integer getId() {
-        return id;
+        return this.id.get();
     }
 
     public void setId(Integer id) {
-        this.id = id;
+        this.id.set(id);
     }
 
     /**
      * @return the owner
      */
     public User getOwner() {
-        return owner;
+        return this.owner.get();
     }
 
     /**
      * @param owner the owner to set
      */
     public void setOwner(User owner) {
-        this.owner = owner;
+        this.owner.set(owner);
     }
 
     /**
      * @return the specie
      */
     public String getSpecie() {
-        return specie;
+        return this.specie.get();
     }
 
     /**
      * @param specie the specie to set
      */
     public void setSpecie(String specie) {
-        this.specie = specie;
+        this.specie.set(specie);
     }
 
     /**
      * @return the race
      */
     public String getRace() {
-        return race;
+        return this.race.get();
     }
 
     /**
      * @param race the race to set
      */
     public void setRace(String race) {
-        this.race = race;
+        this.race.set(race);
     }
 
     /**
      * @return the name
      */
     public String getName() {
-        return name;
+        return this.name.get();
     }
 
     /**
      * @param name the name to set
      */
     public void setName(String name) {
-        this.name = name;
+        this.name.set(name);
     }
 
     /**
      * @return the colour
      */
     public String getColour() {
-        return colour;
+        return this.colour.get();
     }
 
     /**
      * @param colour the colour to set
      */
     public void setColour(String colour) {
-        this.colour = colour;
+        this.colour.set(colour);
     }
 
     /**
      * @return the description
      */
     public String getDescription() {
-        return description;
+        return this.description.get();
     }
 
     /**
      * @param description the description to set
      */
     public void setDescription(String description) {
-        this.description = description;
+        this.description.set(description);
     }
     
     @Override

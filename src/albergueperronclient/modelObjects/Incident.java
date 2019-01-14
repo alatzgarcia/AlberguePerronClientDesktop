@@ -7,41 +7,46 @@ package albergueperronclient.modelObjects;
 
 import java.io.Serializable;
 import java.util.List;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
  * @author Alatz
  */
+@XmlRootElement(name="incident")
 public class Incident implements Serializable {
     private static long serialVersionUID = 1L;
     
-    private Integer id;
-    private String incidentType;
+    private SimpleIntegerProperty id;
+    private SimpleStringProperty incidentType;
     private List<User> implicateds;
-    private String description;
-    private Room room;
+    private SimpleStringProperty description;
+    private SimpleObjectProperty<Room> room;
 
     public Integer getId() {
-        return id;
+        return this.id.get();
     }
 
     public void setId(Integer id) {
-        this.id = id;
+        this.id.set(id);
     }
     
     /**
      * @return the incidentType
      */
     public String getIncidentType() {
-        return incidentType;
+        return this.incidentType.get();
     }
 
     /**
      * @param incidentType the incidentType to set
      */
     public void setIncidentType(String incidentType) {
-        this.incidentType = incidentType;
+        this.incidentType.set(incidentType);
     }
 
     /**
@@ -63,28 +68,28 @@ public class Incident implements Serializable {
      * @return the description
      */
     public String getDescription() {
-        return description;
+        return this.description.get();
     }
 
     /**
      * @param description the description to set
      */
     public void setDescription(String description) {
-        this.description = description;
+        this.description.set(description);
     }
     
     /**
      * @return the room
      */
     public Room getRoom() {
-        return room;
+        return this.room.get();
     }
 
     /**
      * @param room the room to set
      */
     public void setRoom(Room room) {
-        this.room = room;
+        this.room.set(room);
     }
 
     @Override

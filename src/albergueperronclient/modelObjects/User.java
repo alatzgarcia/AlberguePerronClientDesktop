@@ -8,23 +8,27 @@ package albergueperronclient.modelObjects;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import javafx.beans.property.SimpleStringProperty;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
  * @author Alatz
  */
+@XmlRootElement(name="user")
 public class User implements Serializable {
     private static final long serialVersionUID = 1L;
     
-    private String id;
-    private String name;
-    private String surname1;
-    private String surname2;
+    private SimpleStringProperty id;
+    private SimpleStringProperty name;
+    private SimpleStringProperty surname1;
+    private SimpleStringProperty surname2;
+    //--TOFIX
     private Privilege privilege;
-    private String login;
-    private String email;
-    private String password;
+    private SimpleStringProperty login;
+    private SimpleStringProperty email;
+    private SimpleStringProperty password;
     private Date lastPasswordChange;
     private List<Incident> incidents;
     private List<Pet> pets;
@@ -35,7 +39,7 @@ public class User implements Serializable {
      * @return The id value.
      */
     public String getId() {
-        return id;
+        return this.id.get();
     }
 
     /**
@@ -43,7 +47,7 @@ public class User implements Serializable {
      * @param id The id value.
      */
     public void setId(String id) {
-        this.id = id;
+        this.id.set(id);
     }
 
     /**
@@ -51,7 +55,7 @@ public class User implements Serializable {
      * @return The name value.
      */
     public String getName() {
-        return name;
+        return this.name.get();
     }
     
     /**
@@ -59,7 +63,7 @@ public class User implements Serializable {
      * @param name The name value.
      */
     public void setName(String name) {
-        this.name = name;
+        this.name.set(name);
     }
     
      /**
@@ -67,7 +71,7 @@ public class User implements Serializable {
       * @return The surname1 value.
       */
     public String getSurname1() {
-        return surname1;
+        return this.surname1.get();
     }
 
     /**
@@ -75,7 +79,7 @@ public class User implements Serializable {
      * @param surname1 The surname1 Vvalue.
      */
     public void setSurname1(String surname1) {
-        this.surname1 = surname1;
+        this.surname1.set(surname1);
     }
 
     /**
@@ -83,7 +87,7 @@ public class User implements Serializable {
      * @return The surname2 value.
      */
     public String getSurname2() {
-        return surname2;
+        return this.surname2.get();
     }
 
     /**
@@ -91,7 +95,7 @@ public class User implements Serializable {
      * @param surname2 The surname2 value.
      */
     public void setSurname2(String surname2) {
-        this.surname2 = surname2;
+        this.surname2.set(surname2);
     }
     
     /**
@@ -115,7 +119,7 @@ public class User implements Serializable {
      * @return The login value.
      */
     public String getLogin() {
-        return login;
+        return this.login.get();
     }
     
     /**
@@ -123,7 +127,7 @@ public class User implements Serializable {
      * @param login The login value.
      */
     public void setLogin(String login) {
-        this.login = login;
+        this.login.set(login);
     }
     
     /**
@@ -131,7 +135,7 @@ public class User implements Serializable {
      * @return the email
      */
     public String getEmail() {
-        return email;
+        return this.email.get();
     }
 
     /**
@@ -139,7 +143,7 @@ public class User implements Serializable {
      * @param email The email value.
      */
     public void setEmail(String email) {
-        this.email = email;
+        this.email.set(email);
     }
 
     /**
@@ -147,7 +151,7 @@ public class User implements Serializable {
      * @return The password value.
      */
     public String getPassword() {
-        return password;
+        return this.password.get();
     }
 
     /**
@@ -155,7 +159,7 @@ public class User implements Serializable {
      * @param password The password user.
      */
     public void setPassword(String password) {
-        this.password = password;
+        this.password.set(password);
     }
     
     /**

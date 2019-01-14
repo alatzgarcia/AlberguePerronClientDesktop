@@ -7,8 +7,8 @@ package albergueperronclient.logic;
 
 /**
  *
- * @author 2dam
+ * @author Alatz
  */
-public interface ILogic {
+public class RoomManagerFactory {
     
 }

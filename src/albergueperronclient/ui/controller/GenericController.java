@@ -9,7 +9,6 @@ import java.util.logging.Logger;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
-import albergueperronclient.logic.ILogic;
 import albergueperronclient.modelObjects.User;
 
 /**
@@ -25,7 +24,6 @@ public class GenericController {
     protected final int fullNameMinLength = 5;
     protected final int fullNameMaxLength = 50;
     
-    protected ILogic logicManager;
     protected Stage stage;
     protected User user;
     
@@ -43,14 +41,6 @@ public class GenericController {
               //getClass().getResource("/ui/fxml/customCascadeStyleSheet.css").toExternalForm());
         alert.showAndWait();
         
-    }
-    
-    /**
-     * Method to set the logic controller
-     * @param logicManager 
-     */
-    public void setLogicManager(ILogic logicManager){
-        this.logicManager = logicManager;
     }
     
     /**

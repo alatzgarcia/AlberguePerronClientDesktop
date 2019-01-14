@@ -7,25 +7,29 @@ package albergueperronclient.modelObjects;
 
 import java.io.Serializable;
 import java.util.Date;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author Alatz
  */
+@XmlRootElement(name="stay")
 public class Stay implements Serializable {
     private static long serialVersionUID = 1L;
     
-    private Integer id;
-    private User guest;
-    private Room room;
-    private Date date;
+    private SimpleIntegerProperty id;
+    private SimpleObjectProperty<User> guest;
+    private SimpleObjectProperty<Room> room;
+    private SimpleObjectProperty<Date> date;
     
     public Integer getId() {
-        return id;
+        return this.id.get();
     }
 
     public void setId(Integer id) {
-        this.id = id;
+        this.id.set(id);
     }
 
     /**
@@ -33,7 +37,7 @@ public class Stay implements Serializable {
      * @return The guest value.
      */
     public User getGuest() {
-        return guest;
+        return this.guest.get();
     }
 
     /**
@@ -41,7 +45,7 @@ public class Stay implements Serializable {
      * @param guest The guest value.
      */
     public void setGuest(User guest) {
-        this.guest = guest;
+        this.guest.set(guest);
     }
 
     /**
@@ -49,28 +53,28 @@ public class Stay implements Serializable {
      * @return The room value.
      */
     public Room getRoom() {
-        return room;
+        return this.room.get();
     }
 
     /**
      * @param room the room to set
      */
     public void setRoom(Room room) {
-        this.room = room;
+        this.room.set(room);
     }
 
     /**
      * @return the date
      */
     public Date getDate() {
-        return date;
+        return this.date.get();
     }
 
     /**
      * @param date the date to set
      */
     public void setDate(Date date) {
-        this.date = date;
+        this.date.set(date);
     }
     
     @Override
