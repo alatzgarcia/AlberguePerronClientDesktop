@@ -6,7 +6,10 @@
 package albergueperronclient;
 
 
-import albergueperronclient.ui.controller.UIGuestController;
+import albergueperronclient.logic.ILogin;
+import albergueperronclient.logic.ILoginFactory;
+import albergueperronclient.ui.controller.UILoginFXMLController;
+import albergueperronclient.ui.controller.FTPController;
 import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -24,7 +27,7 @@ import javafx.stage.Stage;
  * @author Alatz
  */
 public class App extends Application {
-    private static final Logger LOGGER = Logger.getLogger("albergueperron.App");
+    private static final Logger LOGGER = Logger.getLogger("albergueperronclient.App");
     
     /**
      * Main method of the client application
@@ -43,17 +46,17 @@ public class App extends Application {
     public void start(Stage primaryStage) throws Exception {
         try{
             //Get the logic manager object for the initial stage
-            //ILogic logicManager = ILogicImplementationFactory.getLogic();
+            ILogin loginManager = ILoginFactory.getLoginManager();
             
             //Load the fxml file
             FXMLLoader loader = new FXMLLoader(getClass()
-                    .getResource("/albergueperronclient/gui/fxml/UIGuest.fxml"));
+                    .getResource("/albergueperronclient/ui/fxml/UILogin.fxml"));
             Parent root = loader.load();
             //Get controller from the loader
-            UIGuestController loginController = loader.getController();
+            UILoginFXMLController loginController = loader.getController();
             /*Set a reference in the controller for the UILogin view for the logic manager object           
             */
-            //loginController.setLogicManager(logicManager);
+            loginController.setLoginManager(loginManager);
             //Set a reference for Stage in the UILogin view controller
             loginController.setStage(primaryStage);
             //Initialize the primary stage of the application

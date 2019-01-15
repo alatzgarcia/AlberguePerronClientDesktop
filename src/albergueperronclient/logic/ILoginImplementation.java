@@ -46,7 +46,7 @@ public class ILoginImplementation implements ILogin{
         try{
             LOGGER.info("User: Finding user by ID from REST service (XML).");
             //Ask webClient for all users' data.
-            user = webClient.find(UserBean.class,id);
+            user = webClient.find_XML(UserBean.class,id);
         }catch(Exception ex){
             LOGGER.log(Level.SEVERE,
                     "User: Exception finding user, {0}",
@@ -66,9 +66,16 @@ public class ILoginImplementation implements ILogin{
         //encriptar contraseña
         UserBean user = null;
         //webClient.login(userBean);
-        user=webClient.find(UserBean.class, userBean.getId());
-        LOGGER.info(user.getName());
-        return null;
+        try{
+            user=webClient.find_XML(UserBean.class, userBean.getId());
+            LOGGER.info("Nombre: "+user.getName());
+        }catch(Exception ex){
+            LOGGER.log(Level.SEVERE,
+                    "User: Exception finding user, {0}",
+                    ex.getMessage());
+            //throw new BusinessLogicException("Error finding all users:\n"+ex.getMessage());
+        }
+        return user;
         
         
         

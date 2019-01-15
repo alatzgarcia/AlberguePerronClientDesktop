@@ -9,12 +9,14 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import javafx.beans.property.*;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * User class for AlberguePerronServer application
  * @author Diego
  */
+@XmlRootElement(name="user")
 public class UserBean implements Serializable{
     private SimpleStringProperty id;
     private SimpleStringProperty name;
@@ -59,6 +61,11 @@ public class UserBean implements Serializable{
         this.email =  new SimpleStringProperty(email);
         this.password =  new SimpleStringProperty(password);
         this.lastPasswordChange =  new SimpleStringProperty(lastPasswordChange);
+    }
+
+    public UserBean(String id, String password) {
+      this.id=new SimpleStringProperty(id);
+      this.password=new SimpleStringProperty(password);
     }
 
     public String getId(){

@@ -121,7 +121,7 @@ public class UILoginFXMLController extends GenericController {
             UserBean user = loginManager.login(new UserBean(txtUsername.getText(), 
                     pfPassword.getText()));
             FXMLLoader loader = new FXMLLoader(getClass()
-                    .getResource("/signupsigninuidesktop/ui/fxml/UILogged.fxml"));
+                    .getResource("/albergueperronclient/ui/fxml/UIBlackList.fxml"));
         try {
             Parent root = loader.load();
         } catch (IOException ex) {
