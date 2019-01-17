@@ -9,6 +9,7 @@ import albergueperronclient.logic.IFTPImplementation;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.value.ObservableValue;
@@ -24,10 +25,13 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.TreeView;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import static javafx.scene.input.KeyCode.T;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.WindowEvent;
+import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 
 
@@ -48,9 +52,21 @@ public class FTPController extends GenericController{
     @FXML
     private Button btnUpload;
     @FXML
+    private Button btnDownload;
+    @FXML
+    private Button btnDeleteF;
+    @FXML
+    private Button btnDeleteD;
+    @FXML
+    private Button btnBack;
+    @FXML
+    private Button btnCrear;
+    @FXML
     private TreeTableView treeFile;
     @FXML
     private TreeTableColumn columnFile;
+    
+    static FTPClient ftp;
    
     /**
      * Method for initializing Login Stage. 
@@ -67,29 +83,63 @@ public class FTPController extends GenericController{
         stage.setResizable(false);
         //Set window's events handlers
         stage.setOnShowing(this::handleWindowShowing);
-        IFTPImplementation ftp = new IFTPImplementation();
-        FTPFile[] files=ftp.getFiles();
-        
-         //Creating the root element
-        final TreeItem<String> rootI = new TreeItem<>("Root node");
-        rootI.setExpanded(true); 
-        
-        
-        for (int i = 0; i < files.length; i++) {
-            TreeItem<String> childNode = new TreeItem<>(files[i].getName());
-            //rootI.getChildren().set(i+1, childNode);  
-        }
-             
-        treeFile.setRoot(rootI);
-              
-        treeFile.setShowRoot(true);             
-        //sceneRoot.getChildren().add(treeTableView);
-        
-              
+       
         
         btnSearch.setOnAction(this::search);
         btnUpload.setOnAction(this::upload);
+        btnDeleteF.setOnAction(this::delete);
+        btnDownload.setOnAction(this::download);
+        btnCrear.setOnAction(this::createDir);
+        btnDeleteD.setOnAction(this::deleteDir);
+        
+        //IFTPImplementation ftp = new IFTPImplementation();
+        TreeItem<String> rootI = new TreeItem<String>("Root node");
+      treeFile.setRoot(rootI);
+        FTPFile[] files=ftpManager.getFiles(ftp);
+        for (FTPFile file : files) {
+
+            if(!file.getName().startsWith(".")) {
+
+                System.out.println("File: " + file.getName());
+
+                // add file to file tree
+                rootI.getChildren().add(new TreeItem<>(file.getName()));
+
+            } // if
+
+        } // for
+        
+                   
+        //Creating the root element
+      //TreeItem<String> rootI = new TreeItem<String>("Root node");
+      //treeFile.setRoot(rootI);
+      
+        //Creating tree items
+        //for (int i = 0; i < files.length; i++) {
+         //TreeItem<String> treeItem = new TreeItem<String>(files[i].getName()); 
+        //columnFile.setCellValueFactory(new TreeItemPropertyValueFactory(treeItem.getValue()));
+      //  rootI.getChildren().setAll(treeItem);
+       
+        //}
+      
+     
+         //Adding tree items to the root
+      // rootI.getChildren().setAll(childNode1, childNode2, childNode3);        
+      
+       
+      
+       //treeFile.getColumns().add(columnFile);
+       
+       treeFile.setShowRoot(true); 
+        
+       columnFile.setVisible(true);
+       treeFile.setVisible(true);
+       treeFile.toFront();
+        //scene.add(treeFile);
+        stage.setScene(scene);
         //Show primary window
+        ftp=ftpManager.connect();
+        //ftpManager.disconnect(ftp);
         stage.show();
         
 
@@ -101,7 +151,9 @@ public class FTPController extends GenericController{
      */
     private void handleWindowShowing(WindowEvent event){
         
-            
+           btnUpload.setVisible(true);
+           btnDeleteF.setDisable(false);
+           btnDownload.setDisable(false);
 
        
     }
@@ -122,13 +174,31 @@ public class FTPController extends GenericController{
        
     }
     
-      public void upload(ActionEvent event){
-        //ClienteFTP ftp = new ClienteFTP();
-        //if(ftp.uploadFile(txtFile.getText())){
-        //    txtFile.setText("");
-        //}
+    public void upload(ActionEvent event){
+        
+        if(ftpManager.uploadFile(txtFile.getText(),ftp)){
+           txtFile.setText("");
+        }
+    }
+      
+      public void delete(ActionEvent event){
+        
+        ftpManager.deleteFile(ftp);
+    }
+      
+    public void download(ActionEvent event){
+        
+        ftpManager.downloadFile(ftp);
     }
  
+    public void createDir(ActionEvent event){
+        
+        ftpManager.createDirectory(ftp);
+    }
     
+    public void deleteDir(ActionEvent event){
+        
+        ftpManager.deleteDirectory(ftp);
+    }
 
 }

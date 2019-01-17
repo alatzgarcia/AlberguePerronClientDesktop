@@ -45,6 +45,12 @@ public class GenericController {
         alert.showAndWait();
         
     }
+
+    public void setFtpManager(IFTP ftpManager) {
+        this.ftpManager = ftpManager;
+    }
+    
+    
      
     /**
      * Sets the logic Manager

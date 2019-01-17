@@ -23,4 +23,6 @@ public interface ILogin {
     public UserBean login(UserBean userBean);
 
     public void close();
+    public void generateKey();
+    public byte[] encrypt(String pass);
 }

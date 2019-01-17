@@ -6,6 +6,8 @@
 package albergueperronclient;
 
 
+import albergueperronclient.logic.IFTP;
+import albergueperronclient.logic.IFTPFactory;
 import albergueperronclient.logic.ILogin;
 import albergueperronclient.logic.ILoginFactory;
 import albergueperronclient.ui.controller.UILoginFXMLController;
@@ -50,7 +52,7 @@ public class App extends Application {
             
             //Load the fxml file
             FXMLLoader loader = new FXMLLoader(getClass()
-                    .getResource("/albergueperronclient/ui/fxml/UILogin.fxml"));
+                    .getResource("/albergueperronclient/ui/fxml/UIBlackList.fxml"));
             Parent root = loader.load();
             //Get controller from the loader
             UILoginFXMLController loginController = loader.getController();

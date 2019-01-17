@@ -5,10 +5,29 @@
  */
 package albergueperronclient.logic;
 
+import java.io.IOException;
+import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPFile;
+
 /**
  *
  * @author 2dam
  */
 public interface IFTP {
+
+    public FTPFile[] getFiles(FTPClient ftp) throws IOException ;
+   
+    public boolean uploadFile(String text,FTPClient ftp);
     
+    public void deleteFile(FTPClient ftp);
+    
+    public void downloadFile(FTPClient ftp);
+
+    public void createDirectory(FTPClient ftp);
+    
+    public FTPClient connect();
+
+    public void disconnect(FTPClient ftp);
+
+    public void deleteDirectory(FTPClient ftp);
 }
