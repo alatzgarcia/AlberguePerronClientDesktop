@@ -5,9 +5,11 @@
  */
 package albergueperronclient.rest;
 
+import java.util.ResourceBundle;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.GenericType;
 
 /**
  * Jersey REST client generated for REST resource:UserREST [users]<br>
@@ -25,7 +27,8 @@ public class UserREST {
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/alberguePerronServer/webresources";
+    private static final String BASE_URI = ResourceBundle.getBundle("albergueperronclient.config.parameters")
+                          .getString("RESTful.baseURI");
 
     public UserREST() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
@@ -46,13 +49,19 @@ public class UserREST {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
     }
 
-    public <T> T findAll(Class<T> responseType) throws ClientErrorException {
+    public <T> T findAll(GenericType<T> responseType) throws ClientErrorException {
         WebTarget resource = webTarget;
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
     public void remove(String id) throws ClientErrorException {
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete();
+    }
+
+    public <T> T findByPrivilege(Class<T> responseType, String privilege) throws ClientErrorException {
+        WebTarget resource = webTarget;
+        resource = resource.path(java.text.MessageFormat.format("privilege/{0}", new Object[]{privilege}));
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
     public void close() {

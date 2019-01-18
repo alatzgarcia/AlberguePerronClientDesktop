@@ -21,7 +21,7 @@ import javafx.scene.control.TextField;
  *
  * @author 2dam
  */
-public class UIStayController implements Initializable {
+public class UIStayFXMLController implements Initializable {
 
     @FXML
     private TableView<?> tablePet;

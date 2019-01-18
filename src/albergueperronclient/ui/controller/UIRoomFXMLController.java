@@ -22,7 +22,7 @@ import javafx.scene.text.Text;
  *
  * @author 2dam
  */
-public class UIRoomController implements Initializable {
+public class UIRoomFXMLController implements Initializable {
 
     @FXML
     private TableView<?> tablePet;

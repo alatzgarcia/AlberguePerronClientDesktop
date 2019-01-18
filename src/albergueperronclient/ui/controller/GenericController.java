@@ -46,9 +46,9 @@ public class GenericController {
      * Sets the logic Manager
      * @param logicManager 
      */
-    /*public void setLogicManager(ILogic logicManager){
-        this.logicManager = logicManager;
-    }*/
+    public void setUsersManager(UsersManager usersManager){
+        this.usersManager = usersManager;
+    }
     
     /**
      * Sets the stage

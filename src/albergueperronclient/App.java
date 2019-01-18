@@ -6,7 +6,9 @@
 package albergueperronclient;
 
 
-import albergueperronclient.ui.controller.UIGuestController;
+import albergueperronclient.logic.UserManagerFactory;
+import albergueperronclient.logic.UsersManager;
+import albergueperronclient.ui.controller.UIGuestFXMLController;
 import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -43,21 +45,21 @@ public class App extends Application {
     public void start(Stage primaryStage) throws Exception {
         try{
             //Get the logic manager object for the initial stage
-            //ILogic logicManager = ILogicImplementationFactory.getLogic();
+            UsersManager userManager = UserManagerFactory.createUserManager();
             
             //Load the fxml file
             FXMLLoader loader = new FXMLLoader(getClass()
-                    .getResource("/albergueperronclient/gui/fxml/UIGuest.fxml"));
+                    .getResource("/albergueperronclient/ui/fxml/UIGuest.fxml"));
             Parent root = loader.load();
             //Get controller from the loader
-            UIGuestController loginController = loader.getController();
+            UIGuestFXMLController guestController = loader.getController();
             /*Set a reference in the controller for the UILogin view for the logic manager object           
             */
-            //loginController.setLogicManager(logicManager);
+            guestController.setUsersManager(userManager);
             //Set a reference for Stage in the UILogin view controller
-            loginController.setStage(primaryStage);
+            guestController.setStage(primaryStage);
             //Initialize the primary stage of the application
-            loginController.initStage(root);
+            guestController.initStage(root);
         }catch(Exception e){
             LOGGER.severe(e.getMessage());
         }  

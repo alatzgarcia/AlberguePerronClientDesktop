@@ -9,12 +9,14 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import javafx.beans.property.*;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * User class for AlberguePerronServer application
  * @author Diego
  */
+@XmlRootElement(name="user")
 public class UserBean implements Serializable{
     private SimpleStringProperty id;
     private SimpleStringProperty name;
@@ -24,12 +26,12 @@ public class UserBean implements Serializable{
     private SimpleStringProperty login;
     private SimpleStringProperty email;
     private SimpleStringProperty password;
-    private SimpleStringProperty lastPasswordChange;
+    private SimpleObjectProperty lastPasswordChange;
     private SimpleListProperty<IncidentBean> incidents;
     private SimpleListProperty<PetBean> pets;
     private SimpleListProperty<StayBean> stays;
     
-    //quite las list alv
+    private SimpleStringProperty fullname;
 
     public UserBean() {
         this.id = new SimpleStringProperty();
@@ -40,7 +42,7 @@ public class UserBean implements Serializable{
         this.login =  new SimpleStringProperty();
         this.email =  new SimpleStringProperty();
         this.password =  new SimpleStringProperty();
-        this.lastPasswordChange =  new SimpleStringProperty();
+        this.lastPasswordChange =  new SimpleObjectProperty();
         this.incidents = new SimpleListProperty<>();
         this.pets = new SimpleListProperty<>();
         this.stays = new SimpleListProperty<>();
@@ -58,7 +60,8 @@ public class UserBean implements Serializable{
         this.login =  new SimpleStringProperty(login);
         this.email =  new SimpleStringProperty(email);
         this.password =  new SimpleStringProperty(password);
-        this.lastPasswordChange =  new SimpleStringProperty(lastPasswordChange);
+        this.lastPasswordChange =  new SimpleObjectProperty(lastPasswordChange);
+        /*this.fullname = new SimpleStringProperty(name+" "+surname1+" "+surname2);*/
     }
 
     public String getId(){
@@ -66,7 +69,7 @@ public class UserBean implements Serializable{
     }
     
     public void setId(String id){
-        this.name.set(id);
+        this.id.set(id);
     }
     
     public String getName(){
@@ -81,7 +84,7 @@ public class UserBean implements Serializable{
         return this.surname1.get();
     }
     
-    public void setsurname1(String surname1){
+    public void setSurname1(String surname1){
         this.surname1.set(surname1);
     }
     
@@ -90,7 +93,7 @@ public class UserBean implements Serializable{
     }
     
     public void setSurname2(String surname2){
-        this.name.set(surname2);
+        this.surname2.set(surname2);
     }
     
     public Privilege getPrivilege(){
@@ -125,11 +128,11 @@ public class UserBean implements Serializable{
         this.password.set(password);
     }
 //TOCHECK
-    public String getLastPasswordChange(){
-        return this.lastPasswordChange.get();
+    public Date getLastPasswordChange(){
+        return (Date)this.lastPasswordChange.get();
     }
     
-    public void setLastPasswordChange(String lastPasswordChange){
+    public void setLastPasswordChange(Date lastPasswordChange){
         this.lastPasswordChange.set(lastPasswordChange);
     }
 
@@ -155,7 +158,14 @@ public class UserBean implements Serializable{
 
     public void setStays(List<StayBean> stays) {
         this.stays.setAll(stays);
+    } 
+    
+    public String getFullname(){      
+        return this.name.get()+" "+this.surname1.get()+" "+this.surname2.get();
     }
     
+    public void setFullname(String fullname){
+        this.fullname.set(fullname);
+    }
     
  }

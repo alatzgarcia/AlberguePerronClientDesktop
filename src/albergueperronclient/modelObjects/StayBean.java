@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  * @author Diego
  */
+@XmlRootElement(name="stay")
 public class StayBean implements Serializable {
 
     private Integer id;
