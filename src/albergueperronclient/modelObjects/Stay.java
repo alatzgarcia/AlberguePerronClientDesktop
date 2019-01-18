@@ -21,7 +21,7 @@ public class Stay implements Serializable {
     
     private SimpleIntegerProperty id;
     private SimpleObjectProperty<UserBean> guest;
-    private SimpleObjectProperty<Room> room;
+    private SimpleObjectProperty<RoomBean> room;
     private SimpleObjectProperty<Date> date;
     
     public Integer getId() {
@@ -52,14 +52,14 @@ public class Stay implements Serializable {
      * Gets room value for stay.
      * @return The room value.
      */
-    public Room getRoom() {
+    public RoomBean getRoom() {
         return this.room.get();
     }
 
     /**
      * @param room the room to set
      */
-    public void setRoom(Room room) {
+    public void setRoom(RoomBean room) {
         this.room.set(room);
     }
 

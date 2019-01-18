@@ -12,10 +12,11 @@ import albergueperronclient.exceptions.ReadException;
 import albergueperronclient.exceptions.UpdateException;
 import albergueperronclient.logic.IncidentManager;
 import albergueperronclient.logic.RoomManager;
+import albergueperronclient.logic.RoomManagerFactory;
 import albergueperronclient.logic.UsersManager;
 import albergueperronclient.modelObjects.Incident;
 import albergueperronclient.modelObjects.Privilege;
-import albergueperronclient.modelObjects.Room;
+import albergueperronclient.modelObjects.RoomBean;
 import albergueperronclient.modelObjects.UserBean;
 import java.util.List;
 import java.util.Optional;
@@ -80,9 +81,9 @@ public class IncidentFXMLController extends GenericController {
     @FXML
     private ComboBox cbRoom;
     @FXML
-    private MenuItem menuGuest;
+    private MenuItem menuGuests;
     @FXML
-    private MenuItem menuPet;
+    private MenuItem menuPets;
     @FXML
     private MenuItem menuIncidents;
     @FXML
@@ -93,6 +94,8 @@ public class IncidentFXMLController extends GenericController {
     private MenuItem menuLogOut;
     @FXML
     private MenuItem menuExit;
+    @FXML
+    private MenuItem menuRoom;
     
     private IncidentManager incidentManager;
     private RoomManager roomManager;
@@ -137,18 +140,21 @@ public class IncidentFXMLController extends GenericController {
                     new PropertyValueFactory<>("incidentType"));
             columnDescription.setCellValueFactory(
                     new PropertyValueFactory<>("description"));
-            ObservableList<Room> rooms =
+            ObservableList<RoomBean> rooms =
                     FXCollections.observableArrayList(roomManager.findAllRooms());
             cbRoom.setItems(rooms);
             ObservableList<UserBean> employees =
                     FXCollections.observableArrayList(userManager.findUsersByPrivilege(Privilege.EMPLOYEE));
+            cbEmployee.setItems(employees);
 //--TOFIX --> Arreglar            
 //employees.add(userManager.findUsersByPrivilege(Privilege.ADMIN));
             ObservableList<UserBean> guests =
                     FXCollections.observableArrayList(userManager.findUsersByPrivilege(Privilege.USER));
+            lstImplicateds.setItems(guests);
+            
             //--TOFIX Coger datos para la tabla
             //tableIncidents.setItems(value);
-            
+           
             btnNew.setOnAction(this::enableNewIncidentForm);
             btnCancel.setOnAction(this::disposeIncidentForm);
             btnSaveChanges.setOnAction(this::updateIncident);
@@ -156,15 +162,16 @@ public class IncidentFXMLController extends GenericController {
             btnModify.setOnAction(this::enableUpdateIncidentForm);
             btnInsert.setOnAction(this::createIncident);
             btnReturn.setOnAction(this::returnToPrevious);
-            menuGuest.setOnAction(this::goToGuestsView);
-            menuPet.setOnAction(this::goToPetsView);
+            menuGuests.setOnAction(this::goToGuestsView);
+            menuPets.setOnAction(this::goToPetsView);
             menuStays.setOnAction(this::goToStaysView);
             menuBlackList.setOnAction(this::goToBlackListView);
             menuLogOut.setOnAction(this::logOut);
             menuExit.setOnAction(this::exit);
             
             stage.show();
-        } catch (BusinessLogicException ex) {
+        } catch (Exception ex){
+//} catch (BusinessLogicException ex) {
             Logger.getLogger(IncidentFXMLController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -185,8 +192,10 @@ public class IncidentFXMLController extends GenericController {
         txtIncidentType.setDisable(true);
         txtDescription.setDisable(true);
         lstImplicateds.setDisable(true);
-        cbEmployee.setDisable(true);
-        cbRoom.setDisable(true);
+        //cbEmployee.setDisable(true);
+        cbEmployee.getSelectionModel().selectFirst();
+        //cbRoom.setDisable(true);
+        cbRoom.getSelectionModel().selectFirst();
         menuIncidents.setDisable(true);
         /*btnLogin.setDisable(true);
         btnLogin.setMnemonicParsing(true);
@@ -217,7 +226,7 @@ public class IncidentFXMLController extends GenericController {
         implicateds.add((UserBean)cbEmployee.getSelectionModel().getSelectedItem());
         newIncident.setImplicateds(implicateds);
         newIncident.setIncidentType(txtIncidentType.getText());
-        newIncident.setRoom((Room)cbRoom.getSelectionModel().getSelectedItem());
+        newIncident.setRoom((RoomBean)cbRoom.getSelectionModel().getSelectedItem());
         incidentManager.createIncident(newIncident);
         }catch(CreateException ce){
             //--TOFIX --> Exception handling
@@ -258,7 +267,7 @@ public class IncidentFXMLController extends GenericController {
         implicateds.add((UserBean)cbEmployee.getSelectionModel().getSelectedItem());
         incidentToModify.setImplicateds(implicateds);
         incidentToModify.setIncidentType(txtIncidentType.getText());
-        incidentToModify.setRoom((Room)cbRoom.getSelectionModel().getSelectedItem());
+        incidentToModify.setRoom((RoomBean)cbRoom.getSelectionModel().getSelectedItem());
         incidentManager.updateIncident(incidentToModify);
         }catch(UpdateException ue){
             //--TOFIX --> Exception handling
@@ -282,7 +291,7 @@ public class IncidentFXMLController extends GenericController {
         previousStage.show();
     }
     
-     public void logOut(ActionEvent event){
+    public void logOut(ActionEvent event){
         try{
             Alert alert = new Alert(AlertType.CONFIRMATION);
             alert.setTitle("Cerrar Sesión");
@@ -301,6 +310,7 @@ public class IncidentFXMLController extends GenericController {
     
     /**
     * Exit from the application
+     * @param event
     */
     public void exit(ActionEvent event){
         Platform.exit();
@@ -392,6 +402,28 @@ public class IncidentFXMLController extends GenericController {
         }catch(Exception e){
             LOGGER.severe(e.getMessage());
             showErrorAlert("Error al redirigir a la vista de la lista negra.");
+        }*/
+    }
+    
+    public void goToRoomView(ActionEvent event){
+        /*try{
+            FXMLLoader loader = new FXMLLoader(getClass()
+                    .getResource("/signupsigninuidesktop/ui/fxml/UIStayFXMLController.fxml"));
+            Parent root = loader.load();
+            //Get controller from the loader
+            RoomFXMLController roomController = loader.getController();
+        
+            roomController.setLogicManager(RoomManagerFactory.getRoomManager());
+            //Send the current stage for coming back later
+            roomController.setPreviousStage(stage);
+            //Initialize the primary stage of the application
+            roomController.initStage(root);
+            //--TOFIX --> Decidir si esconder el stage o cerrarlo
+            stage.hide();
+            stage.close();
+        }catch(Exception e){
+            LOGGER.severe(e.getMessage());
+            showErrorAlert("Error al redirigir a la vista de estancias.");
         }*/
     }
     

@@ -293,6 +293,6 @@ public class UserBean implements Serializable {
      */
     @Override
     public String toString() {
-        return "alberguePerronServer.entity.User[ id=" + id + " ]";
+        return getName() + " " + getSurname1() + getSurname2();
     }
 }

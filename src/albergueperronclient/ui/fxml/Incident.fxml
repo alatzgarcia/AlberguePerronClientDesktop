@@ -70,6 +70,7 @@
                   <MenuItem fx:id="menuIncidents" mnemonicParsing="false" text="Incidencias" />
                   <MenuItem fx:id="menuStays" mnemonicParsing="false" text="Estancias" />
                   <MenuItem fx:id="menuBlackList" mnemonicParsing="false" text="Lista Negra" />
+                  <MenuItem fx:id="menuRoom" mnemonicParsing="false" text="Habitaciones" />
                </items>
             </Menu>
             <Menu disable="true" mnemonicParsing="false">

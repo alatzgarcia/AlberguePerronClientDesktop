@@ -9,7 +9,7 @@ import albergueperronclient.exceptions.CreateException;
 import albergueperronclient.exceptions.DeleteException;
 import albergueperronclient.exceptions.ReadException;
 import albergueperronclient.exceptions.UpdateException;
-import albergueperronclient.modelObjects.Room;
+import albergueperronclient.modelObjects.RoomBean;
 import albergueperronclient.rest.RoomRESTClient;
 import java.util.List;
 import java.util.logging.Level;
@@ -30,13 +30,13 @@ public class RoomManagerImplementation implements RoomManager {
     }
     
     @Override
-    public Room findRoomById(Integer roomNum) throws ReadException {
-        Room room = null;
+    public RoomBean findRoomById(Integer roomNum) throws ReadException {
+        RoomBean room = null;
         try{
             LOGGER.log(Level.INFO, "RoomManager: Finding room {0} "
                     + "from REST service (XML).", roomNum);
             //Ask webClient for all users' data.
-            room = webClient.find(Room.class, roomNum.toString());
+            room = webClient.find(RoomBean.class, roomNum.toString());
         }catch(Exception ex){
             LOGGER.log(Level.SEVERE,
                     "RoomManager: Exception finding room, {0}",
@@ -48,13 +48,13 @@ public class RoomManagerImplementation implements RoomManager {
     }
 
     @Override
-    public List<Room> findAllRooms() throws ReadException {
-        List<Room> rooms = null;
+    public List<RoomBean> findAllRooms() throws ReadException {
+        List<RoomBean> rooms = null;
         try{
             LOGGER.info("RoomManager: Finding all rooms from "
                     + "REST service (XML).");
             //Ask webClient for all users' data.
-            rooms = webClient.findAll(new GenericType<List<Room>>() {});
+            rooms = webClient.findAll(new GenericType<List<RoomBean>>() {});
         }catch(Exception ex){
             LOGGER.log(Level.SEVERE,
                     "RoomManager: Exception finding all rooms, {0}",
@@ -65,13 +65,12 @@ public class RoomManagerImplementation implements RoomManager {
     }
 
     @Override
-    public List<Room> findRoomsWithAvailableSpace() throws ReadException {
-        List<Room> rooms = null;
+    public List<RoomBean> findRoomsWithAvailableSpace() throws ReadException {
+        List<RoomBean> rooms = null;
         try{
             LOGGER.log(Level.INFO,"IncidentManager: Finding all rooms with"
                     + "available space.");
-            rooms = webClient.findRoomsWithAvailableSpace(
-                    new GenericType<List<Room>>() {});
+            rooms = webClient.findRoomsWithAvailableSpace(new GenericType<List<RoomBean>>() {});
         }catch(Exception ex){
             LOGGER.log(Level.SEVERE,
                     "IncidentManager: Exception updating incident, {0}",
@@ -82,7 +81,7 @@ public class RoomManagerImplementation implements RoomManager {
     }
 
     @Override
-    public void createRoom(Room room) throws CreateException {
+    public void createRoom(RoomBean room) throws CreateException {
         try{
             LOGGER.log(Level.INFO,"RoomManager: Creating room, {0}",
                     room.getRoomNum());
@@ -97,7 +96,7 @@ public class RoomManagerImplementation implements RoomManager {
     }
 
     @Override
-    public void updateRoom(Room room) throws UpdateException {
+    public void updateRoom(RoomBean room) throws UpdateException {
         try{
             LOGGER.log(Level.INFO,"RoomManager: Updating room {0}.",
                     room.getRoomNum());

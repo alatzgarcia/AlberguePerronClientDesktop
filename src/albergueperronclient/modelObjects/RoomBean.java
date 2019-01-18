@@ -8,7 +8,9 @@ package albergueperronclient.modelObjects;
 import java.io.Serializable;
 import java.util.List;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.ObservableList;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -17,16 +19,46 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author Alatz
  */
 @XmlRootElement(name="room")
-public class Room implements Serializable {
+public class RoomBean implements Serializable {
     private static long serialVersionUID = 1L;
     private SimpleIntegerProperty roomNum;
     private SimpleIntegerProperty totalSpace;
     private SimpleIntegerProperty availableSpace;
     private SimpleStringProperty status;
-    private List<Incident> incidents;
-    private List<Stay> stays;
+    private SimpleListProperty<Incident> incidents;
+    private SimpleListProperty<Stay> stays;
     
-    public Room(){
+    public RoomBean(){
+        this.roomNum = new SimpleIntegerProperty();
+        this.totalSpace = new SimpleIntegerProperty();
+        this.availableSpace = new SimpleIntegerProperty();
+        this.status = new SimpleStringProperty();
+        this.incidents = new SimpleListProperty();
+        this.stays = new SimpleListProperty();
+    }
+    
+    /*public RoomBean(Integer roomNum, Integer totalSpace, Integer availableSpace,
+            String status){
+        this.roomNum = new SimpleIntegerProperty(roomNum);
+        this.totalSpace = new SimpleIntegerProperty(totalSpace);
+        this.availableSpace = new SimpleIntegerProperty(availableSpace);
+        this.status = new SimpleStringProperty(status);
+    }
+    */
+    public RoomBean(SimpleIntegerProperty roomNum, SimpleIntegerProperty totalSpace, SimpleIntegerProperty availableSpace, SimpleStringProperty status) {
+        this.roomNum = roomNum;
+        this.totalSpace = totalSpace;
+        this.availableSpace = availableSpace;
+        this.status = status;
+    }
+    
+    public RoomBean(SimpleIntegerProperty roomNum, SimpleIntegerProperty totalSpace, SimpleIntegerProperty availableSpace, SimpleStringProperty status, SimpleListProperty<Incident> incidents, SimpleListProperty<Stay> stays) {
+        this.roomNum = roomNum;
+        this.totalSpace = totalSpace;
+        this.availableSpace = availableSpace;
+        this.status = status;
+        this.incidents = incidents;
+        this.stays = stays;
     }
     
     /**
@@ -89,31 +121,31 @@ public class Room implements Serializable {
     /**
      * @return the incidents
      */
-    @XmlTransient
-    public List<Incident> getIncidents() {
-        return incidents;
+    public SimpleListProperty<Incident> getIncidents() {
+        //--TOFIX
+        return this.incidents;
     }
 
     /**
      * @param incidents the incidents to set
      */
-    public void setIncidents(List<Incident> incidents) {
-        this.incidents = incidents;
+    public void setIncidents(SimpleListProperty<Incident> incidents) {
+        this.incidents.set(incidents);
     }
 
     /**
      * @return the stays
      */
-    @XmlTransient
-    public List<Stay> getStays() {
-        return stays;
+    public SimpleListProperty<Stay> getStays() {
+        //--TOFIX
+        return this.stays;
     }
 
     /**
      * @param stays the stays to set
      */
-    public void setStays(List<Stay> stays) {
-        this.stays = stays;
+    public void setStays(SimpleListProperty<Stay> stays) {
+        this.stays.set(stays);
     }
     
     @Override
@@ -126,10 +158,10 @@ public class Room implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Room)) {
+        if (!(object instanceof RoomBean)) {
             return false;
         }
-        Room other = (Room) object;
+        RoomBean other = (RoomBean) object;
         if ((this.getRoomNum() == null && other.getRoomNum() != null) || 
                 (this.getRoomNum() != null && !this.roomNum.equals(other.roomNum))) {
             return false;
@@ -139,6 +171,6 @@ public class Room implements Serializable {
 
     @Override
     public String toString() {
-        return "alberguePerronServer.entity.Room[ Room number=" + roomNum + " ]";
+        return getRoomNum().toString();
     }
 }

@@ -25,7 +25,7 @@ public class Incident implements Serializable {
     private SimpleStringProperty incidentType;
     private List<UserBean> implicateds;
     private SimpleStringProperty description;
-    private SimpleObjectProperty<Room> room;
+    private SimpleObjectProperty<RoomBean> room;
 
     public Integer getId() {
         return this.id.get();
@@ -81,14 +81,14 @@ public class Incident implements Serializable {
     /**
      * @return the room
      */
-    public Room getRoom() {
+    public RoomBean getRoom() {
         return this.room.get();
     }
 
     /**
      * @param room the room to set
      */
-    public void setRoom(Room room) {
+    public void setRoom(RoomBean room) {
         this.room.set(room);
     }
 
