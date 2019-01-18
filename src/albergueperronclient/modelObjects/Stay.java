@@ -20,7 +20,7 @@ public class Stay implements Serializable {
     private static long serialVersionUID = 1L;
     
     private SimpleIntegerProperty id;
-    private SimpleObjectProperty<User> guest;
+    private SimpleObjectProperty<UserBean> guest;
     private SimpleObjectProperty<Room> room;
     private SimpleObjectProperty<Date> date;
     
@@ -36,7 +36,7 @@ public class Stay implements Serializable {
      * Gets guest value for stay.
      * @return The guest value.
      */
-    public User getGuest() {
+    public UserBean getGuest() {
         return this.guest.get();
     }
 
@@ -44,7 +44,7 @@ public class Stay implements Serializable {
      * Sets guest value for stay.
      * @param guest The guest value.
      */
-    public void setGuest(User guest) {
+    public void setGuest(UserBean guest) {
         this.guest.set(guest);
     }
 

@@ -10,5 +10,8 @@ package albergueperronclient.logic;
  * @author Alatz
  */
 public class RoomManagerFactory {
-    
+    public static RoomManager getRoomManager(){
+        return new RoomManagerImplementation();
+        //return new ILogicTestDataImplementation(); //Imp class with test data
+    }
 }

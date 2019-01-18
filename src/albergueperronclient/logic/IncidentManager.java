@@ -21,5 +21,5 @@ public interface IncidentManager {
     public List<Incident> findAllIncidents() throws ReadException;
     public void createIncident(Incident incident) throws CreateException;
     public void updateIncident(Incident incident) throws UpdateException;
-    public void deleteIncident(Incident incident) throws DeleteException;
+    public void deleteIncident(Integer id) throws DeleteException;
 }

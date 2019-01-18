@@ -25,6 +25,10 @@ public class Room implements Serializable {
     private SimpleStringProperty status;
     private List<Incident> incidents;
     private List<Stay> stays;
+    
+    public Room(){
+    }
+    
     /**
      * 
      * @return 

@@ -7,11 +7,10 @@ package albergueperronclient.logic;
 
 /**
  *
- * @author Alatz
+ * @author 2dam
  */
-public class IncidentManagerFactory {
-    public static IncidentManager getIncidentManager(){
-        return new IncidentManagerImplementation();
-        //return new ILogicTestDataImplementation(); //Imp class with test data
+public class UsersManagerFactory {
+    public static UsersManager getUsersManager(){
+        return new UserManagerImplementation();
     }
 }

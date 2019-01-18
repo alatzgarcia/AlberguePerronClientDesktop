@@ -23,7 +23,7 @@ public class Incident implements Serializable {
     
     private SimpleIntegerProperty id;
     private SimpleStringProperty incidentType;
-    private List<User> implicateds;
+    private List<UserBean> implicateds;
     private SimpleStringProperty description;
     private SimpleObjectProperty<Room> room;
 
@@ -53,14 +53,14 @@ public class Incident implements Serializable {
      * @return the implicateds
      */
     @XmlTransient
-    public List<User> getImplicateds() {
+    public List<UserBean> getImplicateds() {
         return implicateds;
     }
 
     /**
      * @param implicateds the implicateds to set
      */
-    public void setImplicateds(List<User> implicateds) {
+    public void setImplicateds(List<UserBean> implicateds) {
         this.implicateds = implicateds;
     }
 

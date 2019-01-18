@@ -22,5 +22,5 @@ public interface RoomManager {
     public List<Room> findRoomsWithAvailableSpace() throws ReadException;
     public void createRoom(Room room) throws CreateException;
     public void updateRoom(Room room) throws UpdateException;
-    public void deleteRoom(Room room) throws DeleteException;
+    public void deleteRoom(Integer roomNum) throws DeleteException;
 }

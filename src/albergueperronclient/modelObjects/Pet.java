@@ -20,7 +20,7 @@ public class Pet implements Serializable {
     private static long serialVersionUID = 1L;
     
     private SimpleIntegerProperty id;
-    private SimpleObjectProperty<User> owner;
+    private SimpleObjectProperty<UserBean> owner;
     private SimpleStringProperty specie;
     private SimpleStringProperty race;
     private SimpleStringProperty name;
@@ -38,14 +38,14 @@ public class Pet implements Serializable {
     /**
      * @return the owner
      */
-    public User getOwner() {
+    public UserBean getOwner() {
         return this.owner.get();
     }
 
     /**
      * @param owner the owner to set
      */
-    public void setOwner(User owner) {
+    public void setOwner(UserBean owner) {
         this.owner.set(owner);
     }
 

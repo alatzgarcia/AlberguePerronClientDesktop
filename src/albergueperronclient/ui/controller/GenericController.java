@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
-import albergueperronclient.modelObjects.User;
+import albergueperronclient.modelObjects.UserBean;
 
 /**
  *
@@ -25,7 +25,8 @@ public class GenericController {
     protected final int fullNameMaxLength = 50;
     
     protected Stage stage;
-    protected User user;
+    protected UserBean user;
+    protected Stage previousStage;
     
     /**
      * Method to show error alerts in the application
@@ -55,7 +56,16 @@ public class GenericController {
      * Method to set the user
      * @param dbUser 
      */
-    public void setUser(User dbUser){
+    public void setUser(UserBean dbUser){
         this.user = dbUser;
+    }
+    
+    /**
+     * Sets the stage of the previous window to give the option
+     * to show it again later
+     * @param stage 
+     */
+    public void setPreviousStage(Stage stage){
+        this.previousStage = stage;
     }
 }

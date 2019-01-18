@@ -5,7 +5,7 @@
  */
 package albergueperronclient.ui.controller;
 
-import albergueperronclient.modelObjects.User;
+import albergueperronclient.modelObjects.UserBean;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -17,7 +17,7 @@ import javafx.stage.WindowEvent;
 
 /**
  *
- * @author 2dam
+ * @author Alatz
  */
 public class RoomFXMLController extends GenericController {
     /*@FXML
@@ -78,7 +78,7 @@ public class RoomFXMLController extends GenericController {
         
         try{
             //Sends a user to the logic controller with the entered parameters
-            logicManager.login(new User(txtUsername.getText(), 
+            logicManager.login(new UserBean(txtUsername.getText(), 
                     pfPassword.getText()));
             FXMLLoader loader = new FXMLLoader(getClass()
                     .getResource("/signupsigninuidesktop/ui/fxml/UILogged.fxml"));

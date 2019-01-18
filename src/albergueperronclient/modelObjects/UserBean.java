@@ -6,8 +6,10 @@
 package albergueperronclient.modelObjects;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -17,7 +19,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author Alatz
  */
 @XmlRootElement(name="user")
-public class User implements Serializable {
+public class UserBean implements Serializable {
     private static final long serialVersionUID = 1L;
     
     private SimpleStringProperty id;
@@ -25,14 +27,44 @@ public class User implements Serializable {
     private SimpleStringProperty surname1;
     private SimpleStringProperty surname2;
     //--TOFIX
-    private Privilege privilege;
+    private SimpleObjectProperty<Privilege> privilege;
     private SimpleStringProperty login;
     private SimpleStringProperty email;
     private SimpleStringProperty password;
-    private Date lastPasswordChange;
+    private SimpleObjectProperty<Date> lastPasswordChange;
     private List<Incident> incidents;
     private List<Pet> pets;
     private List<Stay> stays;
+    
+    public UserBean() {
+        this.id = new SimpleStringProperty();
+        this.name = new SimpleStringProperty();
+        this.surname1 =  new SimpleStringProperty();
+        this.surname2 =  new SimpleStringProperty();
+        this.privilege =  new SimpleObjectProperty<Privilege>();
+        this.login =  new SimpleStringProperty();
+        this.email =  new SimpleStringProperty();
+        this.password =  new SimpleStringProperty();
+        this.lastPasswordChange =  new SimpleObjectProperty();
+        this.incidents = new ArrayList<Incident>();
+        this.pets = new ArrayList<Pet>();
+        this.stays = new ArrayList<Stay>();
+    }
+    
+    
+
+    public UserBean(String id, String name, String surname1, String surname2, Privilege privilege, 
+            String login, String email, String password, Object lastPasswordChange) {
+        this.id = new SimpleStringProperty(id);
+        this.name = new SimpleStringProperty(name);
+        this.surname1 =  new SimpleStringProperty(surname1);
+        this.surname2 =  new SimpleStringProperty(surname2);
+        this.privilege =  new SimpleObjectProperty(privilege);
+        this.login =  new SimpleStringProperty(login);
+        this.email =  new SimpleStringProperty(email);
+        this.password =  new SimpleStringProperty(password);
+        this.lastPasswordChange =  new SimpleObjectProperty(lastPasswordChange);
+    }
     
     /**
      * Gets id value for user.
@@ -103,7 +135,7 @@ public class User implements Serializable {
      * @return The privilege value.
      */
     public Privilege getPrivilege() {
-        return privilege;
+        return this.privilege.get();
     }
 
     /**
@@ -111,7 +143,7 @@ public class User implements Serializable {
      * @param privilege The privilege value.
      */
     public void setPrivilege(Privilege privilege) {
-        this.privilege = privilege;
+        this.privilege.set(privilege);
     }
     
     /**
@@ -167,7 +199,7 @@ public class User implements Serializable {
      * @return The lastPasswordChange value.
      */
     public Date getLastPasswordChange() {
-        return lastPasswordChange;
+        return this.lastPasswordChange.get();
     }
 
     /**
@@ -175,7 +207,7 @@ public class User implements Serializable {
      * @param lastPasswordChange The lastPasswordChange value.
      */
     public void setLastPasswordChange(Date lastPasswordChange) {
-        this.lastPasswordChange = lastPasswordChange;
+        this.lastPasswordChange.set(lastPasswordChange);
     }
     
     /**
@@ -245,10 +277,10 @@ public class User implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof User)) {
+        if (!(object instanceof UserBean)) {
             return false;
         }
-        User other = (User) object;
+        UserBean other = (UserBean) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
