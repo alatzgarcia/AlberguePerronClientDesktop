@@ -47,38 +47,23 @@ import org.apache.commons.net.ftp.FTPFile;
  *
  * @author Nerea
  */
-public class ILoginImplementation implements ILogin{
+public class IRegisterImplementation implements IRegister{
     
    //REST users web client
     private UserREST webClient;
     private static final Logger LOGGER=Logger.getLogger("albergueperronclient");
     
-     public ILoginImplementation(){
+     public IRegisterImplementation(){
         webClient=new UserREST();
     }
 
-    @Override
-    public UserBean getUserById(String id) {
-        UserBean user =null;
-        try{
-            LOGGER.info("User: Finding user by ID from REST service (XML).");
-            //Ask webClient for all users' data.
-            user = webClient.find(UserBean.class,id);
-        }catch(Exception ex){
-            LOGGER.log(Level.SEVERE,
-                    "User: Exception finding user, {0}",
-                    ex.getMessage());
-            //throw new BusinessLogicException("Error finding all users:\n"+ex.getMessage());
-        }
-        return user;
-    }
 
     /**
      *
      * @param userBean
      */
     @Override
-    public void login(UserBean userBean) {
+    public void register(UserBean userBean) {
         
         //generateKey();
         byte[] encryptedPass =encrypt(userBean.getPassword());
@@ -86,7 +71,7 @@ public class ILoginImplementation implements ILogin{
         userBean.setPassword(encryptedPass);
         try{
           
-           webClient.update(userBean);
+           webClient.create(userBean);
             
         }catch(Exception ex){
             LOGGER.log(Level.SEVERE,
@@ -101,10 +86,6 @@ public class ILoginImplementation implements ILogin{
         
     }
 
-    @Override
-    public void close() {
-        
-    }
     @Override
     public void generateKey() {
         try {

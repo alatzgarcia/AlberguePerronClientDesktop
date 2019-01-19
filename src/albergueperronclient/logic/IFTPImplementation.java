@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.scene.control.Alert;
 
 import org.apache.commons.net.PrintCommandListener;
 import org.apache.commons.net.ftp.FTP;
@@ -57,7 +58,7 @@ public class IFTPImplementation implements IFTP{
         BufferedInputStream in = null;
         try {
             in = new BufferedInputStream(new FileInputStream(file));
-             uploaded=ftp.storeFile("texto.txt", in);
+             uploaded=ftp.storeFile("directorioCreado/texto.txt", in);
              in.close();
         } catch (FileNotFoundException ex) {
             LOGGER.severe(ex.getMessage());
@@ -76,10 +77,10 @@ public class IFTPImplementation implements IFTP{
         }         
     }
      
-    public void deleteFile(FTPClient ftp){
+    public void deleteFile(FTPClient ftp,String name){
   
         try {
-            if (ftp.deleteFile("texto.txt")){
+            if (ftp.deleteFile(name)){
                 LOGGER.info("Fichero eliminado");
             }else{
                 LOGGER.info("No se ha podido eliminar el fichero……..");         
@@ -90,13 +91,14 @@ public class IFTPImplementation implements IFTP{
 
     }
      
-    public void downloadFile(FTPClient ftp){
+    public void downloadFile(FTPClient ftp,String file){
 
         BufferedOutputStream out;
         try {
             out = new BufferedOutputStream(
-                    new FileOutputStream("C:\\Users\\2dam\\Documents\\texto.txt"));
-            if (ftp.retrieveFile("texto.txt", out)){
+                    new FileOutputStream("/home/nerea/Documentos/textoD.txt"));
+            LOGGER.info(file);
+            if (ftp.retrieveFile(file, out)){
                 LOGGER.info("Recuperado correctamente…..");
             }else{
                 LOGGER.info("No se ha podido descargar……..");
@@ -125,6 +127,7 @@ public class IFTPImplementation implements IFTP{
     public void createDirectory(FTPClient ftp) {
         try {
             //String path=ftp.printWorkingDirectory()
+            //elegir nombre de directorio
             ftp.makeDirectory("/directorioCreado");
         } catch (IOException ex) {
             Logger.getLogger(IFTPImplementation.class.getName()).log(Level.SEVERE, null, ex);
@@ -132,10 +135,10 @@ public class IFTPImplementation implements IFTP{
     }
     
     @Override
-    public void deleteDirectory(FTPClient ftp) {
+    public void deleteDirectory(FTPClient ftp,String name) {
         try {
             //String path=ftp.printWorkingDirectory()
-            ftp.removeDirectory("/directorioCreado");
+            ftp.removeDirectory(name);
         } catch (IOException ex) {
             Logger.getLogger(IFTPImplementation.class.getName()).log(Level.SEVERE, null, ex);
         }

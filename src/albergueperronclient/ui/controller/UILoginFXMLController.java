@@ -118,8 +118,10 @@ public class UILoginFXMLController extends GenericController {
         
         //try{
             //Sends a user to the logic controller with the entered parameters
-            UserBean user = loginManager.login(new UserBean(txtUsername.getText(), 
-                    pfPassword.getText()));
+            UserBean user = new UserBean(txtUsername.getText(), 
+                    pfPassword.getText().getBytes());
+           
+            loginManager.login(user);
             FXMLLoader loader = new FXMLLoader(getClass()
                     .getResource("/albergueperronclient/ui/fxml/UIBlackList.fxml"));
         try {

@@ -19,9 +19,9 @@ public interface IFTP {
    
     public boolean uploadFile(String text,FTPClient ftp);
     
-    public void deleteFile(FTPClient ftp);
+    public void deleteFile(FTPClient ftp,String name);
     
-    public void downloadFile(FTPClient ftp);
+    public void downloadFile(FTPClient ftp,String file);
 
     public void createDirectory(FTPClient ftp);
     
@@ -29,5 +29,5 @@ public interface IFTP {
 
     public void disconnect(FTPClient ftp);
 
-    public void deleteDirectory(FTPClient ftp);
+    public void deleteDirectory(FTPClient ftp,String name);
 }

@@ -7,6 +7,7 @@ package albergueperronclient.ui.controller;
 
 import albergueperronclient.logic.IFTP;
 import albergueperronclient.logic.ILogin;
+import albergueperronclient.logic.IRegister;
 import albergueperronclient.logic.UsersManager;
 import java.util.logging.Logger;
 import javafx.scene.control.Alert;
@@ -31,6 +32,7 @@ public class GenericController {
     protected UsersManager usersManager;
     protected ILogin loginManager;
     protected IFTP ftpManager;
+    protected IRegister registerManager;
 
     /**
      * Shows an alert with an error message
@@ -56,7 +58,11 @@ public class GenericController {
      * Sets the logic Manager
      * @param logicManager 
      */
-    public void setLoginManager(ILogin loginManager){
+    public void setRegisterManager(IRegister registerManager){
+        this.registerManager = registerManager;
+    }
+
+    public void setLoginManager(ILogin loginManager) {
         this.loginManager = loginManager;
     }
     
