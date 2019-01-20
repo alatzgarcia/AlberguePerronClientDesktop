@@ -6,6 +6,8 @@
 package albergueperronclient.logic;
 
 import java.io.IOException;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 
@@ -15,19 +17,24 @@ import org.apache.commons.net.ftp.FTPFile;
  */
 public interface IFTP {
 
-    public FTPFile[] getFiles(FTPClient ftp) throws IOException ;
    
-    public boolean uploadFile(String text,FTPClient ftp);
+    public boolean uploadFile(String text);
     
-    public void deleteFile(FTPClient ftp,String name);
+    public void deleteFile(String name);
     
-    public void downloadFile(FTPClient ftp,String file);
+    public void downloadFile(String file);
 
-    public void createDirectory(FTPClient ftp);
+    public void createDirectory();
     
-    public FTPClient connect();
+    public void connect();
 
-    public void disconnect(FTPClient ftp);
+    public void disconnect();
 
-    public void deleteDirectory(FTPClient ftp,String name);
+    public void deleteDirectory(String name);
+    
+    public void buildFileTree(TreeItem treeNode) throws IOException;
+    
+    public void setTreeFile(TreeView treeFile);
+    
+    public void changeDirectory(String path);
 }

@@ -10,10 +10,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
 import javafx.scene.Parent;
@@ -28,6 +31,8 @@ import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import static javafx.scene.input.KeyCode.T;
+import javafx.scene.input.MouseEvent;
+
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.WindowEvent;
@@ -66,7 +71,9 @@ public class FTPController extends GenericController{
     @FXML
     private TreeTableColumn columnFile;
     
-    static FTPClient ftp;
+    private TreeItem<String> rootItem;
+    
+    
    
     /**
      * Method for initializing Login Stage. 
@@ -91,16 +98,19 @@ public class FTPController extends GenericController{
         btnDownload.setOnAction(this::download);
         btnCrear.setOnAction(this::createDir);
         btnDeleteD.setOnAction(this::deleteDir);
-       ftp=ftpManager.connect();
-       
-       TreeItem<String> rootItem = new TreeItem<>("/home/user/");
+        treeFile.setOnMouseClicked(this::changeDirectory);
+        ftpManager.connect();
+        
+        
+        rootItem = new TreeItem<>("/home/user/");
         rootItem.setExpanded(true);
 
-        // set the tree root
+            // set the tree root
         treeFile.setRoot(rootItem);
 
-        // start building the file tree
-        buildFileTree(treeFile.getRoot());
+            // start building the file tree
+        ftpManager.buildFileTree(treeFile.getRoot());
+        ftpManager.setTreeFile(treeFile);
         //scene.add(treeFile);
         stage.setScene(scene);
         //Show primary window
@@ -142,81 +152,75 @@ public class FTPController extends GenericController{
     
     public void upload(ActionEvent event){
         
-        if(ftpManager.uploadFile(txtFile.getText(),ftp)){
+        
+        if(ftpManager.uploadFile(txtFile.getText())){
            txtFile.setText("");
+           rootItem.getChildren().clear();
+            try {
+                ftpManager.buildFileTree(rootItem);
+            } catch (IOException ex) {
+                Logger.getLogger(FTPController.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
       
       public void delete(ActionEvent event){
         
-        ftpManager.deleteFile(ftp,treeFile.getTreeItem(treeFile.getSelectionModel().getSelectedIndex()).getValue().toString());
+        ftpManager.deleteFile(treeFile.getTreeItem(treeFile.getSelectionModel().getSelectedIndex()).getValue().toString());
+        rootItem.getChildren().clear();
+
+        try {
+            ftpManager.buildFileTree(rootItem);
+        } catch (IOException ex) {
+            Logger.getLogger(FTPController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
     }
       
     public void download(ActionEvent event){
         LOGGER.info("Archivo"+treeFile.getTreeItem(treeFile.getSelectionModel().getSelectedIndex()).getValue());
-        ftpManager.downloadFile(ftp,treeFile.getTreeItem(treeFile.getSelectionModel().getSelectedIndex()).getValue().toString());
+        ftpManager.downloadFile(treeFile.getTreeItem(treeFile.getSelectionModel().getSelectedIndex()).getValue().toString());
+         rootItem.getChildren().clear();
+
+        try {
+            ftpManager.buildFileTree(rootItem);
+        } catch (IOException ex) {
+            Logger.getLogger(FTPController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
     }
  
     public void createDir(ActionEvent event){
         
-        ftpManager.createDirectory(ftp);
+        ftpManager.createDirectory();
+         rootItem.getChildren().clear();
+
+        try {
+            ftpManager.buildFileTree(rootItem);
+        } catch (IOException ex) {
+            Logger.getLogger(FTPController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
     }
     
     public void deleteDir(ActionEvent event){
         
-        ftpManager.deleteDirectory(ftp,treeFile.getTreeItem(treeFile.getSelectionModel().getSelectedIndex()).getValue().toString());
-    }
+        ftpManager.deleteDirectory(treeFile.getTreeItem(treeFile.getSelectionModel().getSelectedIndex()).getValue().toString());
+         rootItem.getChildren().clear();
 
-
-    private void buildFileTree(TreeItem treeNode) throws IOException {
-        TreeItem<String> rootItem = new TreeItem<>();
-     // display the files
-        FTPFile[] files = ftp.listFiles();
-
-        for (FTPFile file : files) {
-
-            if(!file.getName().startsWith(".")) {
-
-                System.out.println("File: " + file.getName());
-
-                // add file to file tree
-                treeNode.getChildren().add(new TreeItem<>(file.getName()));
-
-            } // if
-
-        } // for
-
-        // get the directories
-        FTPFile[] directories = ftp.listDirectories();
-
-        for (FTPFile dir : directories) {
-
-            if(!dir.getName().startsWith(".")) {
-
-                // change working directory to detected directory
-                ftp.changeWorkingDirectory(dir.getName());
-
-                // save working dir
-                String pwd = ftp.printWorkingDirectory();
-
-                // create treeItem to represent new Directory
-                TreeItem newDir = new TreeItem<>(dir.getName());
-                newDir.setExpanded(false);
-
-                // add directory to file tree
-                treeNode.getChildren().add(newDir);
-
-          
-                System.out.println("Discovering Files in: " + pwd);
-
-                // recursively call method to add files and directories to new directory
-                buildFileTree(newDir);
-
-                // go back to parent directory, once finished in this directory
-                ftp.changeToParentDirectory();   
-            } 
+        try {
+            ftpManager.buildFileTree(rootItem);
+        } catch (IOException ex) {
+            Logger.getLogger(FTPController.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
     }
+
+    public void changeDirectory(MouseEvent event){
+        
+        ftpManager.changeDirectory(treeFile.getTreeItem(treeFile.getSelectionModel().getSelectedIndex()).getValue().toString());
+    }
+    
 
 }
     
