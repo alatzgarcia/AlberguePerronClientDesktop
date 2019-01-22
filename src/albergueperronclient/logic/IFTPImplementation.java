@@ -179,7 +179,7 @@ public class IFTPImplementation implements IFTP{
     @Override
     public void buildFileTree(TreeItem treeNode) throws IOException {
         
-        TreeItem<String> rootItem = new TreeItem<>();
+        TreeItem<FTPFile> rootItem = new TreeItem<>();
      // display the files
         FTPFile[] files;
             try {
@@ -192,7 +192,10 @@ public class IFTPImplementation implements IFTP{
                 System.out.println("File: " + file.getName());
 
                 // add file to file tree
-                treeNode.getChildren().add(new TreeItem<>(file.getName()));
+                TreeItem<FTPFile> treeItem=new TreeItem<FTPFile>(file);
+                
+                treeNode.getChildren().add(treeItem);
+             
 
             } // if
 
@@ -212,7 +215,7 @@ public class IFTPImplementation implements IFTP{
                 String pwd = ftp.printWorkingDirectory();
 
                 // create treeItem to represent new Directory
-                TreeItem newDir = new TreeItem<>(dir.getName());
+                TreeItem newDir = new TreeItem<FTPFile>(dir);
                 newDir.setExpanded(false);
 
                 // add directory to file tree

@@ -37,6 +37,7 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.ws.rs.core.GenericType;
+import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.net.PrintCommandListener;
 import org.apache.commons.net.ftp.FTP;
@@ -86,7 +87,9 @@ public class ILoginImplementation implements ILogin{
         userBean.setPassword(encryptedPass);
         try{
           
-           webClient.update(userBean);
+           //webClient.update(userBean);
+           String passString= DatatypeConverter.printHexBinary(encryptedPass);
+           UserBean user=webClient.login(UserBean.class,userBean.getLogin(),passString);
             
         }catch(Exception ex){
             LOGGER.log(Level.SEVERE,

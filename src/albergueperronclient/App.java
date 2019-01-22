@@ -51,21 +51,21 @@ public class App extends Application {
     public void start(Stage primaryStage) throws Exception {
         try{
            //Get the logic manager object for the initial stage
-            IFTP ftpManager = IFTPFactory.getIFTPImplementation();
+            ILogin loginManager = ILoginFactory.getLoginManager();
             
             //Load the fxml file
             FXMLLoader loader = new FXMLLoader(getClass()
-                    .getResource("/albergueperronclient/ui/fxml/UIBlackList.fxml"));
+                    .getResource("/albergueperronclient/ui/fxml/UILogin.fxml"));
             Parent root = loader.load();
             //Get controller from the loader
-            FTPController ftpController = loader.getController();
+            UILoginFXMLController loginController = loader.getController();
             /*Set a reference in the controller for the UILogin view for the logic manager object           
             */
-            ftpController.setFtpManager(ftpManager);
+            loginController.setLoginManager(loginManager);
             //Set a reference for Stage in the UILogin view controller
-            ftpController.setStage(primaryStage);
+            loginController.setStage(primaryStage);
             //Initialize the primary stage of the application
-            ftpController.initStage(root);
+            loginController.initStage(root);
             
         }catch(Exception e){
             LOGGER.severe(e.getMessage());

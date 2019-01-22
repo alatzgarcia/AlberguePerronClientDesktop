@@ -71,7 +71,7 @@ public class FTPController extends GenericController{
     @FXML
     private TreeTableColumn columnFile;
     
-    private TreeItem<String> rootItem;
+    private TreeItem<FTPFile> rootItem;
     
     
    
@@ -102,7 +102,7 @@ public class FTPController extends GenericController{
         ftpManager.connect();
         
         
-        rootItem = new TreeItem<>("/home/user/");
+        rootItem = new TreeItem<FTPFile>();
         rootItem.setExpanded(true);
 
             // set the tree root
