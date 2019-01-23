@@ -32,7 +32,7 @@ public class UserBean implements Serializable {
     private SimpleStringProperty email;
     private SimpleStringProperty password;
     private SimpleObjectProperty<Date> lastPasswordChange;
-    private List<Incident> incidents;
+    private List<IncidentBean> incidents;
     private List<Pet> pets;
     private List<Stay> stays;
     
@@ -46,7 +46,7 @@ public class UserBean implements Serializable {
         this.email =  new SimpleStringProperty();
         this.password =  new SimpleStringProperty();
         this.lastPasswordChange =  new SimpleObjectProperty();
-        this.incidents = new ArrayList<Incident>();
+        this.incidents = new ArrayList<IncidentBean>();
         this.pets = new ArrayList<Pet>();
         this.stays = new ArrayList<Stay>();
     }
@@ -215,7 +215,7 @@ public class UserBean implements Serializable {
      * @return The incidents value.
      */
     @XmlTransient
-    public List<Incident> getIncidents() {
+    public List<IncidentBean> getIncidents() {
         return incidents;
     }
 
@@ -223,7 +223,7 @@ public class UserBean implements Serializable {
      * Sets incidents value for user.
      * @param incidents The incidents value.
      */
-    public void setIncidents(List<Incident> incidents) {
+    public void setIncidents(List<IncidentBean> incidents) {
         this.incidents = incidents;
     }
     

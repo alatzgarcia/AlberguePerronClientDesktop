@@ -9,7 +9,7 @@ import albergueperronclient.exceptions.CreateException;
 import albergueperronclient.exceptions.DeleteException;
 import albergueperronclient.exceptions.ReadException;
 import albergueperronclient.exceptions.UpdateException;
-import albergueperronclient.modelObjects.Incident;
+import albergueperronclient.modelObjects.IncidentBean;
 import albergueperronclient.rest.IncidentRESTClient;
 import java.util.List;
 import java.util.logging.Level;
@@ -30,13 +30,13 @@ public class IncidentManagerImplementation implements IncidentManager {
     }
     
     @Override
-    public Incident findIncidentById(Integer id) throws ReadException {
-        Incident incident = null;
+    public IncidentBean findIncidentById(Integer id) throws ReadException {
+        IncidentBean incident = null;
         try{
             LOGGER.log(Level.INFO, "IncidentManager: Finding incident {0} "
                     + "from REST service (XML).", id);
             //Ask webClient for all users' data.
-            incident = webClient.find(Incident.class, id.toString());
+            incident = webClient.find(IncidentBean.class, id.toString());
         }catch(Exception ex){
             LOGGER.log(Level.SEVERE,
                     "IncidentManager: Exception finding incident, {0}",
@@ -48,12 +48,12 @@ public class IncidentManagerImplementation implements IncidentManager {
     }
 
     @Override
-    public List<Incident> findAllIncidents() throws ReadException {
-        List<Incident> incidents = null;
+    public List<IncidentBean> findAllIncidents() throws ReadException {
+        List<IncidentBean> incidents = null;
         try{
             LOGGER.info("IncidentManager: Finding all users from REST service (XML).");
             //Ask webClient for all users' data.
-            incidents = webClient.findAll(new GenericType<List<Incident>>() {});
+            incidents = webClient.findAll(new GenericType<List<IncidentBean>>() {});
         }catch(Exception ex){
             LOGGER.log(Level.SEVERE,
                     "IncidentManager: Exception finding all users, {0}",
@@ -64,7 +64,7 @@ public class IncidentManagerImplementation implements IncidentManager {
     }
 
     @Override
-    public void createIncident(Incident incident) throws CreateException {
+    public void createIncident(IncidentBean incident) throws CreateException {
         try{
             LOGGER.log(Level.INFO,"IncidentManager: Creating incident of type " 
                     + incident.getIncidentType() + " with description "
@@ -80,7 +80,7 @@ public class IncidentManagerImplementation implements IncidentManager {
     }
 
     @Override
-    public void updateIncident(Incident incident) throws UpdateException {
+    public void updateIncident(IncidentBean incident) throws UpdateException {
          try{
             LOGGER.log(Level.INFO,"IncidentManager: Updating incident {0}.",
                     incident.getId());

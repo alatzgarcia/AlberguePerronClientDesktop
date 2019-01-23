@@ -9,7 +9,7 @@ import albergueperronclient.exceptions.CreateException;
 import albergueperronclient.exceptions.DeleteException;
 import albergueperronclient.exceptions.ReadException;
 import albergueperronclient.exceptions.UpdateException;
-import albergueperronclient.modelObjects.Incident;
+import albergueperronclient.modelObjects.IncidentBean;
 import java.util.List;
 
 /**
@@ -17,9 +17,9 @@ import java.util.List;
  * @author Alatz
  */
 public interface IncidentManager {
-    public Incident findIncidentById(Integer id) throws ReadException;
-    public List<Incident> findAllIncidents() throws ReadException;
-    public void createIncident(Incident incident) throws CreateException;
-    public void updateIncident(Incident incident) throws UpdateException;
+    public IncidentBean findIncidentById(Integer id) throws ReadException;
+    public List<IncidentBean> findAllIncidents() throws ReadException;
+    public void createIncident(IncidentBean incident) throws CreateException;
+    public void updateIncident(IncidentBean incident) throws UpdateException;
     public void deleteIncident(Integer id) throws DeleteException;
 }

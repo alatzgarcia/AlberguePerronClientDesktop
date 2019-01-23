@@ -6,10 +6,13 @@
 package albergueperronclient.modelObjects;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.ObservableList;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -18,15 +21,23 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author Alatz
  */
 @XmlRootElement(name="incident")
-public class Incident implements Serializable {
+public class IncidentBean implements Serializable {
     private static long serialVersionUID = 1L;
     
     private SimpleIntegerProperty id;
     private SimpleStringProperty incidentType;
-    private List<UserBean> implicateds;
+    private SimpleListProperty<UserBean> implicateds;
     private SimpleStringProperty description;
     private SimpleObjectProperty<RoomBean> room;
 
+    public IncidentBean(){
+        this.id = new SimpleIntegerProperty();
+        this.incidentType = new SimpleStringProperty();
+        this.implicateds = new SimpleListProperty<UserBean>();
+        this.description = new SimpleStringProperty();
+        this.room = new SimpleObjectProperty<RoomBean>();
+    }
+    
     public Integer getId() {
         return this.id.get();
     }
@@ -52,16 +63,16 @@ public class Incident implements Serializable {
     /**
      * @return the implicateds
      */
-    @XmlTransient
     public List<UserBean> getImplicateds() {
-        return implicateds;
+        return this.implicateds.get();
     }
 
     /**
      * @param implicateds the implicateds to set
      */
     public void setImplicateds(List<UserBean> implicateds) {
-        this.implicateds = implicateds;
+        //--TOFIX
+        //this.implicateds.set(implicateds);
     }
 
     /**
@@ -102,10 +113,10 @@ public class Incident implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Incident)) {
+        if (!(object instanceof IncidentBean)) {
             return false;
         }
-        Incident other = (Incident) object;
+        IncidentBean other = (IncidentBean) object;
         if ((this.getId() == null && other.getId() != null) || (this.getId() != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -115,5 +126,27 @@ public class Incident implements Serializable {
     @Override
     public String toString() {
         return "alberguePerronServer.entity.Incident[ id=" + getId() + " ]";
+    }
+
+    public UserBean getEmployee(){
+        UserBean employee = null;
+        List<UserBean> users = this.getImplicateds();
+        for(UserBean u: users){
+            if(u.getPrivilege().equals(Privilege.EMPLOYEE)){
+                employee = u;
+            }
+        }
+        return employee;
+    }
+    
+    public List<UserBean> getGuests(){
+        List<UserBean> guests = null;
+        List<UserBean> users = this.getImplicateds();
+        for(UserBean u: users){
+            if(u.getPrivilege().equals(Privilege.USER)){
+                guests.add(u);
+            }
+        }
+        return guests;
     }
 }

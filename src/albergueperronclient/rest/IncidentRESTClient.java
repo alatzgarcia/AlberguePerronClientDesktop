@@ -5,7 +5,7 @@
  */
 package albergueperronclient.rest;
 
-import albergueperronclient.modelObjects.Incident;
+import albergueperronclient.modelObjects.IncidentBean;
 import java.util.List;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.client.Client;

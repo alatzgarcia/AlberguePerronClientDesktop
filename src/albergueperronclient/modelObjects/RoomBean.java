@@ -25,7 +25,7 @@ public class RoomBean implements Serializable {
     private SimpleIntegerProperty totalSpace;
     private SimpleIntegerProperty availableSpace;
     private SimpleStringProperty status;
-    private SimpleListProperty<Incident> incidents;
+    private SimpleListProperty<IncidentBean> incidents;
     private SimpleListProperty<Stay> stays;
     
     public RoomBean(){
@@ -52,7 +52,7 @@ public class RoomBean implements Serializable {
         this.status = status;
     }
     
-    public RoomBean(SimpleIntegerProperty roomNum, SimpleIntegerProperty totalSpace, SimpleIntegerProperty availableSpace, SimpleStringProperty status, SimpleListProperty<Incident> incidents, SimpleListProperty<Stay> stays) {
+    public RoomBean(SimpleIntegerProperty roomNum, SimpleIntegerProperty totalSpace, SimpleIntegerProperty availableSpace, SimpleStringProperty status, SimpleListProperty<IncidentBean> incidents, SimpleListProperty<Stay> stays) {
         this.roomNum = roomNum;
         this.totalSpace = totalSpace;
         this.availableSpace = availableSpace;
@@ -121,7 +121,7 @@ public class RoomBean implements Serializable {
     /**
      * @return the incidents
      */
-    public SimpleListProperty<Incident> getIncidents() {
+    public SimpleListProperty<IncidentBean> getIncidents() {
         //--TOFIX
         return this.incidents;
     }
@@ -129,7 +129,7 @@ public class RoomBean implements Serializable {
     /**
      * @param incidents the incidents to set
      */
-    public void setIncidents(SimpleListProperty<Incident> incidents) {
+    public void setIncidents(SimpleListProperty<IncidentBean> incidents) {
         this.incidents.set(incidents);
     }
 
