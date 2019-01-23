@@ -11,6 +11,7 @@ import albergueperronclient.exceptions.ReadException;
 import albergueperronclient.exceptions.UpdateException;
 import albergueperronclient.logic.IncidentManager;
 import albergueperronclient.logic.RoomManager;
+import albergueperronclient.logic.RoomManagerFactory;
 import albergueperronclient.logic.UsersManager;
 import albergueperronclient.modelObjects.IncidentBean;
 import albergueperronclient.modelObjects.Privilege;
@@ -27,6 +28,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -514,9 +516,9 @@ public class IncidentFXMLController extends GenericController {
     }
     
     public void goToRoomView(ActionEvent event){
-        /*try{
+        try{
             FXMLLoader loader = new FXMLLoader(getClass()
-                    .getResource("/signupsigninuidesktop/ui/fxml/UIStayFXMLController.fxml"));
+                    .getResource("/signupsigninuidesktop/ui/fxml/RoomFXMLController.fxml"));
             Parent root = loader.load();
             //Get controller from the loader
             RoomFXMLController roomController = loader.getController();
@@ -532,7 +534,7 @@ public class IncidentFXMLController extends GenericController {
         }catch(Exception e){
             LOGGER.severe(e.getMessage());
             showErrorAlert("Error al redirigir a la vista de estancias.");
-        }*/
+        }
     }
     
     public void onTableSelectionChanged(ObservableValue observable,
