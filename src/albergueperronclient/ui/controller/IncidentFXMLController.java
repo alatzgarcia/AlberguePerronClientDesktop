@@ -243,6 +243,10 @@ public class IncidentFXMLController extends GenericController {
         btnSaveChanges.setVisible(false);
         txtDescription.setText("");
         txtIncidentType.setText("");
+        cbEmployee.getSelectionModel().clearSelection();
+        cbRoom.getSelectionModel().clearSelection();
+        cbGuests.getSelectionModel().clearSelection();
+        lstImplicateds.getItems().clear();
         tableIncidents.getSelectionModel().clearSelection();
         tableIncidents.setDisable(true);
         
@@ -252,39 +256,41 @@ public class IncidentFXMLController extends GenericController {
     
     public void createIncident(ActionEvent event){
         try{
-            //--TOFIX --> Send data of the form
-            IncidentBean newIncident = new IncidentBean();
-            newIncident.setDescription(txtDescription.getText());
-            //--TOFIX --> Conseguir juntar cbEmpleado + listaImplicados
-            List<UserBean> implicateds = new ArrayList<UserBean>();
-            implicateds.addAll(lstImplicateds.getItems());
-            //implicateds.add((UserBean)cbEmployee.getSelectionModel().getSelectedItem());
-            //List<UserBean> implicateds = new ArrayList<UserBean>();
-            implicateds.add((UserBean)cbEmployee.getSelectionModel().getSelectedItem());
-            newIncident.setImplicateds(implicateds);
-            newIncident.setIncidentType(txtIncidentType.getText());
-            newIncident.setRoom((RoomBean)cbRoom.getSelectionModel().getSelectedItem());
-            incidentManager.createIncident(newIncident);
+            if(checkForData()){
+               //--TOFIX --> Send data of the form
+                IncidentBean newIncident = new IncidentBean();
+                newIncident.setDescription(txtDescription.getText());
+                //--TOFIX --> Conseguir juntar cbEmpleado + listaImplicados
+                List<UserBean> implicateds = lstImplicateds.getItems();
+                //List<UserBean> implicateds = new ArrayList<UserBean>();
+                implicateds.add((UserBean)cbEmployee.getSelectionModel().getSelectedItem());
+                newIncident.setImplicateds(implicateds);
+                newIncident.setIncidentType(txtIncidentType.getText());
+                newIncident.setRoom((RoomBean)cbRoom.getSelectionModel().getSelectedItem());
+                incidentManager.createIncident(newIncident);
             
-            btnCancel.setDisable(true);
-            btnInsert.setDisable(true);
-            btnInsert.setVisible(false);
-            txtDescription.setText("");
-            txtDescription.setDisable(true);
-            txtIncidentType.setText("");
-            txtIncidentType.setDisable(true);
-            cbEmployee.setItems(null);
-            cbEmployee.setDisable(true);
-            lstImplicateds.setItems(null);
-            lstImplicateds.setDisable(true);
-            cbRoom.getSelectionModel().selectFirst();
-            cbRoom.setDisable(true);
-            btnListAdd.setDisable(true);
-            btnListRemove.setDisable(true);
-            cbGuests.setDisable(true);
+                btnCancel.setDisable(true);
+                btnInsert.setDisable(true);
+                btnInsert.setVisible(false);
+                txtDescription.setText("");
+                txtDescription.setDisable(true);
+                txtIncidentType.setText("");
+                txtIncidentType.setDisable(true);
+                cbEmployee.setItems(null);
+                cbEmployee.setDisable(true);
+                lstImplicateds.setItems(null);
+                lstImplicateds.setDisable(true);
+                cbRoom.getSelectionModel().selectFirst();
+                cbRoom.setDisable(true);
+                btnListAdd.setDisable(true);
+                btnListRemove.setDisable(true);
+                cbGuests.setDisable(true);
             
-            tableIncidents.getItems().add(newIncident);
-            tableIncidents.setDisable(false);
+                tableIncidents.getItems().add(newIncident);
+                tableIncidents.setDisable(false); 
+            } else{
+                //--TOFIX --> Advertir al usuario de que se requieren todos los datos introducidos para poder crear un nuevo incidente
+            }
         }catch(CreateException ce){
             //--TOFIX --> Exception handling
         }catch(Exception ex){
@@ -293,11 +299,28 @@ public class IncidentFXMLController extends GenericController {
     }
     
     public void disposeIncidentForm(ActionEvent event){
+        if(btnInsert.isVisible()){
+            cbEmployee.getSelectionModel().clearSelection();
+            cbRoom.getSelectionModel().clearSelection();
+            cbGuests.getSelectionModel().clearSelection();
+            lstImplicateds.getItems().clear();
+            txtDescription.setText("");
+            txtIncidentType.setText("");
+        } else{
+            cbEmployee.getSelectionModel().select(selectedIncident.getEmployee());
+            cbRoom.getSelectionModel().select(selectedIncident.getRoom());
+            cbGuests.getSelectionModel().selectFirst();
+            lstImplicateds.setItems(FXCollections.observableArrayList(selectedIncident.getGuests()));
+            txtDescription.setText(selectedIncident.getDescription());
+            txtIncidentType.setText(selectedIncident.getIncidentType());
+        }
+        
         btnSaveChanges.setDisable(true);
         btnSaveChanges.setVisible(false);
         btnInsert.setDisable(true);
         btnInsert.setVisible(false);
         btnCancel.setDisable(true);
+        btnNew.setDisable(false);
         
         txtIncidentType.setDisable(true);
         txtDescription.setDisable(true);
@@ -309,12 +332,6 @@ public class IncidentFXMLController extends GenericController {
         btnListRemove.setDisable(true);
         cbGuests.setDisable(true);
         
-        cbEmployee.getSelectionModel().selectFirst();
-        cbRoom.getSelectionModel().selectFirst();
-        lstImplicateds.getSelectionModel().selectFirst();
-        txtDescription.setText("");
-        txtIncidentType.setText(""); 
-        
         tableIncidents.setDisable(false);
    }
     
@@ -324,50 +341,62 @@ public class IncidentFXMLController extends GenericController {
         btnCancel.setDisable(false);
         btnListAdd.setDisable(false);
         btnListRemove.setDisable(false);
-        cbGuests.setDisable(false);
+        btnNew.setDisable(true);
         
         txtIncidentType.setDisable(false);
         txtDescription.setDisable(false);
         lstImplicateds.setDisable(false);
+        //cbEmployee.setItems(FXCollections.observableArrayList(selectedIncident.getEmployee()));
         cbEmployee.setDisable(false);
         cbRoom.setDisable(false);
+        cbGuests.setDisable(false);
         
         btnInsert.setDisable(true);
         btnInsert.setVisible(false);
         //selectedIncident = (IncidentBean) tableIncidents.getSelectionModel().getSelectedItem();
+        
+        selectedIncident.getDescription();
+        tableIncidents.setDisable(true);
     }
     
     public void updateIncident(ActionEvent event){
         try{
-            //--TOFIX --> Send data of the form
-            IncidentBean incidentToModify = selectedIncident;
-            incidentToModify.setDescription(txtDescription.getText());
-            //--TOFIX -- Conseguir loopear la selección de combobox de empleado + lista de implicados
-            List<UserBean> implicateds = lstImplicateds.getItems();
-            implicateds.add((UserBean)cbEmployee.getSelectionModel().getSelectedItem());
-            incidentToModify.setImplicateds(implicateds);
-            incidentToModify.setIncidentType(txtIncidentType.getText());
-            incidentToModify.setRoom((RoomBean)cbRoom.getSelectionModel().getSelectedItem());
-            incidentManager.updateIncident(incidentToModify);
-        
-            btnCancel.setDisable(true);
-            btnInsert.setDisable(true);
-            btnInsert.setVisible(false);
-            txtDescription.setText("");
-            txtDescription.setDisable(true);
-            txtIncidentType.setText("");
-            txtIncidentType.setDisable(true);
-            cbEmployee.setItems(null);
-            cbEmployee.setDisable(true);
-            lstImplicateds.setItems(null);
-            lstImplicateds.setDisable(true);
-            cbRoom.getSelectionModel().selectFirst();
-            cbRoom.setDisable(true);
-            btnListAdd.setDisable(true);
-            btnListRemove.setDisable(true);
-            cbGuests.setDisable(true);
+            if(checkForData()){
+                //--TOFIX --> Send data of the form
+                IncidentBean incidentToModify = selectedIncident;
+                incidentToModify.setDescription(txtDescription.getText());
+                //--TOFIX -- Conseguir loopear la selección de combobox de empleado + lista de implicados
+                List<UserBean> implicateds = lstImplicateds.getItems();
+                implicateds.add((UserBean)cbEmployee.getSelectionModel().getSelectedItem());
+                incidentToModify.setImplicateds(implicateds);
+                incidentToModify.setIncidentType(txtIncidentType.getText());
+                incidentToModify.setRoom((RoomBean)cbRoom.getSelectionModel().getSelectedItem());
+                incidentManager.updateIncident(incidentToModify);
+            
+                btnCancel.setDisable(true);
+                btnSaveChanges.setDisable(true);
+                btnSaveChanges.setVisible(false);
+                txtDescription.setText("");
+                txtDescription.setDisable(true);
+                txtIncidentType.setText("");
+                txtIncidentType.setDisable(true);
+                //cbEmployee.setItems(null);
+                cbEmployee.setDisable(true);
+                lstImplicateds.setItems(null);
+                lstImplicateds.setDisable(true);
+                cbRoom.getSelectionModel().selectFirst();
+                cbRoom.setDisable(true);
+                btnListAdd.setDisable(true);
+                btnListRemove.setDisable(true);
+                cbGuests.setDisable(true);
+                btnNew.setDisable(false);
             
             tableIncidents.refresh();
+            tableIncidents.setDisable(false);
+            }
+            else{
+                //--TOFIX --> Mostrar un aviso al usuario para advertirle de que se requieren todos los datos para poder actualizar
+            }
         }catch(UpdateException ue){
             //--TOFIX --> Exception handling
         }catch(Exception ex){
@@ -387,9 +416,37 @@ public class IncidentFXMLController extends GenericController {
         }
     }
     
+    public Boolean checkForData(){
+        //--TOFIX --> When clicking the save changes or insert buttons,
+        //check all fields are correctly filled before allowing the logic
+        //manager operations to happen
+        Boolean formHasCorrectData = true;
+        if(txtDescription.getText().trim().length()==0 || 
+                txtIncidentType.getText().trim().length()== 0 ||
+                !(cbRoom.getSelectionModel().getSelectedItem() instanceof RoomBean)||
+                !(cbEmployee.getSelectionModel().getSelectedItem() instanceof UserBean )
+                || lstImplicateds.getItems().isEmpty()){
+            formHasCorrectData = false;
+        }
+        return formHasCorrectData;
+    }
+    
     public void addToList(ActionEvent event){
+        if(cbGuests.getSelectionModel().getSelectedItem() instanceof UserBean){
+            Boolean alreadyOnList = false;
+            //--TOFIX --> Loopear items en la lista de implicados para comprobar si el que el método ha recibido se encuentra ya en dicha lista
+            for(int i = 0; i < lstImplicateds.getItems().size(); i++){
+                //--TOFIX --> Programar metodo equals del UserBean para comparar dos usuarios
+                if(lstImplicateds.getItems().get(i).equals(cbGuests.getSelectionModel().getSelectedItem())){
+                    alreadyOnList = true;
+                    break;
+                }
+            }
+            if(!alreadyOnList){
+                lstImplicateds.getItems().add(cbGuests.getSelectionModel().getSelectedItem());
+            }
+        }
         //--TOFIX --> Controlar que si el elemento ya está dentro no se pueda volver a introducir
-        lstImplicateds.getItems().add(cbGuests.getSelectionModel().getSelectedItem());
     }
     
     public void removeFromList(ActionEvent event){
@@ -576,7 +633,11 @@ public class IncidentFXMLController extends GenericController {
             txtDescription.setText("");
             cbEmployee.getSelectionModel().clearSelection();
             cbRoom.getSelectionModel().clearSelection();
-            lstImplicateds.getSelectionModel().clearSelection();
+            cbGuests.getSelectionModel().clearSelection();
+            //lstImplicateds.getSelectionModel().clearSelection();
+            lstImplicateds.getItems().clear();
+            btnModify.setDisable(true);
+            btnDelete.setDisable(true);
         }
         
     }

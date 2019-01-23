@@ -12,9 +12,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.ObservableList;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -26,14 +24,14 @@ public class IncidentBean implements Serializable {
     
     private SimpleIntegerProperty id;
     private SimpleStringProperty incidentType;
-    private SimpleListProperty<UserBean> implicateds;
+    private List<UserBean> implicateds;
     private SimpleStringProperty description;
     private SimpleObjectProperty<RoomBean> room;
 
     public IncidentBean(){
         this.id = new SimpleIntegerProperty();
         this.incidentType = new SimpleStringProperty();
-        this.implicateds = new SimpleListProperty<UserBean>();
+        this.implicateds = new ArrayList<UserBean>();
         this.description = new SimpleStringProperty();
         this.room = new SimpleObjectProperty<RoomBean>();
     }
@@ -64,16 +62,35 @@ public class IncidentBean implements Serializable {
      * @return the implicateds
      */
     public List<UserBean> getImplicateds() {
-        return this.implicateds.get();
+        return this.implicateds;
     }
+    
+    /**
+     * @return the implicateds
+     */
+    /*public List<UserBean> getImplicateds() {
+        return this.implicateds.get();
+    }*/
 
     /**
      * @param implicateds the implicateds to set
      */
     public void setImplicateds(List<UserBean> implicateds) {
-        //--TOFIX
-        //this.implicateds.set(implicateds);
+        try{
+            this.implicateds = implicateds;
+        }catch(Exception ex){
+            String error = ex.getMessage();
+            System.out.println("Error en el setter");
+        }
     }
+    
+    /**
+     * @param implicateds the implicateds to set
+     */
+    /*public void setImplicateds(List<UserBean> implicateds) {
+        //--TOFIX
+        this.implicateds.set(implicateds);
+    }*/
 
     /**
      * @return the description
@@ -140,11 +157,12 @@ public class IncidentBean implements Serializable {
     }
     
     public List<UserBean> getGuests(){
-        List<UserBean> guests = null;
+        //UserBean emp = null;
+        List<UserBean> guests = new ArrayList<UserBean>();
         List<UserBean> users = this.getImplicateds();
         for(UserBean u: users){
             if(u.getPrivilege().equals(Privilege.USER)){
-                guests.add(u);
+                guests.add(u); 
             }
         }
         return guests;
