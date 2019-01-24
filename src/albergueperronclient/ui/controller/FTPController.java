@@ -6,17 +6,22 @@
 package albergueperronclient.ui.controller;
 
 import albergueperronclient.logic.IFTPImplementation;
+import albergueperronclient.modelObjects.MyFile;
+import static albergueperronclient.ui.controller.GenericController.LOGGER;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
 import javafx.scene.Parent;
@@ -71,7 +76,7 @@ public class FTPController extends GenericController{
     @FXML
     private TreeTableColumn columnFile;
     
-    private TreeItem<FTPFile> rootItem;
+    private TreeItem<MyFile> rootItem;
     
     
    
@@ -98,11 +103,17 @@ public class FTPController extends GenericController{
         btnDownload.setOnAction(this::download);
         btnCrear.setOnAction(this::createDir);
         btnDeleteD.setOnAction(this::deleteDir);
-        treeFile.setOnMouseClicked(this::changeDirectory);
+               
+        treeFile.getSelectionModel().selectedItemProperty().addListener(this::itemSelected);
+        
+      
         ftpManager.connect();
         
         
-        rootItem = new TreeItem<FTPFile>();
+        rootItem = new TreeItem<MyFile>();
+        MyFile rootF = new MyFile();
+        rootF.setPath("/");
+        rootF.setFile(true);
         rootItem.setExpanded(true);
 
             // set the tree root
@@ -127,9 +138,12 @@ public class FTPController extends GenericController{
      */
     private void handleWindowShowing(WindowEvent event){
         
-           btnUpload.setVisible(true);
-           btnDeleteF.setDisable(false);
-           btnDownload.setDisable(false);
+           btnUpload.setDisable(true);
+           btnDeleteF.setDisable(true);
+           btnDownload.setDisable(true);
+           btnCrear.setDisable(true);
+           btnDeleteD.setDisable(true);
+          
 
        
     }
@@ -145,6 +159,7 @@ public class FTPController extends GenericController{
         File selectedFile = fileChooser.showOpenDialog(stage);
         if (selectedFile != null) {
             txtFile.setText(selectedFile.getPath());
+            btnUpload.setDisable(false);
                 
         }
        
@@ -152,75 +167,94 @@ public class FTPController extends GenericController{
     
     public void upload(ActionEvent event){
         
+        TreeItem<MyFile> itemSelected = (TreeItem<MyFile>) treeFile.getSelectionModel().getSelectedItem();
         
-        if(ftpManager.uploadFile(txtFile.getText())){
-           txtFile.setText("");
-           rootItem.getChildren().clear();
-            try {
-                ftpManager.buildFileTree(rootItem);
-            } catch (IOException ex) {
-                Logger.getLogger(FTPController.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
+        
+        MyFile file=ftpManager.uploadFile(txtFile.getText());
+        TreeItem<MyFile> fileToUpload = new TreeItem<MyFile>(file);
+        itemSelected.getChildren().add(fileToUpload);
+        txtFile.setText("");
+        treeFile.refresh();
+       
+        
     }
       
       public void delete(ActionEvent event){
-        
-        ftpManager.deleteFile(treeFile.getTreeItem(treeFile.getSelectionModel().getSelectedIndex()).getValue().toString());
-        rootItem.getChildren().clear();
-
-        try {
-            ftpManager.buildFileTree(rootItem);
-        } catch (IOException ex) {
-            Logger.getLogger(FTPController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-    }
-      
+       TreeItem<MyFile> treeItem= (TreeItem<MyFile>)treeFile.getSelectionModel().getSelectedItem();
+       TreeItem<MyFile> parent=treeItem.getParent();
+       //MyFile file =treeItem.getValue();
+       ftpManager.deleteFile(treeItem.getValue().getName());
+       parent.getChildren().remove(treeItem);
+        treeFile.refresh();
+      }
+            
     public void download(ActionEvent event){
-        LOGGER.info("Archivo"+treeFile.getTreeItem(treeFile.getSelectionModel().getSelectedIndex()).getValue());
-        ftpManager.downloadFile(treeFile.getTreeItem(treeFile.getSelectionModel().getSelectedIndex()).getValue().toString());
-         rootItem.getChildren().clear();
-
-        try {
-            ftpManager.buildFileTree(rootItem);
-        } catch (IOException ex) {
-            Logger.getLogger(FTPController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        TreeItem<MyFile> treeItem= (TreeItem<MyFile>) treeFile.getSelectionModel().getSelectedItem();
+        LOGGER.info(treeItem.getValue().getName());
+        ftpManager.downloadFile(treeItem.getValue().getName());
+        
         
     }
  
     public void createDir(ActionEvent event){
+        TreeItem<MyFile> itemSelected = (TreeItem<MyFile>) treeFile.getSelectionModel().getSelectedItem();
         
+        MyFile file=ftpManager.createDirectory();
+        TreeItem<MyFile> directoryToCreate = new TreeItem<MyFile>(file);
+        itemSelected.getChildren().add(directoryToCreate);
+        treeFile.refresh();
         ftpManager.createDirectory();
-         rootItem.getChildren().clear();
-
-        try {
-            ftpManager.buildFileTree(rootItem);
-        } catch (IOException ex) {
-            Logger.getLogger(FTPController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        
         
     }
     
     public void deleteDir(ActionEvent event){
-        
-        ftpManager.deleteDirectory(treeFile.getTreeItem(treeFile.getSelectionModel().getSelectedIndex()).getValue().toString());
-         rootItem.getChildren().clear();
-
-        try {
-            ftpManager.buildFileTree(rootItem);
-        } catch (IOException ex) {
-            Logger.getLogger(FTPController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+       TreeItem<MyFile> treeItem= (TreeItem<MyFile>)treeFile.getSelectionModel().getSelectedItem();
+       TreeItem<MyFile> parent=treeItem.getParent();
+       ftpManager.deleteFile(treeItem.getValue().getName());
+       parent.getChildren().remove(treeItem);
+        treeFile.refresh();
+        ftpManager.deleteDirectory(treeItem.getValue().getPath());
+         
         
     }
 
-    public void changeDirectory(MouseEvent event){
-        
-        ftpManager.changeDirectory(treeFile.getTreeItem(treeFile.getSelectionModel().getSelectedIndex()).getValue().toString());
-    }
-    
+
+     private void itemSelected(ObservableValue observable,
+             Object oldValue,
+             Object newValue) {
+         
+            if(!newValue.equals(oldValue)){
+                 TreeItem<MyFile> selectedItem = (TreeItem<MyFile>) newValue;
+
+                String path = null;
+                
+                if(selectedItem.getParent()!=null){
+                    path = selectedItem.getValue().getPath();
+                    ftpManager.changeDirectory(path);
+                     if(selectedItem.getValue().isFile()){
+                        btnCrear.setDisable(true);
+                        btnDeleteD.setDisable(true);
+                        btnUpload.setDisable(true);
+                        btnDownload.setDisable(false);
+                        btnDeleteF.setDisable(false);
+                    }else if(!selectedItem.getValue().isFile()){
+                        btnDownload.setDisable(true);
+                        btnDeleteF.setDisable(true);
+                        btnCrear.setDisable(false);
+                        btnDeleteD.setDisable(false);
+                        //if(txtFile.getText())
+                        btnUpload.setDisable(true);
+                    }
+
+                }else{
+                    path="/";
+                    ftpManager.changeDirectory(path);
+                }
+               
+                
+            }
+     }
 
 }
     

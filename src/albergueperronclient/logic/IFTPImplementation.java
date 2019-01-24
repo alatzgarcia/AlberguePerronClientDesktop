@@ -5,8 +5,10 @@
  */
 package albergueperronclient.logic;
 
+import albergueperronclient.modelObjects.MyFile;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.File;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -16,10 +18,12 @@ import java.io.PrintWriter;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.scene.control.Alert;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
+import javafx.stage.Window;
 
 import org.apache.commons.net.PrintCommandListener;
 import org.apache.commons.net.ftp.FTP;
@@ -56,7 +60,6 @@ public class IFTPImplementation implements IFTP{
             boolean login = ftp.login(user, pass);
             
             if(login){
-            //ftp.changeWorkingDirectory("/prueba");
             ftp.setFileType(FTP.BINARY_FILE_TYPE);
              
             
@@ -68,12 +71,20 @@ public class IFTPImplementation implements IFTP{
     }
      
      @Override
-     public boolean uploadFile(String file){
-        boolean uploaded=false;
+     public MyFile uploadFile(String file){
+        //boolean uploaded=false;
+        MyFile filetoUP = null;
+       
         BufferedInputStream in = null;
         try {
             in = new BufferedInputStream(new FileInputStream(file));
-             uploaded=ftp.storeFile("texto.txt", in);
+            //elegir nombre del archivo
+            filetoUP = new MyFile();
+        
+            filetoUP.setPath(ftp.printWorkingDirectory()+"/");
+            filetoUP.setName("subido.txt");
+            filetoUP.setFile(true);
+            ftp.storeFile(ftp.printWorkingDirectory()+"/"+"subido.txt", in);
              in.close();
              
             
@@ -83,40 +94,42 @@ public class IFTPImplementation implements IFTP{
             LOGGER.severe(ex.getMessage());
         }
        
-        return uploaded;
+        return filetoUP;
      }
      
-    public void renameFile() throws IOException{
-        if (ftp.rename("texto.txt","textoRenombrado.txt")){
-            LOGGER.info("Fichero renombrado");
-            
-
-        }else{
-             LOGGER.info("No se ha podido renombrar el fichero……..");
-        }         
-    }
+    
      
-    public void deleteFile(String name){
-  
+    @Override
+    public boolean deleteFile(String path){
+         boolean deleted=false;
         try {
-            if (ftp.deleteFile(name)){
+            if (ftp.deleteFile(path)){
+                
                 LOGGER.info("Fichero eliminado");
+                deleted=true;
             }else{
                 LOGGER.info("No se ha podido eliminar el fichero……..");         
             }
         } catch (IOException ex) {
             LOGGER.severe(ex.getMessage());
         }
-
+        return deleted;
     }
      
     public void downloadFile(String file){
-
+        //elegir el directorio en el que queramos descargar el archivo
+         DirectoryChooser dirChooser = new DirectoryChooser();
+        dirChooser.setTitle("Open Resource File");
+        Window ownerWindow = null;
+        
+        File selectedFile = dirChooser.showDialog(ownerWindow);
+       
         BufferedOutputStream out;
         try {
             out = new BufferedOutputStream(
-                    new FileOutputStream("/home/nerea/Documentos/textoD.txt"));
-            LOGGER.info(file);
+                    //new FileOutputStream("C:\\Users\\2dam\\Documents\\textoD.txt"));
+                    new FileOutputStream(selectedFile+"/descargado.txt"));
+            LOGGER.info(selectedFile+"descargado.txt");
             if (ftp.retrieveFile(file, out)){
                 LOGGER.info("Recuperado correctamente…..");
             }else{
@@ -135,29 +148,33 @@ public class IFTPImplementation implements IFTP{
   
 
     @Override
-    public void createDirectory() {
+    public MyFile createDirectory() {
+        MyFile dir = new MyFile();
         try {
-            //String path=ftp.printWorkingDirectory()
+           
             TextInputDialog dialog = new TextInputDialog("");
             dialog.setTitle("New directory");
-            dialog.setHeaderText("New directoryLook, a Text Input Dialog");
+            dialog.setHeaderText("New directory");
             dialog.setContentText("Please enter the name of the directory:");
 
-            // Traditional way to get the response value.
             Optional<String> result = dialog.showAndWait();
             if (result.isPresent()){
+                dir.setPath(ftp.printWorkingDirectory()+'/'+result.get());
+                dir.setName(result.get());
+                dir.setFile(false);
                 ftp.makeDirectory(result.get());
+                
             }
             
         } catch (IOException ex) {
             Logger.getLogger(IFTPImplementation.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return dir;
     }
     
     @Override
     public void deleteDirectory(String name) {
         try {
-            //String path=ftp.printWorkingDirectory()
             ftp.removeDirectory(name);
         } catch (IOException ex) {
             Logger.getLogger(IFTPImplementation.class.getName()).log(Level.SEVERE, null, ex);
@@ -178,68 +195,61 @@ public class IFTPImplementation implements IFTP{
         
     @Override
     public void buildFileTree(TreeItem treeNode) throws IOException {
+        //añadir imagen para diferenciar directorio y archivo
         
-        TreeItem<FTPFile> rootItem = new TreeItem<>();
+        //TreeItem<MyFile> rootItem = new TreeItem<>();
+        treeNode.getChildren().clear();
      // display the files
-        FTPFile[] files;
-            try {
-                files = ftp.listFiles();
-           
+        FTPFile[] files = ftp.listFiles();
+          
         for (FTPFile file : files) {
-
-            if(!file.getName().startsWith(".")) {
-
-                System.out.println("File: " + file.getName());
-
+            MyFile fileFTP = new MyFile();
+            fileFTP.setName(file.getName());
+            
+            LOGGER.info(fileFTP.getPath());
+            if(file.isFile()) {
+                fileFTP.setPath(ftp.printWorkingDirectory()+'/');
+                fileFTP.setFile(true);
                 // add file to file tree
-                TreeItem<FTPFile> treeItem=new TreeItem<FTPFile>(file);
+                TreeItem<MyFile> treeItem=new TreeItem<MyFile>(fileFTP);
+                
                 
                 treeNode.getChildren().add(treeItem);
              
 
-            } // if
+            } else if(file.isDirectory()) {
+                fileFTP.setPath(ftp.printWorkingDirectory()+'/'+file.getName());
+                LOGGER.info(fileFTP.getPath());
+                fileFTP.setFile(false);
+                ftp.changeWorkingDirectory(file.getName());
 
-        } // for
-
-        // get the directories
-        FTPFile[] directories = ftp.listDirectories();
-
-        for (FTPFile dir : directories) {
-
-            if(!dir.getName().startsWith(".")) {
-
-                // change working directory to detected directory
-                ftp.changeWorkingDirectory(dir.getName());
-
-                // save working dir
                 String pwd = ftp.printWorkingDirectory();
 
                 // create treeItem to represent new Directory
-                TreeItem newDir = new TreeItem<FTPFile>(dir);
+                TreeItem newDir = new TreeItem<MyFile>(fileFTP);
                 newDir.setExpanded(false);
 
                 // add directory to file tree
                 treeNode.getChildren().add(newDir);
           
-                System.out.println("Discovering Files in: " + pwd);
-
                 // recursively call method to add files and directories to new directory
                 buildFileTree(newDir);
 
                 // go back to parent directory, once finished in this directory
-                ftp.changeToParentDirectory();   
-            } 
-        }
-            } catch (IOException ex) {
-                Logger.getLogger(IFTPImplementation.class.getName()).log(Level.SEVERE, null, ex);
+                ftp.changeToParentDirectory();
+
             }
+
+        }
+        
 
         
     }
     
+    @Override
     public void changeDirectory(String path){
         try {
-            ftp.changeWorkingDirectory('/'+path);
+            ftp.changeWorkingDirectory(path);
         } catch (IOException ex) {
             Logger.getLogger(IFTPImplementation.class.getName()).log(Level.SEVERE, null, ex);
         }

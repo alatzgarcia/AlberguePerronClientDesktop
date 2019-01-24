@@ -5,6 +5,7 @@
  */
 package albergueperronclient.logic;
 
+import albergueperronclient.modelObjects.MyFile;
 import java.io.IOException;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -18,13 +19,13 @@ import org.apache.commons.net.ftp.FTPFile;
 public interface IFTP {
 
    
-    public boolean uploadFile(String text);
+    public MyFile uploadFile(String text);
     
-    public void deleteFile(String name);
+    public boolean deleteFile(String name);
     
     public void downloadFile(String file);
 
-    public void createDirectory();
+    public MyFile createDirectory();
     
     public void connect();
 
