@@ -37,6 +37,7 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.ws.rs.core.GenericType;
+import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.net.PrintCommandListener;
 import org.apache.commons.net.ftp.FTP;
@@ -68,7 +69,8 @@ public class IRegisterImplementation implements IRegister{
         //generateKey();
         byte[] encryptedPass =encrypt(userBean.getPassword());
         //String encryptedPassS = new String(encryptedPass);
-        userBean.setPassword(encryptedPass);
+        String passString= DatatypeConverter.printHexBinary(encryptedPass);
+        userBean.setPassword(passString);
         try{
           
            webClient.create(userBean);
@@ -116,7 +118,7 @@ public class IRegisterImplementation implements IRegister{
 
 	}
 
-    public byte[] encrypt(byte[] pass){
+    public byte[] encrypt(String pass){
             FileInputStream fis;
             byte[] encodedMessage = null;
 		try {
@@ -133,7 +135,7 @@ public class IRegisterImplementation implements IRegister{
                     
                     Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
                     cipher.init(Cipher.ENCRYPT_MODE, pubKey);
-                    encodedMessage = cipher.doFinal(pass);
+                    encodedMessage = cipher.doFinal(pass.getBytes());
 			
                     //ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("encoded"));
                     //oos.writeObject(encodedMessage);

@@ -25,7 +25,7 @@ public class UserBean implements Serializable{
     private Privilege privilege;
     private String login;
     private String email;
-    private byte[] password;
+    private String password;
     private String lastPasswordChange;
     private List<IncidentBean> incidents;
     private List<PetBean> pets;
@@ -37,12 +37,12 @@ public class UserBean implements Serializable{
         
     }
 
-    public UserBean(String login, byte[] password) {
+    public UserBean(String login, String password) {
         this.login = login;
         this.password = password;
     }
 
-    public UserBean(String id, String login, String email, byte[] password) {
+    public UserBean(String id, String login, String email, String password) {
         this.id = id;
         this.login = login;
         this.email = email;
@@ -107,11 +107,11 @@ public class UserBean implements Serializable{
         this.email = email;
     }
 
-    public byte[] getPassword() {
+    public String getPassword() {
         return password;
     }
 
-    public void setPassword(byte[] password) {
+    public void setPassword(String password) {
         this.password = password;
     }
 

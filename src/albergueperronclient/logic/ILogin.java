@@ -24,5 +24,5 @@ public interface ILogin {
 
     public void close();
     public void generateKey();
-    public byte[] encrypt(byte[] pass);
+    public byte[] encrypt(String pass);
 }

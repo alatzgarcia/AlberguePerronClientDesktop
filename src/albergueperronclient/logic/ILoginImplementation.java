@@ -83,12 +83,12 @@ public class ILoginImplementation implements ILogin{
         
         //generateKey();
         byte[] encryptedPass =encrypt(userBean.getPassword());
-        //String encryptedPassS = new String(encryptedPass);
-        userBean.setPassword(encryptedPass);
+        String passString= DatatypeConverter.printHexBinary(encryptedPass);
+        userBean.setPassword(passString);
         try{
           
            //webClient.update(userBean);
-           String passString= DatatypeConverter.printHexBinary(encryptedPass);
+           //String passString= DatatypeConverter.printHexBinary(encryptedPass);
            UserBean user=webClient.login(UserBean.class,userBean.getLogin(),passString);
             
         }catch(Exception ex){
@@ -138,7 +138,7 @@ public class ILoginImplementation implements ILogin{
 
 	}
 
-    public byte[] encrypt(byte[] pass){
+    public byte[] encrypt(String pass){
             FileInputStream fis;
             byte[] encodedMessage = null;
 		try {
@@ -155,7 +155,7 @@ public class ILoginImplementation implements ILogin{
                     
                     Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
                     cipher.init(Cipher.ENCRYPT_MODE, pubKey);
-                    encodedMessage = cipher.doFinal(pass);
+                    encodedMessage = cipher.doFinal(pass.getBytes());
 			
                     //ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("encoded"));
                     //oos.writeObject(encodedMessage);

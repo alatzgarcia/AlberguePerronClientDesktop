@@ -114,7 +114,7 @@ public class UIRegisterFXMLController extends GenericController{
         
             //Creates an User with the user's inserted data
             UserBean user = new UserBean(txtId.getText(),txtUsername.getText(),txtEmail.getText(),
-                    pfPassword.getText().getBytes());
+                    pfPassword.getText());
             //Sends the user to the logic
             registerManager.register(user);
             //FXMLLoader loader = new FXMLLoader(getClass()

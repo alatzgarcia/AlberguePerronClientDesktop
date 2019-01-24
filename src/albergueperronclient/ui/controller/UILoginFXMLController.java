@@ -119,7 +119,7 @@ public class UILoginFXMLController extends GenericController {
         //try{
             //Sends a user to the logic controller with the entered parameters
             UserBean user = new UserBean(txtUsername.getText(), 
-                    pfPassword.getText().getBytes());
+                    pfPassword.getText());
            
             loginManager.login(user);
             FXMLLoader loader = new FXMLLoader(getClass()
