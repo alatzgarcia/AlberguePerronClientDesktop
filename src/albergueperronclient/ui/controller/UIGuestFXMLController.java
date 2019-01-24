@@ -6,7 +6,12 @@
 package albergueperronclient.ui.controller;
 
 import albergueperronclient.exceptions.BusinessLogicException;
+import albergueperronclient.modelObjects.Privilege;
 import albergueperronclient.modelObjects.UserBean;
+import albergueperronclient.passwordGen.PasswordGenerator;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Optional;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -26,6 +31,21 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import java.lang.String;
+import java.security.InvalidKeyException;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.fxml.FXMLLoader;
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.xml.bind.DatatypeConverter;
 
 /**
  * FXML Controller class
@@ -99,8 +119,8 @@ public class UIGuestFXMLController extends GenericController{
         stage.setOnShowing(this::handleWindowShowing);
         
         /*        
-        //Sets the button methods when they are clicked
-        btnReturn.setOnAction(this::returnWindow);*/
+        //Sets the button methods when they are clicked*/
+        btnReturn.setOnAction(this::returnWindow);
         btnCancel.setOnAction(this::cancel);
         btnNewGuest.setOnAction(this::newGuest);
         btnInsertGuest.setOnAction(this::saveNewGuest);
@@ -146,7 +166,7 @@ public class UIGuestFXMLController extends GenericController{
         btnSaveChanges.setDisable(true);
         btnSaveChanges.setVisible(false);
         btnInsertGuest.setDisable(true);
-        btnSaveChanges.setVisible(false);
+        btnInsertGuest.setVisible(false);
         if (newValue!=null){
             UserBean user=(UserBean)newValue;
             txtDni.setText(user.getId());
@@ -163,25 +183,11 @@ public class UIGuestFXMLController extends GenericController{
         }
     }
     
-
     
-    /*public void returnWindow(ActionEvent event) throws IOException{
-            FXMLLoader loader = new FXMLLoader(getClass()
-                    .getResource("/signupsigninuidesktop/ui/fxml/UILoggedAdmin.fxml"));
-            Parent root = loader.load();
-            UILoggedAdmin loggedController = loader.getController();
-            /*Set a reference in the controller 
-                for the UILogin view for the logic manager object           
-            *//*
-            loggedController.setLogicManager(logicManager);
-            //Send the user to the controller
-            loggedController.setUser(user);
-            //Initialize the primary stage of the application
-            loggedController.initStage(root);
-            
-            stage.close();
+    public void returnWindow(ActionEvent event){
+        LOGGER.info("Entra en el return");
+        stage.close();
     }
-    */
     
     public void updateGuest(ActionEvent event){
         //Enable the buttons needed to modify a guest
@@ -189,11 +195,10 @@ public class UIGuestFXMLController extends GenericController{
         btnSaveChanges.setVisible(true);
         btnSaveChanges.setDisable(false);
         btnSaveChanges.toFront();
+//deszactivar el resto de botones
         //Enables all the fields
         fieldChange(visible);
         fieldChange(enable);
-        
-        
     }
     
     public void newGuest(ActionEvent event){
@@ -201,6 +206,8 @@ public class UIGuestFXMLController extends GenericController{
         btnCancel.setDisable(false);
         btnInsertGuest.setVisible(true);
         btnInsertGuest.setDisable(false);
+        btnModifyGuest.setDisable(true);
+        btnDeleteGuest.setDisable(true);
         
         // Enables all the fields
         fieldChange(enable);
@@ -265,7 +272,7 @@ public class UIGuestFXMLController extends GenericController{
     }
     
     private void saveNewGuest(ActionEvent event){
-        if (checkFields()){
+        //if (checkFields()){
             //Cuando se quiera hacer algo con el CRUD usar userManager
             //UserBean userNew=new UserBean();
             //userNew=getUserFromFields();
@@ -273,15 +280,27 @@ public class UIGuestFXMLController extends GenericController{
             //Updates the user
             try{
                 usersManager.createUser(getUserFromFields());
+                tableGuest.getItems().add(user);
+                tableGuest.refresh();
+                Alert alert = new Alert(Alert.AlertType.INFORMATION.INFORMATION);
+                alert.setTitle("Crear usuario");
+                alert.setContentText("El usuario fue creado");    
+                Optional<ButtonType> result = alert.showAndWait();
+                if(result.get()== ButtonType.OK){
+                    tableGuest.getSelectionModel().clearSelection();
+                    alert.close();  
+                }
             }catch(BusinessLogicException ble){
                 LOGGER.info("The update failed "+ble.getMessage());
+            }catch(Exception e){
+                LOGGER.info("The update failed "+e.getMessage());
             }
-        }
+        //}
     }
 
-    private void saveUpdateGuest(ActionEvent event){
+   private void saveUpdateGuest(ActionEvent event){
         LOGGER.info("SE HACE EL BOTON DE UPDATE");
-        if (checkFields()){
+        //if (checkFields()){
             //Cuando se quiera hacer algo con el CRUD usar userManager
             //UserBean userUpdate=new UserBean();
             //userUpdate=getUserFromFields();
@@ -290,10 +309,22 @@ public class UIGuestFXMLController extends GenericController{
             //Updates the user
             try{
                 usersManager.updateUser(getUserFromFields(),tableGuest.getSelectionModel().getSelectedItem().getId());
+                tableGuest.getItems().remove(tableGuest.getSelectionModel().getSelectedItem());
+                tableGuest.getItems().add(user);
+                tableGuest.refresh();
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION.INFORMATION);
+                alert.setTitle("Modificado");
+                alert.setContentText("Se modificó el usuario "+ tableGuest.getSelectionModel().getSelectedItem().getLogin());    
+                Optional<ButtonType> result = alert.showAndWait();
+                if(result.get()== ButtonType.OK){
+                    tableGuest.getSelectionModel().clearSelection();
+                    alert.close();                    
+                }
             }catch(BusinessLogicException ble){
                 LOGGER.info("The update failed "+ble.getMessage());
             }
-        }
+            
+        //}
         
     }
     
@@ -319,10 +350,11 @@ public class UIGuestFXMLController extends GenericController{
                 fieldChange(invisible);
                 fieldChange(clean);
                 btnCancel.setDisable(true);
-                btnNewGuest.setDisable(true);
                 btnModifyGuest.setDisable(true);
                 btnSaveChanges.setVisible(false);
                 btnInsertGuest.setVisible(false);
+                btnSaveChanges.setDisable(true);
+                btnInsertGuest.setDisable(true);
                 tableGuest.getSelectionModel().clearSelection();
             }else if(result.get()==ButtonType.CANCEL){
                 alert.close();
@@ -334,17 +366,39 @@ public class UIGuestFXMLController extends GenericController{
 
     private UserBean getUserFromFields() {
         user= new UserBean();
+        
         //Sets the attributes with the fields
         user.setEmail(txtEmail.getText().toString());
         user.setLogin(txtLogin.getText().toString());
-        user.setName(txtEmail.getText().toString());
+        user.setName(txtName.getText().toString());
         user.setSurname1(txtFirstSurname.getText().toString());
         user.setSurname2(txtSecondSurname.getText().toString());
         user.setId(txtDni.getText().toString());
         
         //Gets the unmodificable attributes
-        user.setPassword(tableGuest.getSelectionModel().getSelectedItem().getPassword());
-        user.setLastPasswordChange(tableGuest.getSelectionModel().getSelectedItem().getLastPasswordChange());
+        if(!tableGuest.getSelectionModel().getSelectedItem().getPassword().isEmpty()&&
+                !tableGuest.getSelectionModel().getSelectedItem().getLastPasswordChange().toString().isEmpty()){
+            user.setPassword(tableGuest.getSelectionModel().getSelectedItem().getPassword());
+            user.setLastPasswordChange(tableGuest.getSelectionModel().getSelectedItem().getLastPasswordChange());
+        }else{
+            LOGGER.info("GENERATION PASSWORD");
+            PasswordGenerator passwordGenerator = new PasswordGenerator.PasswordGeneratorBuilder()
+                .useDigits(true)
+                .useLower(true)
+                .useUpper(true)
+                .usePunctuation(true)
+                .build();
+            String password = passwordGenerator.generate(8);
+            //DatatypeConverter.parseHexBinary(password);
+            byte[] passwordByte=encrypt(password);
+            password=DatatypeConverter.printHexBinary(passwordByte);
+            
+            
+            user.setPassword(password);
+            Date lastPasswordChange= new Date();
+            user.setLastPasswordChange(lastPasswordChange);
+        }
+        user.setPrivilege(Privilege.USER);
         
         return user;
     }
@@ -357,6 +411,8 @@ public class UIGuestFXMLController extends GenericController{
             Optional<ButtonType> result = alert.showAndWait();
             if(result.get()== ButtonType.OK){
                 usersManager.deleteUser(tableGuest.getSelectionModel().getSelectedItem().getId());
+                tableGuest.getItems().remove(tableGuest.getSelectionModel().getSelectedItem());
+                tableGuest.refresh();
             }else if(result.get()==ButtonType.CANCEL){
                 alert.close();
             }
@@ -365,5 +421,70 @@ public class UIGuestFXMLController extends GenericController{
         }catch(Exception e){
             LOGGER.info("Error"+e.getMessage());
         }   
+    }
+    
+    public void onTextChanged(ObservableValue observable,
+            String oldValue,
+            String newValue){
+        if(txtDni.getText().trim().length()!=9||
+                txtEmail.getText().matches("^[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,4}$")||
+                txtFirstSurname.getText().trim().length()<userPasswordMinLength||txtFirstSurname.getText().trim().length()>userPasswordMaxLength||
+                txtLogin.getText().trim().length()<userPasswordMinLength||txtLogin.getText().trim().length()>userPasswordMaxLength||
+                txtName.getText().trim().length()<userPasswordMinLength||txtName.getText().trim().length()>userPasswordMaxLength){
+            if(btnSaveChanges.isVisible()){
+                btnSaveChanges.setDisable(true);
+            }else if(btnInsertGuest.isVisible()){
+                btnInsertGuest.setDisable(true);
+            }
+        }else{
+            if(btnSaveChanges.isVisible()){
+                btnSaveChanges.setDisable(false);
+            }else if(btnInsertGuest.isVisible()){
+                btnInsertGuest.setDisable(false);
+            }
+        }
+    }
+    
+     public byte[] encrypt(String pass){
+            FileInputStream fis;
+            byte[] encodedMessage = null;
+		try {
+                    fis = new FileInputStream("public.key");
+                    byte[] publicKey = new byte[fis.available()];
+                    fis.read(publicKey);
+			
+                    X509EncodedKeySpec pubKeySpec = new X509EncodedKeySpec(publicKey);
+                    KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+			 
+                    PublicKey pubKey = keyFactory.generatePublic(pubKeySpec);
+                    
+                    Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+                    cipher.init(Cipher.ENCRYPT_MODE, pubKey);
+                    encodedMessage = cipher.doFinal(pass.getBytes());
+			
+                    //ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("encoded"));
+                    //oos.writeObject(encodedMessage);
+			
+                    LOGGER.info("Message encrypted");
+	
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		} catch (InvalidKeySpecException e) {
+			e.printStackTrace();
+		} catch (NoSuchPaddingException e) {
+			e.printStackTrace();
+		} catch (IllegalBlockSizeException e) {
+			e.printStackTrace();
+		} catch (BadPaddingException e) {
+			e.printStackTrace();
+		} catch (InvalidKeyException ex) {
+                        ex.printStackTrace();
+                }
+        
+            return encodedMessage;
     }
 }
