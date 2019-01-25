@@ -5,6 +5,7 @@
  */
 package albergueperronclient.ui.controller;
 
+import albergueperronclient.logic.StaysManager;
 import albergueperronclient.logic.UsersManager;
 import java.util.logging.Logger;
 import javafx.scene.control.Alert;
@@ -27,6 +28,7 @@ public class GenericController {
     
     //The interface that links the UI with the Logic
     protected UsersManager usersManager;
+    protected StaysManager staysManager;
 
     /**
      * Shows an alert with an error message

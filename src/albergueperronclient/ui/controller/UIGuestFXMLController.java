@@ -195,7 +195,11 @@ public class UIGuestFXMLController extends GenericController{
         btnSaveChanges.setVisible(true);
         btnSaveChanges.setDisable(false);
         btnSaveChanges.toFront();
-//deszactivar el resto de botones
+        
+        btnDeleteGuest.setDisable(true);
+        btnNewGuest.setDisable(true);
+        btnModifyGuest.setDisable(true);
+        
         //Enables all the fields
         fieldChange(visible);
         fieldChange(enable);
@@ -355,6 +359,7 @@ public class UIGuestFXMLController extends GenericController{
                 btnInsertGuest.setVisible(false);
                 btnSaveChanges.setDisable(true);
                 btnInsertGuest.setDisable(true);
+                btnNewGuest.setDisable(false);
                 tableGuest.getSelectionModel().clearSelection();
             }else if(result.get()==ButtonType.CANCEL){
                 alert.close();
