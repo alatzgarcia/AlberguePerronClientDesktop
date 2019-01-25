@@ -5,6 +5,10 @@
  */
 package albergueperronclient.ui.controller;
 
+import albergueperronclient.logic.ILogin;
+import albergueperronclient.logic.ILoginFactory;
+import albergueperronclient.logic.IRecovery;
+import albergueperronclient.logic.IRecoveryFactory;
 import java.util.Optional;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyProperty;
@@ -66,10 +70,10 @@ public class UILoginFXMLController extends GenericController {
     @FXML
     private Button btnExit;
     /**
-     * HyperLink to go to the register view
+     * HyperLink to go to the remind password view
      */
     @FXML
-    private Hyperlink hlRegister;
+    private Hyperlink hlRemindPass;
     
     /**
      * InitStage method for the UILogin view
@@ -91,7 +95,7 @@ public class UILoginFXMLController extends GenericController {
         
         btnExit.setOnAction(this::exit);
         btnLogin.setOnAction(this::login);
-        //hlRegister.setOnAction(this::register);
+        hlRemindPass.setOnAction(this::passwordRecovery);
         
         stage.show();
     }
@@ -168,22 +172,23 @@ public class UILoginFXMLController extends GenericController {
      * Method for the register of a new user
      * @param event event that has caused the call to the function
      */
-    public void register(ActionEvent event){
+    public void passwordRecovery(ActionEvent event){
         //calls the logicManager register functio
         try{
+            IRecovery recoveryManager = IRecoveryFactory.getRecoveryManager();
             FXMLLoader loader = new FXMLLoader(getClass()
-                    .getResource("/signupsigninuidesktop/ui/fxml/UIRegister.fxml"));
+                    .getResource("/albergueperronclient/ui/fxml/UIPasswordRecovery.fxml"));
             Parent root = loader.load();
             //Get controller from the loader
-            //UIRegisterFXMLController registerController = loader.getController();
+            UIPassRecoveryController recoveryController = loader.getController();
             /*Set a reference in the controller 
                 for the UIController view for the logic manager object           
             */
-            //registerController.setLogicManager(logicManager);
+            recoveryController.setRecoveryManager(recoveryManager);
             //Send the current stage for coming back later
-            //registerController.setPreviousStage(stage);
+            //recoveryController.setPreviousStage(stage);
             //Initialize the primary stage of the application
-            //registerController.initStage(root);
+            recoveryController.initStage(root);
             txtUsername.setText("");
             pfPassword.setText("");
             stage.hide();

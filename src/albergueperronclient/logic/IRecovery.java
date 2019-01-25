@@ -10,9 +10,9 @@ import java.util.Collection;
 
 /**
  *
- * @author 2dam
+ * @author Nerea JImenez
  */
-public interface ILogin {
+public interface IRecovery {
     /**
      * This method returns a Collection of {@link UserBean}, containing all users data.
      * @return Collection The collection with all {@link UserBean} data for users. 
@@ -23,5 +23,8 @@ public interface ILogin {
     public UserBean login(UserBean userBean);
 
     public void close();
-    public byte[] encrypt(String pass);
+  
+    public void recoverEmail(UserBean user);
+    
+    public UserBean getUserByEmail(String email);
 }

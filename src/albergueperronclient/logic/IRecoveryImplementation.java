@@ -48,13 +48,13 @@ import org.apache.commons.net.ftp.FTPFile;
  *
  * @author Nerea
  */
-public class ILoginImplementation implements ILogin{
+public class IRecoveryImplementation implements IRecovery{
     
    //REST users web client
     private UserREST webClient;
     private static final Logger LOGGER=Logger.getLogger("albergueperronclient");
     
-     public ILoginImplementation(){
+     public IRecoveryImplementation(){
         webClient=new UserREST();
     }
 
@@ -103,6 +103,31 @@ public class ILoginImplementation implements ILogin{
         return user;
         
         
+    }
+    
+    @Override
+    public UserBean getUserByEmail(String email) {
+        UserBean user =null;
+        try{
+            
+            user = webClient.findUserByEmail(UserBean.class,email);
+        }catch(Exception ex){
+            LOGGER.log(Level.SEVERE,
+                    "User: Exception finding user, {0}",
+                    ex.getMessage());
+            //throw new BusinessLogicException("Error finding all users:\n"+ex.getMessage());
+        }
+        return user;
+    }
+    
+    @Override
+    public void recoverEmail(UserBean user){
+        
+       //encriptar contraseña
+       byte[] encryptedPass =encrypt(user.getPassword());
+       String passString= DatatypeConverter.printHexBinary(encryptedPass);
+       user.setPassword(passString);
+       UserBean userN = webClient.passRecovery(UserBean.class,user.getEmail(),user.getPassword()); 
     }
 
     @Override
@@ -155,5 +180,6 @@ public class ILoginImplementation implements ILogin{
         return encodedMessage;
     }
 
+   
     
 }

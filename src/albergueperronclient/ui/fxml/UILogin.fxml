@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="loginPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="albergueperronclient.ui.controller.UILoginFXMLController">
+<BorderPane fx:id="loginPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="albergueperronclient.ui.controller.UILoginFXMLController">
    <center>
       <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
@@ -51,7 +51,7 @@
                   <Image url="@../Proyecto_equipo2/img/readmore1600.png" />
                </image>
             </ImageView>
-            <Hyperlink layoutX="246.0" layoutY="291.0" text="Click aquí" />
+            <Hyperlink fx:id="hlRemindPass" layoutX="246.0" layoutY="291.0" text="Click aquí" />
             <Label layoutX="90.0" layoutY="294.0" text="¿Has olvidado tu contraseña?" />
          </children>
       </AnchorPane>
