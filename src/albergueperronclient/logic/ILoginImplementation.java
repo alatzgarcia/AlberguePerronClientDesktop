@@ -7,46 +7,28 @@ package albergueperronclient.logic;
 
 import albergueperronclient.modelObjects.UserBean;
 import albergueperronclient.rest.UserREST;
-//import albergueperronclient.rest.UserREST;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
-import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.stage.FileChooser;
-import javafx.stage.FileChooser.ExtensionFilter;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import javax.ws.rs.core.GenericType;
 import javax.xml.bind.DatatypeConverter;
 
-import org.apache.commons.net.PrintCommandListener;
-import org.apache.commons.net.ftp.FTP;
-import org.apache.commons.net.ftp.FTPClient;
-import org.apache.commons.net.ftp.FTPFile;
 
 /**
- *
- * @author Nerea
+ * This class implements ILogic business logic interface using a 
+ * RESTful web client to access bussines logic in an Java EE application server. 
+ * @author Nerea JImenez
  */
 public class ILoginImplementation implements ILogin{
     
@@ -54,10 +36,20 @@ public class ILoginImplementation implements ILogin{
     private UserREST webClient;
     private static final Logger LOGGER=Logger.getLogger("albergueperronclient");
     
-     public ILoginImplementation(){
+    /**
+     * Create a LoginImplementation object. It constructs a web client for 
+     * accessing a RESTful service that provides business logic in an application
+     * server.
+     */
+    public ILoginImplementation(){
         webClient=new UserREST();
     }
 
+    /**
+     * This method returns the user with a given id
+     * @param id the id of the user
+     * @return the user
+     */
     @Override
     public UserBean getUserById(String id) {
         UserBean user =null;
@@ -75,29 +67,24 @@ public class ILoginImplementation implements ILogin{
     }
 
     /**
-     *
-     * @param userBean
+     * Method for the login of the user
+     * @param userBean the user
+     * @return the user
      */
     @Override
-    public UserBean login(UserBean userBean) {
+    public UserBean login(UserBean userBean)  {
         
-        //generateKey();
+        //the password is encrypted before it is passed on to the server
         byte[] encryptedPass =encrypt(userBean.getPassword());
         String passString= DatatypeConverter.printHexBinary(encryptedPass);
         userBean.setPassword(passString);
         UserBean user=null;
         try{
-          
-           //webClient.update(userBean);
-           //String passString= DatatypeConverter.printHexBinary(encryptedPass);
+        
            user=webClient.login(UserBean.class,userBean.getLogin(),passString);
-            
-        }catch(Exception ex){
-            LOGGER.log(Level.SEVERE,
-                    "User: Exception finding user, {0}",
-                    ex.getCause());
-            
-            //throw new BusinessLogicException("Error finding all users:\n"+ex.getMessage());
+        
+        }catch(Exception e){
+           LOGGER.severe(e.getMessage());
         }
         
         return user;
@@ -110,13 +97,18 @@ public class ILoginImplementation implements ILogin{
         
     }
    
-
+    /**
+     * Method for the encryption of the password
+     * @param pass The password
+     * @return encrypted password
+     */
     public byte[] encrypt(String pass){
             FileInputStream fis;
             byte[] encodedMessage = null;
 		try {
 			
-			
+		    //gets the public key that has been previously generated
+                    //with a matching private key that it is kept in the server side
                     fis = new FileInputStream("public.key");
                     byte[] publicKey = new byte[fis.available()];
                     fis.read(publicKey);
@@ -129,10 +121,7 @@ public class ILoginImplementation implements ILogin{
                     Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
                     cipher.init(Cipher.ENCRYPT_MODE, pubKey);
                     encodedMessage = cipher.doFinal(pass.getBytes());
-			
-                    //ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("encoded"));
-                    //oos.writeObject(encodedMessage);
-			
+					
                     LOGGER.info("Message encrypted");
 	
 		} catch (FileNotFoundException e) {

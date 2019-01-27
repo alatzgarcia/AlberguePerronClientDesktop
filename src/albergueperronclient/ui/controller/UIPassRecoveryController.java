@@ -5,36 +5,27 @@
  */
 package albergueperronclient.ui.controller;
 
+import albergueperronclient.exceptions.IncorrectEmailException;
 import java.util.Optional;
 import javafx.application.Platform;
-import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.WindowEvent;
 import albergueperronclient.modelObjects.UserBean;
 import albergueperronclient.passwordGen.PasswordGenerator;
-//import albergueperronclient.exceptions.IncorrectLoginException;
-//import albergueperronclient.exceptions.IncorrectPasswordException;
-//import albergueperronclient.exceptions.ServerNotAvailableException;
 import static albergueperronclient.ui.controller.GenericController.LOGGER;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.stage.Stage;
 /**
- * Controller class for UILogin.fxml
- * @author Alatz
+ * Controller class for UIRecovery.fxml
+ * @author Nerea Jimenez
  */
 public class UIPassRecoveryController extends GenericController {
     /**
@@ -47,7 +38,7 @@ public class UIPassRecoveryController extends GenericController {
     private Button btnSend;
     
     @FXML
-    private Label emailError;
+    private Label lblError;
     
     /**
      * InitStage method for the UILogin view
@@ -78,6 +69,8 @@ public class UIPassRecoveryController extends GenericController {
      */
     public void handleWindowShowing(WindowEvent event){
         btnSend.setDisable(true);
+        btnSend.setMnemonicParsing(true);
+        btnSend.setText("_Enviar");
         
     }
     
@@ -87,42 +80,33 @@ public class UIPassRecoveryController extends GenericController {
      */
     public void checkEmail(ActionEvent event){
         
-        //try{
+        try{
             //Sends a user to the logic controller with the entered parameters
             String email = txtEmail.getText();
             
             UserBean user = recoveryManager.getUserByEmail(email);
             if(user!=null){
+                //generates a random password
                 PasswordGenerator randomPass = new PasswordGenerator.
-                        PasswordGeneratorBuilder().
+                        PasswordGeneratorBuilder().useDigits(true).useUpper(true).
                         useLower(true).build();
                 String password = randomPass.generate(8);
                 user.setPassword(password);
+                //Calls the logic method to update the password
                 recoveryManager.recoverEmail(user);
+            }else{
+                throw new IncorrectEmailException();
             }
             
-        
             txtEmail.setText("");
             
             stage.hide();
-        /**} catch(IncorrectLoginException ile){
-            LOGGER.severe("Error. Incorrect login. Detailed error"
-                    + ile.getMessage());
-            txtUsername.setStyle("-fx-border-color: red");
-            lblUsernameError.setText("Error. El usuario introducido no existe.");
-        } catch(IncorrectPasswordException ipe){
-            LOGGER.severe("Error.Incorrect password. Detailed error: "
-                    + ipe.getMessage());
-            pfPassword.setStyle("-fx-border-color: red");
-            lblPasswordError.setText("Error. La contraseña introducida"
-                    + " es incorrecta.");
-        } catch(ServerNotAvailableException snae){
-            LOGGER.severe(snae.getMessage());
-            showErrorAlert(snae.getMessage());
-        }catch(Exception e){
-            LOGGER.severe(e.getMessage());
-            showErrorAlert("Se ha producido un error en el inicio de sesión.");
-        }**/
+        } catch(IncorrectEmailException iee){
+            LOGGER.severe("Error. Incorrect email. Detailed error "
+                    + iee.getMessage());
+            txtEmail.setStyle("-fx-border-color: red");
+            lblError.setText("Error. El email introducido no existe.");
+        }
     }
       
     /**
@@ -168,7 +152,7 @@ public class UIPassRecoveryController extends GenericController {
             if(txtEmail.getText().matches("^[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,4}$")&&
                  txtEmail.getText().trim().length()>=userPasswordMinLength&&
                  txtEmail.getText().trim().length()<=userPasswordMaxLength){
-                emailError.setText("");
+                lblError.setText("");
                 btnSend.setDisable(false);
                 
             }else{
@@ -191,7 +175,7 @@ public class UIPassRecoveryController extends GenericController {
              Boolean newValue){
         if(oldValue){
             if(!txtEmail.getText().matches("^[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,4}$")){
-                emailError.setText("Email no válido");
+                lblError.setText("Email no válido");
             txtEmail.setStyle("-fx-border-color: red");
         }
     }

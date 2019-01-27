@@ -5,6 +5,7 @@
  */
 package albergueperronclient.logic;
 
+import albergueperronclient.exceptions.FTPException;
 import albergueperronclient.modelObjects.MyFile;
 import java.io.IOException;
 import javafx.scene.control.TreeItem;
@@ -14,7 +15,7 @@ import org.apache.commons.net.ftp.FTPFile;
 
 /**
  *
- * @author 2dam
+ * @author Nerea Jimenez
  */
 public interface IFTP {
 
@@ -27,7 +28,7 @@ public interface IFTP {
 
     public MyFile createDirectory();
     
-    public void connect();
+    public void connect() throws FTPException;
 
     public void disconnect();
 
@@ -35,7 +36,7 @@ public interface IFTP {
     
     public void buildFileTree(TreeItem treeNode) throws IOException;
     
-    public void setTreeFile(TreeView treeFile);
-    
     public void changeDirectory(String path);
+
+    public void setTreeFile(TreeView treeFile);
 }

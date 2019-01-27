@@ -9,21 +9,18 @@ import albergueperronclient.modelObjects.UserBean;
 import java.util.Collection;
 
 /**
- *
+ * Business logic interface encapsulating business methods for the recovery 
+ * of the password
  * @author Nerea JImenez
  */
 public interface IRecovery {
-    /**
-     * This method returns a Collection of {@link UserBean}, containing all users data.
-     * @return Collection The collection with all {@link UserBean} data for users. 
-     * @throws BusinessLogicException If there is any error while processing.
-     */
-    public UserBean getUserById(String id);
-
-    public UserBean login(UserBean userBean);
-
-    public void close();
   
+    public void close();
+    
+    /**
+     * Method for the recovery of the user password
+     * @param user The user
+     */
     public void recoverEmail(UserBean user);
     
     public UserBean getUserByEmail(String email);

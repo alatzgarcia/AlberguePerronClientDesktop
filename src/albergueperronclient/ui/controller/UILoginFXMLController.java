@@ -5,10 +5,10 @@
  */
 package albergueperronclient.ui.controller;
 
-import albergueperronclient.logic.ILogin;
-import albergueperronclient.logic.ILoginFactory;
+import albergueperronclient.exceptions.IncorrectLoginException;
 import albergueperronclient.logic.IRecovery;
 import albergueperronclient.logic.IRecoveryFactory;
+import albergueperronclient.modelObjects.Privilege;
 import java.util.Optional;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyProperty;
@@ -27,16 +27,14 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.WindowEvent;
 import albergueperronclient.modelObjects.UserBean;
-//import albergueperronclient.exceptions.IncorrectLoginException;
-//import albergueperronclient.exceptions.IncorrectPasswordException;
-//import albergueperronclient.exceptions.ServerNotAvailableException;
 import static albergueperronclient.ui.controller.GenericController.LOGGER;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
+
 /**
  * Controller class for UILogin.fxml
- * @author Alatz
+ * @author Nerea Jimenez
  */
 public class UILoginFXMLController extends GenericController {
     /**
@@ -70,7 +68,7 @@ public class UILoginFXMLController extends GenericController {
     @FXML
     private Button btnExit;
     /**
-     * HyperLink to go to the remind password view
+     * HyperLink to go to the recovery password view
      */
     @FXML
     private Hyperlink hlRemindPass;
@@ -111,69 +109,80 @@ public class UILoginFXMLController extends GenericController {
         btnExit.setMnemonicParsing(true);
         btnExit.setText("_Salir");
         txtUsername.requestFocus();
-        //Settear promptText
+        
     }
     
     /**
-     * Method for the login of a user
+     * Method for the login of the user
      * @param event event that has caused the call to the function
      */
     public void login(ActionEvent event){
         
-        //try{
+        try{
             //Sends a user to the logic controller with the entered parameters
             UserBean user = new UserBean(txtUsername.getText(), 
                     pfPassword.getText());
-           
-            loginManager.login(user);
-            FXMLLoader loader = new FXMLLoader(getClass()
-                    .getResource("/albergueperronclient/ui/fxml/UIBlackList.fxml"));
-        try {
-            Parent root = loader.load();
-        } catch (IOException ex) {
-            Logger.getLogger(UILoginFXMLController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-            //Get controller from the loader
-            //UILoggedFXMLController loggedController = loader.getController();
-            /*Set a reference in the controller 
-                for the UILogin view for the logic manager object           
-            */
-            //loggedController.setLogicManager(logicManager);
-            //Send the user to the controller
-            //loggedController.setUser(user);
-            //Send the current stage for coming back later
-            //loggedController.setPreviousStage(stage);
-            //Initialize the primary stage of the application
-            //loggedController.initStage(root);
-            txtUsername.setText("");
-            pfPassword.setText("");
-            stage.hide();
-        /**} catch(IncorrectLoginException ile){
-            LOGGER.severe("Error. Incorrect login. Detailed error"
+         
+            user=loginManager.login(user);
+            
+            //if the user exists and it is an admin the loggued view opens
+            if(user!=null && user.getPrivilege()==Privilege.ADMIN){
+                
+                FXMLLoader loader = new FXMLLoader(getClass()
+                        .getResource("/albergueperronclient/ui/fxml/UILoggedAdmin.fxml"));
+
+                Parent root;
+                try {
+                    root = loader.load();
+                    
+                    //Get controller from the loader
+                    UILogguedFXMLController loggedController = loader.getController();
+                    /*Set a reference in the controller 
+                        for the UILogin view for the logic manager object           
+                    */
+                    loggedController.setUsersManager(usersManager);
+                    //Send the user to the controller
+                    loggedController.setUser(user);
+                    //Send the current stage for coming back later
+                    //loggedController.setPreviousStage(stage);
+                    //Initialize the primary stage of the application
+                    loggedController.initStage(root);
+                    txtUsername.setText("");
+                    pfPassword.setText("");
+                    stage.hide();
+               
+                } catch (IOException ex) {
+                    LOGGER.severe(ex.getMessage());
+                }
+            }else if(user==null){
+                throw new IncorrectLoginException();
+           }else{
+                showErrorAlert("Tiene que ser administrador para acceder");
+           }
+            
+        
+        
+            
+        } catch(IncorrectLoginException ile){
+            LOGGER.severe("Error. Incorrect login. Detailed error "
                     + ile.getMessage());
             txtUsername.setStyle("-fx-border-color: red");
-            lblUsernameError.setText("Error. El usuario introducido no existe.");
-        } catch(IncorrectPasswordException ipe){
-            LOGGER.severe("Error.Incorrect password. Detailed error: "
-                    + ipe.getMessage());
             pfPassword.setStyle("-fx-border-color: red");
-            lblPasswordError.setText("Error. La contraseña introducida"
-                    + " es incorrecta.");
-        } catch(ServerNotAvailableException snae){
-            LOGGER.severe(snae.getMessage());
-            showErrorAlert(snae.getMessage());
+            lblUsernameError.setText("Error. El usuario o la contraseña "
+                    + "introducidos no son correctos.");
+       
         }catch(Exception e){
             LOGGER.severe(e.getMessage());
             showErrorAlert("Se ha producido un error en el inicio de sesión.");
-        }**/
-    }
+        }
+}
     
     /**
-     * Method for the register of a new user
+     * Method for the recovery of the password
      * @param event event that has caused the call to the function
      */
     public void passwordRecovery(ActionEvent event){
-        //calls the logicManager register functio
+        //opens the password recovery view
         try{
             IRecovery recoveryManager = IRecoveryFactory.getRecoveryManager();
             FXMLLoader loader = new FXMLLoader(getClass()
@@ -194,7 +203,7 @@ public class UILoginFXMLController extends GenericController {
             stage.hide();
         }catch(Exception e){
             LOGGER.severe(e.getMessage());
-            showErrorAlert("Error al redirigir al registro de usuario.");
+            showErrorAlert("Error al redirigir");
         }
     }
     

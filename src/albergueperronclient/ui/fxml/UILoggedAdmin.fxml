@@ -6,7 +6,7 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="albergueperronclient.gui.fxml.GU010LoggedAdminUIController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="albergueperronclient.ui.controller.UILogguedFXMLController">
    <children>
       <MenuBar layoutY="2.0" prefHeight="26.0" prefWidth="1279.0">
         <menus>
@@ -38,7 +38,7 @@
       <Button fx:id="btnEmployees" disable="true" layoutX="950.0" layoutY="212.0" mnemonicParsing="false" prefHeight="116.0" prefWidth="207.0" text="Empleados" />
       <Button fx:id="btnStay" layoutX="126.0" layoutY="423.0" mnemonicParsing="false" prefHeight="116.0" prefWidth="207.0" text="Estancias" />
       <Button fx:id="btnRoom" layoutX="405.0" layoutY="424.0" mnemonicParsing="false" prefHeight="116.0" prefWidth="207.0" text="Habitaciones" />
-      <Button fx:id="btnBlackStay" layoutX="675.0" layoutY="424.0" mnemonicParsing="false" prefHeight="116.0" prefWidth="207.0" text="Lista negra" />
+      <Button fx:id="btnFTP" layoutX="675.0" layoutY="424.0" mnemonicParsing="false" prefHeight="116.0" prefWidth="207.0" text="FTP" />
       <Button fx:id="btnIncidenceType" disable="true" layoutX="950.0" layoutY="423.0" mnemonicParsing="false" prefHeight="116.0" prefWidth="207.0" text="Tipos de Incidencia" />
    </children>
 </AnchorPane>

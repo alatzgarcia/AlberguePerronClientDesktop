@@ -9,19 +9,25 @@ import albergueperronclient.modelObjects.UserBean;
 import java.util.Collection;
 
 /**
- *
- * @author 2dam
+ * Business logic interface encapsulating business methods for users login.
+ * @author Nerea JImenez
  */
 public interface ILogin {
     /**
-     * This method returns a Collection of {@link UserBean}, containing all users data.
-     * @return Collection The collection with all {@link UserBean} data for users. 
-     * @throws BusinessLogicException If there is any error while processing.
+     * This method returns an user with a given id
+     * @param id The id of the user
+     * @return the user
      */
     public UserBean getUserById(String id);
-
+    /**
+     * Method for the login of the user
+     * @param userBean
+     * @return the user
+     */
     public UserBean login(UserBean userBean);
-
+    /**
+     * 
+     */
     public void close();
-    public byte[] encrypt(String pass);
+    
 }

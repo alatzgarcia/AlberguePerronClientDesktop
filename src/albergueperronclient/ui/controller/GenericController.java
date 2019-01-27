@@ -10,6 +10,7 @@ import albergueperronclient.logic.ILogin;
 import albergueperronclient.logic.IRecovery;
 import albergueperronclient.logic.IRegister;
 import albergueperronclient.logic.UsersManager;
+import albergueperronclient.modelObjects.UserBean;
 import java.util.logging.Logger;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -35,6 +36,7 @@ public class GenericController {
     protected IFTP ftpManager;
     protected IRegister registerManager;
     protected IRecovery recoveryManager;
+    private UserBean user;
     /**
      * Shows an alert with an error message
      * @param errorMsg 
@@ -65,6 +67,12 @@ public class GenericController {
     public IRegister getRegisterManager() {
         return registerManager;
     }
+
+    public void setRegisterManager(IRegister registerManager) {
+        this.registerManager = registerManager;
+    }
+    
+    
     
     public void setLoginManager(ILogin loginManager) {
         this.loginManager = loginManager;
@@ -81,10 +89,16 @@ public class GenericController {
      * Sets the user
      * @param user 
      */
-    /*public void setUser(User user){
+    public void setUser(UserBean user){
         this.user=user;
         
-    }*/
+    }
 
-    
+      /**
+     * Sets the logic Manager
+     * @param logicManager 
+     */
+    public void setUsersManager(UsersManager usersManager){
+        this.usersManager = usersManager;
+}
 }

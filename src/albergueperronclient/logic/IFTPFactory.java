@@ -7,7 +7,7 @@ package albergueperronclient.logic;
 
 /**
  *
- * @author 2dam
+ * @author Nerea Jimenez
  */
 public class IFTPFactory {
     public static IFTP getIFTPImplementation(){

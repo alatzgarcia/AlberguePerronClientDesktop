@@ -66,9 +66,8 @@ public class IRegisterImplementation implements IRegister{
     @Override
     public void register(UserBean userBean) {
         
-        //generateKey();
         byte[] encryptedPass =encrypt(userBean.getPassword());
-        //String encryptedPassS = new String(encryptedPass);
+        
         String passString= DatatypeConverter.printHexBinary(encryptedPass);
         userBean.setPassword(passString);
         try{

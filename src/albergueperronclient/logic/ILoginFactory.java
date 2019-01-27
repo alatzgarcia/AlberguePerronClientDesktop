@@ -6,7 +6,7 @@
 package albergueperronclient.logic;
 
 /**
- *
+ * This class is a factory for ILogin interface implementing objects.
  * @author Nerea Jimenez
  */
 public class ILoginFactory {
