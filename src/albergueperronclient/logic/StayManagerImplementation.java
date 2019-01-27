@@ -56,7 +56,7 @@ public class StayManagerImplementation implements StaysManager{
     }
 
     @Override
-    public void createUser(StayBean stay) throws BusinessLogicException {
+    public void createStay(StayBean stay) throws BusinessLogicException {
         try{
             webClient.create(stay);
         }catch(Exception e){
@@ -68,7 +68,7 @@ public class StayManagerImplementation implements StaysManager{
     }
 
     @Override
-    public void updateUser(StayBean stay, String id) throws BusinessLogicException {
+    public void updateStay(StayBean stay, String id) throws BusinessLogicException {
         try{
            webClient.edit(stay, id);
         }catch(Exception e){
@@ -80,7 +80,7 @@ public class StayManagerImplementation implements StaysManager{
     }
 
     @Override
-    public void deleteUser(String id) throws BusinessLogicException {
+    public void deleteStay(String id) throws BusinessLogicException {
         try{
             webClient.remove(id);
         }catch(Exception e){
@@ -89,6 +89,21 @@ public class StayManagerImplementation implements StaysManager{
                     e.getMessage());
            throw new BusinessLogicException("Error deleting stay: \n"+e.getMessage() );
         }
+    }
+
+    @Override
+    public Collection<StayBean> getAllGuestId() throws BusinessLogicException {
+        Collection<StayBean> guests =null;
+        try{
+            //Ask webClient for all users' data.
+            guests = webClient.findAll(new GenericType<List<StayBean>>() {});
+        }catch(Exception e){
+            LOGGER.log(Level.SEVERE,
+                    "StaysManager: Exception finding all guest, ",
+                    e.getMessage());
+            throw new BusinessLogicException("Error finding all guest:\n"+e.getMessage());
+        }
+        return guests;
     }
 
 }

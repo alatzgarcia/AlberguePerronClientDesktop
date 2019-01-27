@@ -11,7 +11,9 @@ import albergueperronclient.modelObjects.StayBean;
 import albergueperronclient.modelObjects.UserBean;
 import static albergueperronclient.ui.controller.GenericController.LOGGER;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.EventListener;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -115,17 +117,18 @@ public class UIStayFXMLController extends GenericController{
         tableStay.setItems(staysData);
         
         //Insertar datos en los cb
-        ObservableList<StayBean> stay;
+        ObservableList<StayBean> stay=FXCollections.observableArrayList(staysManager.getAllStays());
         
         
         cbGuest=new ComboBox();
         cbRoom=new ComboBox();
         
+        cbGuest.setItems(stay);
+        
         for (StayBean s : staysData) {
             //guest.addElement(s.getGuest());
             //room.addElement(s.getRoom());
-            cbGuest.setItems();
-            stay=
+            cbGuest.setItems(s.getGuest().getId());
         }
         
         
@@ -143,12 +146,40 @@ public class UIStayFXMLController extends GenericController{
         btnDelete.setDisable(false);
         btnModify.setDisable(false);
         
-        btnSaveChanges.setOnAction(this::stayModify);
+        fieldChange(visible);
+        fieldChange(disable);
+        
+        btnModify.setOnAction(this::stayModify);
+        btnDelete.setOnAction(this::deleteStay);
+    }
+    
+    public void deleteStay(){
+        try{
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION.CONFIRMATION);
+            alert.setTitle("Borrar");
+            alert.setContentText("¿Desea borrar la estancia?");    
+            Optional<ButtonType> result = alert.showAndWait();
+            if(result.get()== ButtonType.OK){
+                usersManager.deleteUser(tableStay.getSelectionModel().getSelectedItem().getId().toString());
+                tableStay.getItems().remove(tableStay.getSelectionModel().getSelectedItem());
+                tableStay.refresh();
+            }else if(result.get()==ButtonType.CANCEL){
+                alert.close();
+            }
+        }catch(BusinessLogicException ble){
+            LOGGER.info("Delete failed "+ble.getMessage());
+        }catch(Exception e){
+            LOGGER.info("Error"+e.getMessage());
+        }   
     }
     
     public void stayModify(){
         btnSaveChanges.setVisible(true);
         btnSaveChanges.setDisable(false);
+        btnCancel.setDisable(false);
+        btnModify.setDisable(true);
+        btnDelete.setDisable(true);
+        btnNew.setDisable(true);
         
         fieldChange(enable);
         fieldChange(visible);
@@ -166,9 +197,9 @@ public class UIStayFXMLController extends GenericController{
                 tableStay.getItems().remove(tableStay.getSelectionModel().getSelectedItem());
                 tableStay.getItems().add(stay);
                 tableStay.refresh();
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION.INFORMATION);
+                Alert alert = new Alert(Alert.AlertType.INFORMATION.INFORMATION);
                 alert.setTitle("Modificado");
-                alert.setContentText("Se modificó el usuario "+ tableStay.getSelectionModel().getSelectedItem().getId());    
+                alert.setContentText("Se modificó la estancia "+ tableStay.getSelectionModel().getSelectedItem().getId());    
                 Optional<ButtonType> result = alert.showAndWait();
                 if(result.get()== ButtonType.OK){
                     tableStay.getSelectionModel().clearSelection();
@@ -182,10 +213,13 @@ public class UIStayFXMLController extends GenericController{
     public void newStay(EventListener event){
         btnInsert.setVisible(true);
         btnInsert.setDisable(false);
+        btnModify.setDisable(true);
+        btnNew.setDisable(true);
+        btnCancel.setDisable(true);
+        
         
         fieldChange(enable);
         fieldChange(visible);
-        
     }
     
     public void saveNewStay(){
@@ -249,13 +283,17 @@ public class UIStayFXMLController extends GenericController{
     }
      
     private StayBean getStayFromFields(){
-        
  //TODO
         stay= new StayBean();
         
         //Sets the attributes with the fields
-        stay.setDate(new Date(txtDate.getText()));
-        stay.setGuest(cbGuest.getValue().toString());
+        SimpleDateFormat parser=new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy");
+        Date date = parser.parse(txtDate.getText());
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        String formattedDate = formatter.format(date);
+
+        stay.setDate(date);
+        stay.setGuest(cbGuest.getValue());
         stay.setRoom(cbRoom.getValue());
         stay.setId(tableStay.getSelectionModel().getSelectedItem().getId());
         

@@ -7,7 +7,6 @@ package albergueperronclient.logic;
 
 import albergueperronclient.exceptions.BusinessLogicException;
 import albergueperronclient.modelObjects.StayBean;
-import albergueperronclient.modelObjects.UserBean;
 import java.util.Collection;
 
 /**
@@ -24,4 +23,6 @@ public interface StaysManager {
     public void updateStay(StayBean stay, String id) throws BusinessLogicException;
     
     public void deleteStay(String id) throws BusinessLogicException;
+    
+    public Collection<StayBean> getAllGuestId() throws BusinessLogicException;
 }
