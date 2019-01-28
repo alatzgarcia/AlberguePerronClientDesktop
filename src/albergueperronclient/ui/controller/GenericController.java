@@ -5,6 +5,7 @@
  */
 package albergueperronclient.ui.controller;
 
+import albergueperronclient.logic.RoomManager;
 import albergueperronclient.logic.StaysManager;
 import albergueperronclient.logic.UsersManager;
 import java.util.logging.Logger;
@@ -29,6 +30,7 @@ public class GenericController {
     //The interface that links the UI with the Logic
     protected UsersManager usersManager;
     protected StaysManager staysManager;
+    protected RoomManager roomsManager;
 
     /**
      * Shows an alert with an error message
@@ -50,6 +52,10 @@ public class GenericController {
      */
     public void setUsersManager(UsersManager usersManager){
         this.usersManager = usersManager;
+    }
+    
+    public void setStaysManager(StaysManager staysManager){
+        this.staysManager=staysManager;
     }
     
     /**

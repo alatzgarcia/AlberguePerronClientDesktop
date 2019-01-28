@@ -6,9 +6,12 @@
 package albergueperronclient;
 
 
+import albergueperronclient.logic.StayManagerFactory;
+import albergueperronclient.logic.StaysManager;
 import albergueperronclient.logic.UserManagerFactory;
 import albergueperronclient.logic.UsersManager;
 import albergueperronclient.ui.controller.UIGuestFXMLController;
+import albergueperronclient.ui.controller.UIStayFXMLController;
 import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -45,21 +48,22 @@ public class App extends Application {
     public void start(Stage primaryStage) throws Exception {
         try{
             //Get the logic manager object for the initial stage
-            UsersManager userManager = UserManagerFactory.createUserManager();
+            //UsersManager userManager = UserManagerFactory.createUserManager();
+            StaysManager stayManager=StayManagerFactory.createStayManager();
             
             //Load the fxml file
             FXMLLoader loader = new FXMLLoader(getClass()
-                    .getResource("/albergueperronclient/ui/fxml/UIGuest.fxml"));
+                    .getResource("/albergueperronclient/ui/fxml/UIStay.fxml"));
             Parent root = loader.load();
             //Get controller from the loader
-            UIGuestFXMLController guestController = loader.getController();
+            UIStayFXMLController stayController = loader.getController();
             /*Set a reference in the controller for the UILogin view for the logic manager object           
             */
-            guestController.setUsersManager(userManager);
+            stayController.setStaysManager(stayManager);
             //Set a reference for Stage in the UILogin view controller
-            guestController.setStage(primaryStage);
+            stayController.setStage(primaryStage);
             //Initialize the primary stage of the application
-            guestController.initStage(root);
+            stayController.initStage(root);
         }catch(Exception e){
             LOGGER.severe(e.getMessage());
         }  

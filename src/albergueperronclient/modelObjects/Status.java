@@ -3,14 +3,19 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package albergueperronclient.logic;
+package albergueperronclient.modelObjects;
 
 /**
  *
  * @author 2dam
  */
-public class StayManagerFactory {
-    public static StaysManager createStayManager(){
-        return new StayManagerImplementation();
-    }
+public enum Status {
+    /*
+        The room is enabled for use
+    */
+    ENABLED,
+    /*
+        The room is disabled and therefore can not be used
+    */
+    DISABLED
 }

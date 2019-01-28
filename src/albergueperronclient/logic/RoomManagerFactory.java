@@ -7,10 +7,11 @@ package albergueperronclient.logic;
 
 /**
  *
- * @author 2dam
+ * @author Alatz
  */
-public class StayManagerFactory {
-    public static StaysManager createStayManager(){
-        return new StayManagerImplementation();
+public class RoomManagerFactory {
+    public static RoomManager getRoomManager(){
+        return new RoomManagerImplementation();
+        //return new ILogicTestDataImplementation(); //Imp class with test data
     }
 }

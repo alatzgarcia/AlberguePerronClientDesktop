@@ -6,7 +6,9 @@
 package albergueperronclient.ui.controller;
 
 import albergueperronclient.exceptions.BusinessLogicException;
+import albergueperronclient.exceptions.ReadException;
 import albergueperronclient.logic.StaysManager;
+import albergueperronclient.modelObjects.Room;
 import albergueperronclient.modelObjects.StayBean;
 import albergueperronclient.modelObjects.UserBean;
 import static albergueperronclient.ui.controller.GenericController.LOGGER;
@@ -21,6 +23,7 @@ import java.util.Vector;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
@@ -80,9 +83,9 @@ public class UIStayFXMLController extends GenericController{
     @FXML
     private MenuItem menuExit;
     @FXML
-    private ComboBox<StayBean> cbGuest;
+    private ComboBox<UserBean> cbGuest;
     @FXML
-    private ComboBox<StayBean> cbRoom;
+    private ComboBox<Room> cbRoom;
     @FXML
     private TextField txtDate;
     @FXML
@@ -97,7 +100,7 @@ public class UIStayFXMLController extends GenericController{
     /**
      * Initializes the controller class.
      */
-     public void initStage(Parent root) throws BusinessLogicException{
+     public void initStage(Parent root) {
         Scene scene = new Scene(root);
         Stage stage=new Stage();
         stage.setScene(scene);
@@ -111,29 +114,26 @@ public class UIStayFXMLController extends GenericController{
         columnRoom.setCellValueFactory(new PropertyValueFactory<>("room"));
         columnDate.setCellValueFactory(new PropertyValueFactory<>("date"));
         
-        //Create an observable lis for the users
-        staysData = FXCollections.observableArrayList(staysManager.getAllStays());
-        //Set the observable data
-        tableStay.setItems(staysData);
-        
-        //Insertar datos en los cb
-        ObservableList<StayBean> stay=FXCollections.observableArrayList(staysManager.getAllStays());
-        
-        
-        cbGuest=new ComboBox();
-        cbRoom=new ComboBox();
-        
-        cbGuest.setItems(stay);
-        
-        for (StayBean s : staysData) {
-            //guest.addElement(s.getGuest());
-            //room.addElement(s.getRoom());
-            cbGuest.setItems(s.getGuest().getId());
+        try{
+            //Create an observable lis for the users
+            staysData = FXCollections.observableArrayList(staysManager.getAllStays());
+            //Set the observable data
+            tableStay.setItems(staysData);
+
+            //Insertar datos en los cb
+            ObservableList<UserBean> guests=FXCollections.observableArrayList(usersManager.getAllUsers());
+            ObservableList<Room> rooms=FXCollections.observableArrayList(roomsManager.findAllRooms());
+
+            //Insert the combo
+            cbGuest.setItems(guests);
+            cbRoom.setItems(rooms);
+        }catch(BusinessLogicException ble){
+            LOGGER.severe(ble.getMessage());
+        }catch(ReadException re){
+            LOGGER.severe(re.getMessage());
         }
         
         
-        
-        btnNew.setOnAction(this::newStay);
         
         //Sets the selection listener
         tableStay.getSelectionModel().selectedItemProperty().addListener(this::handleUserTableFocus);
@@ -141,19 +141,29 @@ public class UIStayFXMLController extends GenericController{
         stage.show();
        
     }
+     
+    
     
     public void handleUserTableFocus(ObservableValue observable, Object oldValue, Object newValue){
-        btnDelete.setDisable(false);
-        btnModify.setDisable(false);
-        
         fieldChange(visible);
         fieldChange(disable);
         
         btnModify.setOnAction(this::stayModify);
         btnDelete.setOnAction(this::deleteStay);
+        
+        if (newValue!=null){
+            StayBean stay=(StayBean)newValue;
+            cbGuest.getSelectionModel().select(tableStay.getSelectionModel().getSelectedItem().getGuest());
+            cbRoom.getSelectionModel().select(tableStay.getSelectionModel().getSelectedItem().getRoom());
+            
+            //Enables the correspondent buttons
+            btnDelete.setDisable(false);
+            btnModify.setDisable(false);
+            btnNew.setDisable(false);
+        }
     }
     
-    public void deleteStay(){
+    public void deleteStay(ActionEvent event){
         try{
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION.CONFIRMATION);
             alert.setTitle("Borrar");
@@ -173,7 +183,7 @@ public class UIStayFXMLController extends GenericController{
         }   
     }
     
-    public void stayModify(){
+    public void stayModify(ActionEvent event){
         btnSaveChanges.setVisible(true);
         btnSaveChanges.setDisable(false);
         btnCancel.setDisable(false);
@@ -187,7 +197,7 @@ public class UIStayFXMLController extends GenericController{
         btnSaveChanges.setOnAction(this::saveStayChanges);
     }
     
-    public void saveStayChanges(){
+    public void saveStayChanges(ActionEvent event){
         btnDelete.setDisable(true);
         btnModify.setDisable(true);
         btnNew.setDisable(true);
@@ -223,7 +233,23 @@ public class UIStayFXMLController extends GenericController{
     }
     
     public void saveNewStay(){
-        
+        try{
+            staysManager.createStay(getStayFromFields());
+            tableStay.getItems().add(stay);
+            tableStay.refresh();
+            Alert alert = new Alert(Alert.AlertType.INFORMATION.INFORMATION);
+            alert.setTitle("Crear estancia");
+            alert.setContentText("La estancia fue creada");    
+            Optional<ButtonType> result = alert.showAndWait();
+            if(result.get()== ButtonType.OK){
+                tableStay.getSelectionModel().clearSelection();
+                alert.close();  
+            }
+        }catch(BusinessLogicException ble){
+            LOGGER.info("The create failed "+ble.getMessage());
+        }catch(Exception e){
+            LOGGER.info("The create failed "+e.getMessage());
+        }
     }
      
     public void handleWindowShowing(){
@@ -275,7 +301,7 @@ public class UIStayFXMLController extends GenericController{
             case 5:
                 //Deletes all the existing data
 //QUITAR LA SELECCION
-                //cbGuest.
+                //cbGuest.set
                 //cbRoom.setText("");
                 txtDate.setText("");
                 break;
@@ -288,15 +314,16 @@ public class UIStayFXMLController extends GenericController{
         
         //Sets the attributes with the fields
         SimpleDateFormat parser=new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy");
-        Date date = parser.parse(txtDate.getText());
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        //Date date = parser.parse(txtDate.getText());
+        
+        /*SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         String formattedDate = formatter.format(date);
 
         stay.setDate(date);
         stay.setGuest(cbGuest.getValue());
         stay.setRoom(cbRoom.getValue());
         stay.setId(tableStay.getSelectionModel().getSelectedItem().getId());
-        
+        */
         return stay;
     }
 }

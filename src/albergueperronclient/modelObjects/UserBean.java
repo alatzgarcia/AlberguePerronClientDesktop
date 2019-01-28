@@ -168,4 +168,9 @@ public class UserBean implements Serializable{
         this.fullname.set(fullname);
     }
     
+    @Override
+    public String toString(){
+        return this.getFullname();
+    }
+    
  }

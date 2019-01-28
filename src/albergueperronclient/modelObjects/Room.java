@@ -7,6 +7,11 @@ package albergueperronclient.modelObjects;
 
 import java.io.Serializable;
 import java.util.List;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.ObservableList;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -14,111 +19,115 @@ import javax.xml.bind.annotation.XmlTransient;
  *
  * @author Alatz
  */
+@XmlRootElement(name="room")
 public class Room implements Serializable {
-
     private static long serialVersionUID = 1L;
-    private Integer roomNum;
-    private Integer totalSpace;
-    private Integer availableSpace;
-    private String status;
-    private List<IncidentBean> incidents;
-    private List<StayBean> stays;
-    /**
-     * gets the number of the room
-     * @return 
-     */
-    public Integer getRoomNum() {
-        return roomNum;
+    private SimpleIntegerProperty roomNum;
+    private SimpleIntegerProperty totalSpace;
+    private SimpleIntegerProperty availableSpace;
+    private SimpleObjectProperty<Status> status;
+    private SimpleListProperty<IncidentBean> incidents;
+    private SimpleListProperty<StayBean> stays;
+    
+    public Room(){
+        this.roomNum = new SimpleIntegerProperty();
+        this.totalSpace = new SimpleIntegerProperty();
+        this.availableSpace = new SimpleIntegerProperty();
+        this.status = new SimpleObjectProperty<Status>();
     }
     
-    /**
-     * Sets the number of a room
-     * @param roomNum the roomNumber to set
-     */
-    public void setRoomNum(Integer roomNum) {
+    public Room(SimpleIntegerProperty roomNum, SimpleIntegerProperty totalSpace, SimpleIntegerProperty availableSpace, SimpleObjectProperty status) {
         this.roomNum = roomNum;
-    }
-
-    /**
-     * Gets the total space of the room
-     * @return the totalSpace
-     */
-    public Integer getTotalSpace() {
-        return totalSpace;
-    }
-
-    /**
-     * Sets the total space of the room
-     * @param totalSpace the totalSpace to set
-     */
-    public void setTotalSpace(Integer totalSpace) {
         this.totalSpace = totalSpace;
-    }
-
-    /**
-     * Gets the available space in the room
-     * @return the availableSpace
-     */
-    public Integer getAvailableSpace() {
-        return availableSpace;
-    }
-
-    /**
-     * Sets the available space of the room
-     * @param availableSpace the availableSpace to set
-     */
-    public void setAvailableSpace(Integer availableSpace) {
         this.availableSpace = availableSpace;
-    }
-    
-    /**
-     * Gets the status of the room
-     * @return the status
-     */
-    public String getStatus() {
-        return status;
-    }
-
-    /**
-     * Sets the satus of the room
-     * @param status the status to set
-     */
-    public void setStatus(String status) {
         this.status = status;
     }
     
     /**
-     * Gets the incidents of the room
+     * 
+     * @return 
+     */
+    public Integer getRoomNum() {
+        return this.roomNum.get();
+    }
+    
+    /**
+     * @param roomNum the roomNumber to set
+     */
+    public void setRoomNum(Integer roomNum) {
+        this.roomNum.set(roomNum);
+    }
+
+    /**
+     * @return the totalSpace
+     */
+    public Integer getTotalSpace() {
+        return this.totalSpace.get();
+    }
+
+    /**
+     * @param totalSpace the totalSpace to set
+     */
+    public void setTotalSpace(Integer totalSpace) {
+        this.totalSpace.set(totalSpace);
+    }
+
+    /**
+     * @return the availableSpace
+     */
+    public Integer getAvailableSpace() {
+        return this.availableSpace.get();
+    }
+
+    /**
+     * @param availableSpace the availableSpace to set
+     */
+    public void setAvailableSpace(Integer availableSpace) {
+        this.availableSpace.set(availableSpace);
+    }
+    
+    /**
+     * @return the status
+     */
+    public Status getStatus() {
+        return this.status.get();
+    }
+
+    /**
+     * @param status the status to set
+     */
+    public void setStatus(Status status) {
+        this.status.set(status);
+    }
+    
+    /**
      * @return the incidents
      */
-    @XmlTransient
-    public List<IncidentBean> getIncidents() {
-        return incidents;
+    public SimpleListProperty<IncidentBean> getIncidents() {
+        //--TOFIX
+        return this.incidents;
     }
 
     /**
-     * Sets the incidents of a room
      * @param incidents the incidents to set
      */
-    public void setIncidents(List<IncidentBean> incidents) {
-        this.incidents = incidents;
+    public void setIncidents(SimpleListProperty<IncidentBean> incidents) {
+        this.incidents.set(incidents);
     }
 
     /**
-     * Gets all the stays of a room
      * @return the stays
      */
-    @XmlTransient
-    public List<StayBean> getStays() {
-        return stays;
+    public SimpleListProperty<StayBean> getStays() {
+        //--TOFIX
+        return this.stays;
     }
 
     /**
-     * Sets all the stays of a room
      * @param stays the stays to set
      */
-    public void setStays(List<StayBean> stays) {
-        this.stays = stays;
+    public void setStays(SimpleListProperty<StayBean> stays) {
+        this.stays.set(stays);
     }
     
     @Override
@@ -144,6 +153,6 @@ public class Room implements Serializable {
 
     @Override
     public String toString() {
-        return "alberguePerronServer.entity.Room[ Room number=" + roomNum + " ]";
+        return getRoomNum().toString();
     }
 }

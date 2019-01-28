@@ -295,9 +295,9 @@ public class UIGuestFXMLController extends GenericController{
                     alert.close();  
                 }
             }catch(BusinessLogicException ble){
-                LOGGER.info("The update failed "+ble.getMessage());
+                LOGGER.info("The create failed "+ble.getMessage());
             }catch(Exception e){
-                LOGGER.info("The update failed "+e.getMessage());
+                LOGGER.info("The create failed "+e.getMessage());
             }
         //}
     }
