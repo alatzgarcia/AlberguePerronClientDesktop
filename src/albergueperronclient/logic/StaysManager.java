@@ -23,6 +23,4 @@ public interface StaysManager {
     public void updateStay(StayBean stay, String id) throws BusinessLogicException;
     
     public void deleteStay(String id) throws BusinessLogicException;
-    
-    public Collection<StayBean> getAllGuestId() throws BusinessLogicException;
 }

@@ -9,6 +9,7 @@ import albergueperronclient.exceptions.BusinessLogicException;
 import albergueperronclient.modelObjects.Privilege;
 import albergueperronclient.modelObjects.UserBean;
 import albergueperronclient.passwordGen.PasswordGenerator;
+import java.awt.Color;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -431,20 +432,42 @@ public class UIGuestFXMLController extends GenericController{
     public void onTextChanged(ObservableValue observable,
             String oldValue,
             String newValue){
-        if(txtDni.getText().trim().length()!=9||
+        LOGGER.info("Cambio de texto");
+        /*if(txtDni.getText().trim().length()!=9||
                 txtEmail.getText().matches("^[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,4}$")||
                 txtFirstSurname.getText().trim().length()<userPasswordMinLength||txtFirstSurname.getText().trim().length()>userPasswordMaxLength||
                 txtLogin.getText().trim().length()<userPasswordMinLength||txtLogin.getText().trim().length()>userPasswordMaxLength||
                 txtName.getText().trim().length()<userPasswordMinLength||txtName.getText().trim().length()>userPasswordMaxLength){
+            
+        }*/
+        Boolean formatOK=true;
+        if(txtDni.getText().length()!=9){
+            formatOK=false;
+        }
+        if(txtEmail.getText().matches("^[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,4}$")){
+            formatOK=false;
+        }
+        if(txtFirstSurname.getText().trim().length()<userPasswordMinLength||txtFirstSurname.getText().trim().length()>userPasswordMaxLength){
+            formatOK=false;
+        }
+        if(txtLogin.getText().trim().length()<userPasswordMinLength||txtLogin.getText().trim().length()>userPasswordMaxLength){
+            formatOK=false;
+        }
+        if( txtName.getText().trim().length()<userPasswordMinLength||txtName.getText().trim().length()>userPasswordMaxLength){
+            formatOK=false;
+        }
+        if(!formatOK){
             if(btnSaveChanges.isVisible()){
                 btnSaveChanges.setDisable(true);
-            }else if(btnInsertGuest.isVisible()){
+            }
+            if(btnInsertGuest.isVisible()){
                 btnInsertGuest.setDisable(true);
             }
         }else{
             if(btnSaveChanges.isVisible()){
                 btnSaveChanges.setDisable(false);
-            }else if(btnInsertGuest.isVisible()){
+            }
+            if(btnInsertGuest.isVisible()){
                 btnInsertGuest.setDisable(false);
             }
         }

@@ -7,7 +7,10 @@ package albergueperronclient.ui.controller;
 
 import albergueperronclient.exceptions.BusinessLogicException;
 import albergueperronclient.exceptions.ReadException;
+import albergueperronclient.logic.RoomManagerFactory;
+import albergueperronclient.logic.StayManagerFactory;
 import albergueperronclient.logic.StaysManager;
+import albergueperronclient.logic.UserManagerFactory;
 import albergueperronclient.modelObjects.Room;
 import albergueperronclient.modelObjects.StayBean;
 import albergueperronclient.modelObjects.UserBean;
@@ -38,6 +41,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 /**
  * FXML Controller class
@@ -91,6 +95,8 @@ public class UIStayFXMLController extends GenericController{
     @FXML
     private Button btnDateToToday;
     private ObservableList<StayBean> staysData;
+    ObservableList<UserBean> guests;
+    ObservableList<Room> rooms;
     private StayBean stay;
     private int visible=1;
     private int invisible=2;
@@ -107,7 +113,7 @@ public class UIStayFXMLController extends GenericController{
         stage.setTitle("Login");
         stage.setResizable(false);
         
-        //stage.setOnShowing(this::handleWindowShowing);
+        stage.setOnShowing(this::handleWindowShowing);
         
         //Sets the columns the attributes to use
         columnGuests.setCellValueFactory(new PropertyValueFactory<>("guest"));
@@ -119,21 +125,23 @@ public class UIStayFXMLController extends GenericController{
             staysData = FXCollections.observableArrayList(staysManager.getAllStays());
             //Set the observable data
             tableStay.setItems(staysData);
-
-            //Insertar datos en los cb
-            ObservableList<UserBean> guests=FXCollections.observableArrayList(usersManager.getAllUsers());
-            ObservableList<Room> rooms=FXCollections.observableArrayList(roomsManager.findAllRooms());
+            
+            //Create the interfaces
+            usersManager=UserManagerFactory.createUserManager();
+            roomsManager=RoomManagerFactory.getRoomManager();
+            
+            //Insert the data at cbs
+            guests=FXCollections.observableArrayList(usersManager.getAllUsers());
+            //rooms=FXCollections.observableArrayList(roomsManager.findAllRooms());
 
             //Insert the combo
             cbGuest.setItems(guests);
             cbRoom.setItems(rooms);
         }catch(BusinessLogicException ble){
             LOGGER.severe(ble.getMessage());
-        }catch(ReadException re){
+        }/*catch(ReadException re){
             LOGGER.severe(re.getMessage());
-        }
-        
-        
+        }*/
         
         //Sets the selection listener
         tableStay.getSelectionModel().selectedItemProperty().addListener(this::handleUserTableFocus);
@@ -142,8 +150,6 @@ public class UIStayFXMLController extends GenericController{
        
     }
      
-    
-    
     public void handleUserTableFocus(ObservableValue observable, Object oldValue, Object newValue){
         fieldChange(visible);
         fieldChange(disable);
@@ -252,7 +258,7 @@ public class UIStayFXMLController extends GenericController{
         }
     }
      
-    public void handleWindowShowing(){
+    public void handleWindowShowing(WindowEvent event){
         btnNew.setVisible(true);
         btnNew.setDisable(false);
         btnCancel.setVisible(true);
@@ -301,7 +307,7 @@ public class UIStayFXMLController extends GenericController{
             case 5:
                 //Deletes all the existing data
 //QUITAR LA SELECCION
-                //cbGuest.set
+                //cbGuest.
                 //cbRoom.setText("");
                 txtDate.setText("");
                 break;
