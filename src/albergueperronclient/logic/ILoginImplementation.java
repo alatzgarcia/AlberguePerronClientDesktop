@@ -5,6 +5,7 @@
  */
 package albergueperronclient.logic;
 
+import utils.Encryptation;
 import albergueperronclient.modelObjects.UserBean;
 import albergueperronclient.rest.UserREST;
 import java.io.FileInputStream;
@@ -45,27 +46,7 @@ public class ILoginImplementation implements ILogin{
         webClient=new UserREST();
     }
 
-    /**
-     * This method returns the user with a given id
-     * @param id the id of the user
-     * @return the user
-     */
-    @Override
-    public UserBean getUserById(String id) {
-        UserBean user =null;
-        try{
-            LOGGER.info("User: Finding user by ID from REST service (XML).");
-            //Ask webClient for all users' data.
-            user = webClient.find(UserBean.class,id);
-        }catch(Exception ex){
-            LOGGER.log(Level.SEVERE,
-                    "User: Exception finding user, {0}",
-                    ex.getMessage());
-            //throw new BusinessLogicException("Error finding all users:\n"+ex.getMessage());
-        }
-        return user;
-    }
-
+    
     /**
      * Method for the login of the user
      * @param userBean the user
@@ -75,15 +56,13 @@ public class ILoginImplementation implements ILogin{
     public UserBean login(UserBean userBean)  {
         
         //the password is encrypted before it is passed on to the server
-        byte[] encryptedPass =encrypt(userBean.getPassword());
-        String passString= DatatypeConverter.printHexBinary(encryptedPass);
-       // String passString= encryptedPass.toString();
-        LOGGER.info("Password encriptada en string en cliente: "+passString);
-        userBean.setPassword(passString);
+        String encryptedPass =Encryptation.encrypt(userBean.getPassword());
+        
+        userBean.setPassword(encryptedPass);
         UserBean user=null;
         try{
         
-           user=webClient.login(UserBean.class,userBean.getLogin(),passString);
+           user=webClient.login(UserBean.class,userBean.getLogin(),encryptedPass);
         
         }catch(Exception e){
            LOGGER.severe(e.getMessage());
@@ -104,7 +83,7 @@ public class ILoginImplementation implements ILogin{
      * @param pass The password
      * @return encrypted password
      */
-    public byte[] encrypt(String pass){
+    public String encrypt(String pass){
             FileInputStream fis;
             byte[] encodedMessage = null;
 		try {
@@ -143,7 +122,7 @@ public class ILoginImplementation implements ILogin{
 		} catch (BadPaddingException e) {
 			e.printStackTrace();
 		}
-        return encodedMessage;
+        return DatatypeConverter.printHexBinary(encodedMessage);
     }
 
     

@@ -40,6 +40,7 @@ import static albergueperronclient.ui.controller.GenericController.LOGGER;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.scene.control.MenuItem;
 import javafx.stage.Stage;
 
 /**
@@ -82,6 +83,21 @@ public class UILogguedFXMLController extends GenericController {
      */
     @FXML
     private Button btnFTP;
+    
+    @FXML
+    private MenuItem menuGuest;
+    @FXML
+    private MenuItem menuPet;
+    @FXML
+    private MenuItem menuIncidences;
+    @FXML
+    private MenuItem menuStay;
+    @FXML
+    private MenuItem menuBlackList;
+    @FXML
+    private MenuItem menuLogOut;
+    @FXML
+    private MenuItem menuExit;
 
     /**
      * InitStage method for the UILogged view
@@ -103,6 +119,12 @@ public class UILogguedFXMLController extends GenericController {
         btnStay.setOnAction(this::openStaysView);
         // btnRoom.setOnAction(this::openRoomsView);
         btnFTP.setOnAction(this::openFTPView);
+        menuGuest.setOnAction(this::openGuestsView);
+        menuPet.setOnAction(this::openPetsView);
+        menuStay.setOnAction(this::openStaysView);
+        //menuBlackList.setOnAction(this::openBlackListView);
+        menuLogOut.setOnAction(this::logOut);
+        menuExit.setOnAction(this::exit);
 
         stage.show();
     }
@@ -203,10 +225,48 @@ public class UILogguedFXMLController extends GenericController {
 
             //Initialize the primary stage of the application
             ftpController.initStage(root);
+            stage.hide();
         } catch (IOException ex) {
             Logger.getLogger(UILogguedFXMLController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    public void logOut(ActionEvent event){
+        try{
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Cerrar Sesión");
+            alert.setContentText("¿Desea cerrar sesion?");        
+            Optional<ButtonType> result = alert.showAndWait();
+            if(result.get()== ButtonType.OK){
+                stage.close();
+                try{
+                    //Get the logic manager object for the initial stage
+                     ILogin loginManager = ILoginFactory.getLoginManager();
+
+                     //Load the fxml file
+                     FXMLLoader loader = new FXMLLoader(getClass()
+                             .getResource("/albergueperronclient/ui/fxml/UILogin.fxml"));
+                     Parent root = loader.load();
+                     //Get controller from the loader
+                     UILoginFXMLController loginController = loader.getController();
+                     /*Set a reference in the controller for the UILogin view for the logic manager object           
+                     */
+                     loginController.setLoginManager(loginManager);
+                     //Set a reference for Stage in the UILogin view controller
+                     loginController.setStage(stage);
+                     //Initialize the primary stage of the application
+                     loginController.initStage(root);
+
+                 }catch(Exception e){
+                     LOGGER.severe(e.getMessage());
+                 }  
+            }else{
+                LOGGER.info("Logout cancelled.");
+            } 
+        }catch(Exception ex){
+            LOGGER.severe(ex.getMessage());
+        }
+}
 
     /**
      * Method to exit the application
@@ -222,7 +282,7 @@ public class UILogguedFXMLController extends GenericController {
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get() == ButtonType.OK) {
                 LOGGER.info("Exiting the application.");
-                loginManager.close();
+                stage.close();
                 Platform.exit();
             } else {
                 LOGGER.info("Exit cancelled.");

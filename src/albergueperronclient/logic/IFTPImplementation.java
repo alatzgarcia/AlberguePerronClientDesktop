@@ -214,11 +214,7 @@ public class IFTPImplementation implements IFTP{
     @Override
     public void buildFileTree(TreeItem treeNode) throws IOException {
         
-        Node rootIcon1 =  new ImageView(new Image(getClass().getResourceAsStream
-            ("/albergueperronclient/root.png")));
-        Node rootIcon2 =  new ImageView(new Image(getClass().getResourceAsStream
-            ("/albergueperronclient/file.png"))); 
-    
+     
         FTPFile[] files = ftp.listFiles();
           
         for (FTPFile file : files) {
@@ -229,7 +225,8 @@ public class IFTPImplementation implements IFTP{
                 fileFTP.setPath(ftp.printWorkingDirectory()+'/');
                 fileFTP.setFile(true);
           
-                TreeItem<MyFile> treeItem=new TreeItem<MyFile>(fileFTP,rootIcon2);
+                TreeItem<MyFile> treeItem=new TreeItem<MyFile>(fileFTP,new ImageView(new Image(getClass().getResourceAsStream
+            ("/albergueperronclient/file.png"))));
                 treeNode.getChildren().add(treeItem);
              
 
@@ -239,7 +236,8 @@ public class IFTPImplementation implements IFTP{
                 ftp.changeWorkingDirectory(file.getName());
 
                 // create treeItem to represent new Directory
-                TreeItem newDir = new TreeItem<MyFile>(fileFTP,rootIcon1);
+                TreeItem newDir = new TreeItem<MyFile>(fileFTP,new ImageView(new Image(getClass().getResourceAsStream
+            ("/albergueperronclient/root.png"))));
                 // add directory to file tree
                 treeNode.getChildren().add(newDir);
                 // recursively call method to add files and directories to new directory

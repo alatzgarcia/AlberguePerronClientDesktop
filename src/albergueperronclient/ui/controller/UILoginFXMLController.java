@@ -156,9 +156,9 @@ public class UILoginFXMLController extends GenericController {
                 }
             }else if(user==null){
                 throw new IncorrectLoginException();
-           }else{
+            }else if(user.getPrivilege()!=Privilege.ADMIN){
                 showErrorAlert("Tiene que ser administrador para acceder");
-           }
+            }
             
         
         

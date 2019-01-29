@@ -15,5 +15,5 @@ import java.util.Collection;
 public interface IRegister {
     public void register(UserBean user);
     public void generateKey();
-    public byte[] encrypt(String pass);
+    
 }

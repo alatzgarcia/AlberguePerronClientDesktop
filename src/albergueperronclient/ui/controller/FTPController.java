@@ -6,7 +6,11 @@
 package albergueperronclient.ui.controller;
 
 import albergueperronclient.exceptions.FTPException;
+import albergueperronclient.logic.IFTP;
+import albergueperronclient.logic.IFTPFactory;
 import albergueperronclient.logic.IFTPImplementation;
+import albergueperronclient.logic.ILogin;
+import albergueperronclient.logic.ILoginFactory;
 import albergueperronclient.modelObjects.MyFile;
 import static albergueperronclient.ui.controller.GenericController.LOGGER;
 import java.io.File;
@@ -25,6 +29,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.event.EventType;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -32,6 +37,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
@@ -79,13 +85,22 @@ public class FTPController extends GenericController{
     @FXML
     private TreeView treeFile;
     @FXML
-    private TreeTableColumn columnFile;
+    private MenuItem menuGuests;
+    @FXML
+    private MenuItem menuPets;
+    @FXML
+    private MenuItem menuIncidences;
+    @FXML
+    private MenuItem menuStay;
+    @FXML
+    private MenuItem menuBlackList;
+    @FXML
+    private MenuItem menuLogOut;
+    @FXML
+    private MenuItem menuExit;
     
     private TreeItem<MyFile> rootItem;
-    private Node rootIcon1 =  new ImageView(new Image(getClass().getResourceAsStream
-            ("/albergueperronclient/root.png")));
-    private Node rootIcon2 =  new ImageView(new Image(getClass().getResourceAsStream
-            ("/albergueperronclient/file.png"))); 
+   
     
    
     /**
@@ -113,6 +128,12 @@ public class FTPController extends GenericController{
         btnCrear.setOnAction(this::createDir);
         btnDeleteD.setOnAction(this::deleteDir);
         btnBack.setOnAction(this::goBack);
+        menuGuests.setOnAction(this::openGuestsView);
+        menuPets.setOnAction(this::openPetsView);
+        menuStay.setOnAction(this::openStaysView);
+        //menuBlackList.setOnAction(this::openBlackListView);
+        menuLogOut.setOnAction(this::logOut);
+        menuExit.setOnAction(this::exit);
         treeFile.getSelectionModel().selectedItemProperty().addListener(this::itemSelected);
         
       
@@ -127,7 +148,8 @@ public class FTPController extends GenericController{
         rootF.setPath("/");
         rootF.setFile(false);
         rootF.setName("root");
-        rootItem = new TreeItem<MyFile>(rootF,rootIcon1);
+        rootItem = new TreeItem<MyFile>(rootF,new ImageView(new Image(getClass().getResourceAsStream
+            ("/albergueperronclient/root.png"))));
         rootItem.setExpanded(true);
 
         // set the tree root
@@ -140,7 +162,6 @@ public class FTPController extends GenericController{
         stage.setScene(scene);
         //Show primary window
         
-        //ftpManager.disconnect(ftp);
         stage.show();
         
 
@@ -194,7 +215,8 @@ public class FTPController extends GenericController{
         if(!txtFile.getText().equals("")){
             TreeItem<MyFile> itemSelected = (TreeItem<MyFile>) treeFile.getSelectionModel().getSelectedItem();
             MyFile file=ftpManager.uploadFile(txtFile.getText());
-            TreeItem<MyFile> fileToUpload = new TreeItem<MyFile>(file,rootIcon2);
+            TreeItem<MyFile> fileToUpload = new TreeItem<MyFile>(file,new ImageView(new Image(getClass().getResourceAsStream
+            ("/albergueperronclient/file.png"))));
             itemSelected.getChildren().add(fileToUpload);
             txtFile.setText("");
             treeFile.refresh();
@@ -233,7 +255,8 @@ public class FTPController extends GenericController{
         TreeItem<MyFile> itemSelected = (TreeItem<MyFile>) treeFile.getSelectionModel().getSelectedItem();
         
         MyFile file=ftpManager.createDirectory();
-        TreeItem<MyFile> directoryToCreate = new TreeItem<MyFile>(file,rootIcon1);
+        TreeItem<MyFile> directoryToCreate = new TreeItem<MyFile>(file,new ImageView(new Image(getClass().getResourceAsStream
+            ("/albergueperronclient/root.png"))));
         itemSelected.getChildren().add(directoryToCreate);
         treeFile.refresh();
        
@@ -294,7 +317,167 @@ public class FTPController extends GenericController{
      
      public void goBack(ActionEvent event){
          ftpManager.disconnect();
+         stage.close();
+         try {
+              FXMLLoader loader = new FXMLLoader(getClass()
+                        .getResource("/albergueperronclient/ui/fxml/UILoggedAdmin.fxml"));
+
+                Parent root= loader.load();
+                    
+                    //Get controller from the loader
+                    UILogguedFXMLController loggedController = loader.getController();
+                    /*Set a reference in the controller 
+                        for the UILogin view for the logic manager object           
+                    */
+                    loggedController.setUsersManager(usersManager);
+                    //Send the user to the controller
+                    //loggedController.setUser(user);
+                    //Send the current stage for coming back later
+                    //loggedController.setPreviousStage(stage);
+                    //Initialize the primary stage of the application
+                    loggedController.initStage(root);
+                    
+                    stage.hide();
+               
+                } catch (IOException ex) {
+                    LOGGER.severe(ex.getMessage());
+                }
      }
+     
+     public void openGuestsView(ActionEvent event) {
+
+        FXMLLoader loader = new FXMLLoader(getClass()
+                .getResource("/albergueperronclient/ui/fxml/UIGuest.fxml"));
+
+        try {
+            Parent root = loader.load();
+
+            //UsersManager usersManager = UserManagerFactory.createUserManager();
+            //Get controller from the loader
+            //UIGuestFXMLController loggedController = loader.getController();
+
+            //Initialize the primary stage of the application
+            //loggedController.initStage(root);
+        } catch (IOException ex) {
+            Logger.getLogger(UILogguedFXMLController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void openPetsView(ActionEvent event) {
+
+        FXMLLoader loader = new FXMLLoader(getClass()
+                .getResource("/albergueperronclient/ui/fxml/UIPet.fxml"));
+
+        try {
+            Parent root = loader.load();
+
+        } catch (IOException ex) {
+            Logger.getLogger(UILogguedFXMLController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void openStaysView(ActionEvent event) {
+
+        FXMLLoader loader = new FXMLLoader(getClass()
+                .getResource("/albergueperronclient/ui/fxml/UIStay.fxml"));
+
+        try {
+            Parent root = loader.load();
+
+            //UsersManager usersManager = UserManagerFactory.createUserManager();
+            //Get controller from the loader
+            UIStayController stayController = loader.getController();
+
+            //Initialize the primary stage of the application
+            //stayController.initStage(root);
+        } catch (IOException ex) {
+            Logger.getLogger(UILogguedFXMLController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void openFTPView(ActionEvent event) {
+
+        FXMLLoader loader = new FXMLLoader(getClass()
+                .getResource("/albergueperronclient/ui/fxml/UIBlackList.fxml"));
+
+        IFTP ftpManager = IFTPFactory.getIFTPImplementation();
+
+        try {
+            Parent root = loader.load();
+
+            //UsersManager usersManager = UserManagerFactory.createUserManager();
+            //Get controller from the loader
+            FTPController ftpController = loader.getController();
+            ftpController.setFtpManager(ftpManager);
+
+            //Initialize the primary stage of the application
+            ftpController.initStage(root);
+        } catch (IOException ex) {
+            Logger.getLogger(UILogguedFXMLController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void logOut(ActionEvent event){
+        try{
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Cerrar Sesión");
+            alert.setContentText("¿Desea cerrar sesion?");        
+            Optional<ButtonType> result = alert.showAndWait();
+            if(result.get()== ButtonType.OK){
+                stage.close();
+                try{
+                    //Get the logic manager object for the initial stage
+                     ILogin loginManager = ILoginFactory.getLoginManager();
+
+                     //Load the fxml file
+                     FXMLLoader loader = new FXMLLoader(getClass()
+                             .getResource("/albergueperronclient/ui/fxml/UILogin.fxml"));
+                     Parent root = loader.load();
+                     //Get controller from the loader
+                     UILoginFXMLController loginController = loader.getController();
+                     /*Set a reference in the controller for the UILogin view for the logic manager object           
+                     */
+                     loginController.setLoginManager(loginManager);
+                     //Set a reference for Stage in the UILogin view controller
+                     loginController.setStage(stage);
+                     //Initialize the primary stage of the application
+                     loginController.initStage(root);
+
+                 }catch(Exception e){
+                     LOGGER.severe(e.getMessage());
+                 }  
+            }else{
+                LOGGER.info("Logout cancelled.");
+            } 
+        }catch(Exception ex){
+            LOGGER.severe(ex.getMessage());
+        }
+}
+
+    /**
+     * Method to exit the application
+     *
+     * @param event event that has caused the call to the function
+     */
+    public void exit(ActionEvent event) {
+        try {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Cerrar aplicación");
+            alert.setContentText("¿Desea salir de la aplicación?");
+
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == ButtonType.OK) {
+                LOGGER.info("Exiting the application.");
+                stage.close();
+                Platform.exit();
+            } else {
+                LOGGER.info("Exit cancelled.");
+            }
+        } catch (Exception ex) {
+            LOGGER.severe(ex.getMessage());
+            showErrorAlert("Error al intentar cerrar la aplicación.");
+        }
+    }
 
 }
     

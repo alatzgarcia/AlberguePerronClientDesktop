@@ -20,7 +20,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.WindowEvent;
 import albergueperronclient.modelObjects.UserBean;
-import albergueperronclient.passwordGen.PasswordGenerator;
+import utils.PasswordGenerator;
 import static albergueperronclient.ui.controller.GenericController.LOGGER;
 import javafx.stage.Stage;
 /**

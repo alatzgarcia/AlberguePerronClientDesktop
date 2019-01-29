@@ -18,12 +18,7 @@ public interface ILogin {
      * @param id The id of the user
      * @return the user
      */
-    public UserBean getUserById(String id);
-    /**
-     * Method for the login of the user
-     * @param userBean
-     * @return the user
-     */
+  
     public UserBean login(UserBean userBean);
     /**
      * 

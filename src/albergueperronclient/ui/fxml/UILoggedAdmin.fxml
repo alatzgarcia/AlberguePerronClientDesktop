@@ -15,7 +15,7 @@
                   <MenuItem fx:id="menuGuest" mnemonicParsing="false" text="Huéspedes" />
                   <MenuItem fx:id="menuPet" mnemonicParsing="false" text="Mascotas" />
                   <MenuItem fx:id="menuIncidences" mnemonicParsing="false" text="Incidencias" />
-                  <MenuItem fx:id="menuRoom" mnemonicParsing="false" text="Estancias" />
+                  <MenuItem fx:id="menuStay" mnemonicParsing="false" text="Estancias" />
                   <MenuItem fx:id="menuBlackList" mnemonicParsing="false" text="Lista Negra" />
             </items>
           </Menu>

@@ -66,10 +66,9 @@ public class IRegisterImplementation implements IRegister{
     @Override
     public void register(UserBean userBean) {
         
-        byte[] encryptedPass =encrypt(userBean.getPassword());
-        
-        String passString= DatatypeConverter.printHexBinary(encryptedPass);
-        userBean.setPassword(passString);
+        String encryptedPass =encrypt(userBean.getPassword());
+    
+        userBean.setPassword(encryptedPass);
        
         try{
           
@@ -118,7 +117,8 @@ public class IRegisterImplementation implements IRegister{
 
 	}
 
-    public byte[] encrypt(String pass){
+
+    public String encrypt(String pass){
             FileInputStream fis;
             byte[] encodedMessage = null;
 		try {
@@ -159,7 +159,7 @@ public class IRegisterImplementation implements IRegister{
 		} catch (BadPaddingException e) {
 			e.printStackTrace();
 		}
-        return encodedMessage;
+        return DatatypeConverter.printHexBinary(encodedMessage);
     }
 
     
