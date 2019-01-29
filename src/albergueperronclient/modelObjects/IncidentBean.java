@@ -18,7 +18,7 @@ public class IncidentBean implements Serializable {
     private String incidentType;
     private List<UserBean> implicateds;
     private String description;
-    private Room room;
+    private RoomBean room;
 
     public Integer getId() {
         return id;
@@ -80,7 +80,7 @@ public class IncidentBean implements Serializable {
      * Gets the room of the incident
      * @return the room
      */
-    public Room getRoom() {
+    public RoomBean getRoom() {
         return room;
     }
 
@@ -88,7 +88,7 @@ public class IncidentBean implements Serializable {
      * Sets the room of the incident
      * @param room the room to set
      */
-    public void setRoom(Room room) {
+    public void setRoom(RoomBean room) {
         this.room = room;
     }
 

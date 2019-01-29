@@ -11,7 +11,7 @@ import albergueperronclient.logic.RoomManagerFactory;
 import albergueperronclient.logic.StayManagerFactory;
 import albergueperronclient.logic.StaysManager;
 import albergueperronclient.logic.UserManagerFactory;
-import albergueperronclient.modelObjects.Room;
+import albergueperronclient.modelObjects.RoomBean;
 import albergueperronclient.modelObjects.StayBean;
 import albergueperronclient.modelObjects.UserBean;
 import static albergueperronclient.ui.controller.GenericController.LOGGER;
@@ -89,14 +89,14 @@ public class UIStayFXMLController extends GenericController{
     @FXML
     private ComboBox<UserBean> cbGuest;
     @FXML
-    private ComboBox<Room> cbRoom;
+    private ComboBox<RoomBean> cbRoom;
     @FXML
     private TextField txtDate;
     @FXML
     private Button btnDateToToday;
     private ObservableList<StayBean> staysData;
     ObservableList<UserBean> guests;
-    ObservableList<Room> rooms;
+    ObservableList<RoomBean> rooms;
     private StayBean stay;
     private int visible=1;
     private int invisible=2;
@@ -132,16 +132,16 @@ public class UIStayFXMLController extends GenericController{
             
             //Insert the data at cbs
             guests=FXCollections.observableArrayList(usersManager.getAllUsers());
-            //rooms=FXCollections.observableArrayList(roomsManager.findAllRooms());
-
+            rooms=FXCollections.observableArrayList(roomsManager.findRoomsWithAvailableSpace());
+            
             //Insert the combo
             cbGuest.setItems(guests);
             cbRoom.setItems(rooms);
         }catch(BusinessLogicException ble){
             LOGGER.severe(ble.getMessage());
-        }/*catch(ReadException re){
+        }catch(ReadException re){
             LOGGER.severe(re.getMessage());
-        }*/
+        }
         
         //Sets the selection listener
         tableStay.getSelectionModel().selectedItemProperty().addListener(this::handleUserTableFocus);
@@ -161,6 +161,7 @@ public class UIStayFXMLController extends GenericController{
             StayBean stay=(StayBean)newValue;
             cbGuest.getSelectionModel().select(tableStay.getSelectionModel().getSelectedItem().getGuest());
             cbRoom.getSelectionModel().select(tableStay.getSelectionModel().getSelectedItem().getRoom());
+            txtDate.setText(tableStay.getSelectionModel().getSelectedItem().getDate().toString());
             
             //Enables the correspondent buttons
             btnDelete.setDisable(false);
@@ -176,7 +177,7 @@ public class UIStayFXMLController extends GenericController{
             alert.setContentText("¿Desea borrar la estancia?");    
             Optional<ButtonType> result = alert.showAndWait();
             if(result.get()== ButtonType.OK){
-                usersManager.deleteUser(tableStay.getSelectionModel().getSelectedItem().getId().toString());
+                staysManager.deleteStay(tableStay.getSelectionModel().getSelectedItem().getId().toString());
                 tableStay.getItems().remove(tableStay.getSelectionModel().getSelectedItem());
                 tableStay.refresh();
             }else if(result.get()==ButtonType.CANCEL){
@@ -207,7 +208,6 @@ public class UIStayFXMLController extends GenericController{
         btnDelete.setDisable(true);
         btnModify.setDisable(true);
         btnNew.setDisable(true);
-        
         try{
                 staysManager.updateStay(getStayFromFields(),tableStay.getSelectionModel().getSelectedItem().getId().toString());
                 tableStay.getItems().remove(tableStay.getSelectionModel().getSelectedItem());
@@ -226,7 +226,7 @@ public class UIStayFXMLController extends GenericController{
             }
     }
     
-    public void newStay(EventListener event){
+    public void newStay(ActionEvent event){
         btnInsert.setVisible(true);
         btnInsert.setDisable(false);
         btnModify.setDisable(true);
@@ -276,6 +276,9 @@ public class UIStayFXMLController extends GenericController{
         fieldChange(clean);
         fieldChange(disable);
         fieldChange(invisible);
+        
+        btnNew.setOnAction(this::newStay);
+        btnCancel.setOnAction(this::cancel);
     }
     
      public void fieldChange(int change){
@@ -319,17 +322,41 @@ public class UIStayFXMLController extends GenericController{
         stay= new StayBean();
         
         //Sets the attributes with the fields
-        SimpleDateFormat parser=new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy");
-        //Date date = parser.parse(txtDate.getText());
+        /*SimpleDateFormat parser=new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy");
+        Date date = parser.parse(txtDate.getText().toString());
         
-        /*SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         String formattedDate = formatter.format(date);
 
-        stay.setDate(date);
+        stay.setDate(date);*/
         stay.setGuest(cbGuest.getValue());
         stay.setRoom(cbRoom.getValue());
         stay.setId(tableStay.getSelectionModel().getSelectedItem().getId());
-        */
+        
         return stay;
+    }
+    
+    public void cancel(ActionEvent event){
+        try{
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION.CONFIRMATION);
+            alert.setTitle("Cancelar");
+            alert.setContentText("¿Desea cancelar la operación?");    
+            Optional<ButtonType> result = alert.showAndWait();
+            if(result.get()== ButtonType.OK){
+                tableStay.getSelectionModel().clearSelection();
+                fieldChange(invisible);
+                fieldChange(clean);
+                btnCancel.setDisable(true);
+                btnSaveChanges.setVisible(false);
+                btnInsert.setVisible(false);
+                btnSaveChanges.setDisable(true);
+                btnInsert.setDisable(true);
+                btnNew.setDisable(false);
+            }else if(result.get()==ButtonType.CANCEL){
+                alert.close();
+            }
+        } catch(Exception ex){
+            LOGGER.severe(ex.getMessage());
+        }
     }
 }

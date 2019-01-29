@@ -13,7 +13,7 @@ import albergueperronclient.logic.RoomManagerFactory;
 import albergueperronclient.logic.UsersManager;
 //import albergueperronclient.logic.UsersManagerFactory;
 import albergueperronclient.modelObjects.Privilege;
-import albergueperronclient.modelObjects.Room;
+import albergueperronclient.modelObjects.RoomBean;
 import albergueperronclient.modelObjects.UserBean;
 import albergueperronclient.modelObjects.Status;
 import static albergueperronclient.ui.controller.GenericController.LOGGER;
@@ -89,7 +89,7 @@ public class UIRoomFXMLController extends GenericController {
     private TableView tableRoom;
     
     private RoomManager roomManager;
-    private Room selectedRoom;
+    private RoomBean selectedRoom;
     
     public void setLogicManager(RoomManager roomManager){
         this.roomManager = roomManager;
@@ -111,7 +111,7 @@ public class UIRoomFXMLController extends GenericController {
             //set window's events handlers
             stage.setOnShowing(this::handleWindowShowing);
         
-            ObservableList<Room> rooms =
+            ObservableList<RoomBean> rooms =
                     FXCollections.observableArrayList(roomManager.findAllRooms());
         
             columnRoomNum.setCellValueFactory(
@@ -173,7 +173,7 @@ public class UIRoomFXMLController extends GenericController {
     public void updateRoom(ActionEvent event){
         try{
             if(checkForData()){
-                Room roomToModify = selectedRoom;
+                RoomBean roomToModify = selectedRoom;
                 roomToModify.setTotalSpace(Integer.parseInt(txtTotal.getText()));
                 roomToModify.setStatus((Status)cbStatus.getSelectionModel().getSelectedItem());
                 roomManager.updateRoom(roomToModify);
@@ -372,7 +372,7 @@ public class UIRoomFXMLController extends GenericController {
              Object oldValue,
              Object newValue){
         if(newValue!=null){            
-            selectedRoom = (Room)newValue;
+            selectedRoom = (RoomBean)newValue;
             txtTotal.setText(selectedRoom.getTotalSpace().toString());
             cbStatus.getSelectionModel().select(selectedRoom.getStatus());
             lblAvailableSpace.setText(selectedRoom.getAvailableSpace().toString());

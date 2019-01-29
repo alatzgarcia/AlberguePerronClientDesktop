@@ -9,7 +9,7 @@ import albergueperronclient.exceptions.CreateException;
 import albergueperronclient.exceptions.DeleteException;
 import albergueperronclient.exceptions.ReadException;
 import albergueperronclient.exceptions.UpdateException;
-import albergueperronclient.modelObjects.Room;
+import albergueperronclient.modelObjects.RoomBean;
 import java.util.List;
 
 /**
@@ -17,10 +17,10 @@ import java.util.List;
  * @author Alatz
  */
 public interface RoomManager {
-    public Room findRoomById(Integer roomNum) throws ReadException;
-    public List<Room> findAllRooms() throws ReadException;
-    public List<Room> findRoomsWithAvailableSpace() throws ReadException;
-    public void createRoom(Room room) throws CreateException;
-    public void updateRoom(Room room) throws UpdateException;
+    public RoomBean findRoomById(Integer roomNum) throws ReadException;
+    public List<RoomBean> findAllRooms() throws ReadException;
+    public List<RoomBean> findRoomsWithAvailableSpace() throws ReadException;
+    public void createRoom(RoomBean room) throws CreateException;
+    public void updateRoom(RoomBean room) throws UpdateException;
     public void deleteRoom(Integer roomNum) throws DeleteException;
 }

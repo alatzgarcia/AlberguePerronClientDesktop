@@ -6,6 +6,7 @@
 package albergueperronclient.modelObjects;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleListProperty;
@@ -19,24 +20,26 @@ import javax.xml.bind.annotation.XmlTransient;
  *
  * @author Alatz
  */
-@XmlRootElement(name="room")
-public class Room implements Serializable {
+@XmlRootElement(name="stayRoom")
+public class RoomBean implements Serializable {
     private static long serialVersionUID = 1L;
     private SimpleIntegerProperty roomNum;
     private SimpleIntegerProperty totalSpace;
     private SimpleIntegerProperty availableSpace;
     private SimpleObjectProperty<Status> status;
-    private SimpleListProperty<IncidentBean> incidents;
-    private SimpleListProperty<StayBean> stays;
+    private List<IncidentBean> incidents;
+    private List<StayBean> stays;
     
-    public Room(){
+    public RoomBean(){
         this.roomNum = new SimpleIntegerProperty();
         this.totalSpace = new SimpleIntegerProperty();
         this.availableSpace = new SimpleIntegerProperty();
         this.status = new SimpleObjectProperty<Status>();
+        this.incidents=new ArrayList<IncidentBean>();
+        this.stays=new ArrayList<StayBean>();
     }
     
-    public Room(SimpleIntegerProperty roomNum, SimpleIntegerProperty totalSpace, SimpleIntegerProperty availableSpace, SimpleObjectProperty status) {
+    public RoomBean(SimpleIntegerProperty roomNum, SimpleIntegerProperty totalSpace, SimpleIntegerProperty availableSpace, SimpleObjectProperty status) {
         this.roomNum = roomNum;
         this.totalSpace = totalSpace;
         this.availableSpace = availableSpace;
@@ -103,7 +106,8 @@ public class Room implements Serializable {
     /**
      * @return the incidents
      */
-    public SimpleListProperty<IncidentBean> getIncidents() {
+    @XmlTransient
+    public List<IncidentBean> getIncidents() {
         //--TOFIX
         return this.incidents;
     }
@@ -111,14 +115,15 @@ public class Room implements Serializable {
     /**
      * @param incidents the incidents to set
      */
-    public void setIncidents(SimpleListProperty<IncidentBean> incidents) {
-        this.incidents.set(incidents);
+    public void setIncidents(List<IncidentBean> incidents) {
+        this.incidents=incidents;
     }
 
     /**
      * @return the stays
      */
-    public SimpleListProperty<StayBean> getStays() {
+    @XmlTransient
+    public List<StayBean> getStays() {
         //--TOFIX
         return this.stays;
     }
@@ -126,8 +131,8 @@ public class Room implements Serializable {
     /**
      * @param stays the stays to set
      */
-    public void setStays(SimpleListProperty<StayBean> stays) {
-        this.stays.set(stays);
+    public void setStays(List<StayBean> stays) {
+        this.stays=stays;
     }
     
     @Override
@@ -140,10 +145,10 @@ public class Room implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Room)) {
+        if (!(object instanceof RoomBean)) {
             return false;
         }
-        Room other = (Room) object;
+        RoomBean other = (RoomBean) object;
         if ((this.getRoomNum() == null && other.getRoomNum() != null) || 
                 (this.getRoomNum() != null && !this.roomNum.equals(other.roomNum))) {
             return false;

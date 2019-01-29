@@ -26,7 +26,7 @@ public class RoomRESTClient {
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/albergueperronserver/webresources";
+    private static final String BASE_URI = "http://localhost:8080/alberguePerronServer/webresources";
 
     public RoomRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
