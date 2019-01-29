@@ -12,6 +12,8 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -156,8 +158,7 @@ public class IncidentBean implements Serializable {
         return employee;
     }
     
-    public List<UserBean> getGuests(){
-        //UserBean emp = null;
+    public ObservableList<UserBean> getGuests(){
         List<UserBean> guests = new ArrayList<UserBean>();
         List<UserBean> users = this.getImplicateds();
         for(UserBean u: users){
@@ -165,6 +166,7 @@ public class IncidentBean implements Serializable {
                 guests.add(u); 
             }
         }
-        return guests;
+        ObservableList guestsObservable = FXCollections.observableArrayList(guests);
+        return guestsObservable;
     }
 }

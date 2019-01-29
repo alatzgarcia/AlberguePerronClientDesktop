@@ -160,7 +160,6 @@ public class IncidentFXMLController extends GenericController {
             ObservableList<UserBean> guests =
                     FXCollections.observableArrayList(userManager.findUsersByPrivilege(Privilege.USER));
             cbGuests.setItems(guests);
-            
             //--TOFIX Coger datos para la tabla
             ObservableList<IncidentBean> incidents = 
                     FXCollections.observableArrayList(incidentManager.findAllIncidents());
@@ -172,13 +171,14 @@ public class IncidentFXMLController extends GenericController {
             btnDelete.setOnAction(this::deleteIncident);
             btnModify.setOnAction(this::enableUpdateIncidentForm);
             btnInsert.setOnAction(this::createIncident);
-            btnReturn.setOnAction(this::returnToPrevious);
+            btnReturn.setOnAction(this::returnToMenu);
             btnListAdd.setOnAction(this::addToList);
             btnListRemove.setOnAction(this::removeFromList);
             menuGuests.setOnAction(this::goToGuestsView);
             menuPets.setOnAction(this::goToPetsView);
             menuStays.setOnAction(this::goToStaysView);
             menuBlackList.setOnAction(this::goToBlackListView);
+            menuRoom.setOnAction(this::goToRoomView);
             menuLogOut.setOnAction(this::logOut);
             menuExit.setOnAction(this::exit);
             
@@ -229,6 +229,7 @@ public class IncidentFXMLController extends GenericController {
         //btnInsert.setDisable(false);
         btnInsert.setVisible(true);
         btnCancel.setDisable(false);
+        btnNew.setDisable(true);
         txtIncidentType.setDisable(false);
         txtDescription.setDisable(false);
         lstImplicateds.setDisable(false);
@@ -272,13 +273,14 @@ public class IncidentFXMLController extends GenericController {
                 btnCancel.setDisable(true);
                 btnInsert.setDisable(true);
                 btnInsert.setVisible(false);
+                btnNew.setDisable(false);
                 txtDescription.setText("");
                 txtDescription.setDisable(true);
                 txtIncidentType.setText("");
                 txtIncidentType.setDisable(true);
-                cbEmployee.setItems(null);
+                cbEmployee.getSelectionModel().clearSelection();
                 cbEmployee.setDisable(true);
-                lstImplicateds.setItems(null);
+                //lstImplicateds.setItems(null);
                 lstImplicateds.setDisable(true);
                 cbRoom.getSelectionModel().selectFirst();
                 cbRoom.setDisable(true);
@@ -288,6 +290,7 @@ public class IncidentFXMLController extends GenericController {
             
                 tableIncidents.getItems().add(newIncident);
                 tableIncidents.setDisable(false); 
+                tableIncidents.refresh();
             } else{
                 //--TOFIX --> Advertir al usuario de que se requieren todos los datos introducidos para poder crear un nuevo incidente
             }
@@ -300,6 +303,7 @@ public class IncidentFXMLController extends GenericController {
     
     public void disposeIncidentForm(ActionEvent event){
         if(btnInsert.isVisible()){
+            btnNew.setDisable(false);
             cbEmployee.getSelectionModel().clearSelection();
             cbRoom.getSelectionModel().clearSelection();
             cbGuests.getSelectionModel().clearSelection();
@@ -313,6 +317,7 @@ public class IncidentFXMLController extends GenericController {
             lstImplicateds.setItems(FXCollections.observableArrayList(selectedIncident.getGuests()));
             txtDescription.setText(selectedIncident.getDescription());
             txtIncidentType.setText(selectedIncident.getIncidentType());
+            btnDelete.setDisable(true);
         }
         
         btnSaveChanges.setDisable(true);
@@ -342,6 +347,7 @@ public class IncidentFXMLController extends GenericController {
         btnListAdd.setDisable(false);
         btnListRemove.setDisable(false);
         btnNew.setDisable(true);
+        btnDelete.setDisable(true);
         
         txtIncidentType.setDisable(false);
         txtDescription.setDisable(false);
@@ -357,6 +363,7 @@ public class IncidentFXMLController extends GenericController {
         
         selectedIncident.getDescription();
         tableIncidents.setDisable(true);
+        //tableIncidents.getSelectionModel().clearSelection();
     }
     
     public void updateIncident(ActionEvent event){
@@ -366,32 +373,36 @@ public class IncidentFXMLController extends GenericController {
                 IncidentBean incidentToModify = selectedIncident;
                 incidentToModify.setDescription(txtDescription.getText());
                 //--TOFIX -- Conseguir loopear la selección de combobox de empleado + lista de implicados
-                List<UserBean> implicateds = lstImplicateds.getItems();
+                List<UserBean> implicateds = new ArrayList<UserBean>();
+                implicateds.addAll(lstImplicateds.getItems());
                 implicateds.add((UserBean)cbEmployee.getSelectionModel().getSelectedItem());
                 incidentToModify.setImplicateds(implicateds);
                 incidentToModify.setIncidentType(txtIncidentType.getText());
                 incidentToModify.setRoom((RoomBean)cbRoom.getSelectionModel().getSelectedItem());
                 incidentManager.updateIncident(incidentToModify);
-            
+                
                 btnCancel.setDisable(true);
                 btnSaveChanges.setDisable(true);
                 btnSaveChanges.setVisible(false);
-                txtDescription.setText("");
+                //txtDescription.setText("");
                 txtDescription.setDisable(true);
-                txtIncidentType.setText("");
+                //txtIncidentType.setText("");
                 txtIncidentType.setDisable(true);
                 //cbEmployee.setItems(null);
                 cbEmployee.setDisable(true);
-                lstImplicateds.setItems(null);
+                //lstImplicateds.setItems(null);
                 lstImplicateds.setDisable(true);
+                //lstImplicateds.getSelectionModel().clearSelection();
                 cbRoom.getSelectionModel().selectFirst();
                 cbRoom.setDisable(true);
                 btnListAdd.setDisable(true);
                 btnListRemove.setDisable(true);
                 cbGuests.setDisable(true);
                 btnNew.setDisable(false);
+                btnDelete.setDisable(false);
             
             tableIncidents.refresh();
+            //tableIncidents.getSelectionModel().clearSelection();
             tableIncidents.setDisable(false);
             }
             else{
@@ -406,9 +417,10 @@ public class IncidentFXMLController extends GenericController {
     
     public void deleteIncident(ActionEvent event){
         try{
-            tableIncidents.getItems().remove(selectedIncident);
+            
             incidentManager.deleteIncident(selectedIncident.getId());
-            //tableIncidents.refresh();
+            tableIncidents.getItems().remove(selectedIncident);
+            tableIncidents.refresh();
         }catch(DeleteException de){
             //--TOFIX --> Exception handling
         }catch(Exception ex){
@@ -437,7 +449,7 @@ public class IncidentFXMLController extends GenericController {
             //--TOFIX --> Loopear items en la lista de implicados para comprobar si el que el método ha recibido se encuentra ya en dicha lista
             for(int i = 0; i < lstImplicateds.getItems().size(); i++){
                 //--TOFIX --> Programar metodo equals del UserBean para comparar dos usuarios
-                if(lstImplicateds.getItems().get(i).equals(cbGuests.getSelectionModel().getSelectedItem())){
+                if(cbGuests.getSelectionModel().getSelectedItem().equals(lstImplicateds.getItems().get(i))){
                     alreadyOnList = true;
                     break;
                 }
@@ -453,10 +465,34 @@ public class IncidentFXMLController extends GenericController {
         lstImplicateds.getItems().remove(lstImplicateds.getSelectionModel().getSelectedItem());
     }
     
-    public void returnToPrevious(ActionEvent event){
+    public void returnToMenu(ActionEvent event){
+        /*try{
+            FXMLLoader loader = new FXMLLoader(getClass()
+                    .getResource("/albergueperronclient/ui/fxml/UILogged.fxml"));
+            Parent root = loader.load();
+            //Get controller from the loader
+            UILoggedFXMLController menuController = loader.getController();
+        
+            menuController.setLogicManager(UILoggedManagerFactory.getLoggedManager());
+            //Send the current stage for coming back later
+            //roomController.setPreviousStage(stage);
+            //Initialize the primary stage of the application
+            menuController.initStage(root);
+            //--TOFIX --> Decidir si esconder el stage o cerrarlo
+            stage.hide();
+            stage.close();
+        }catch(Exception e){
+            LOGGER.severe(e.getMessage());
+            showErrorAlert("Error al redirigir al menú.");
+        }*/
+        //-- TOFIX
+        Platform.exit();
+    }
+    
+    /*public void returnToPrevious(ActionEvent event){
         stage.close();
         previousStage.show();
-    }
+    }*/
     
     public void logOut(ActionEvent event){
         try{
@@ -487,7 +523,7 @@ public class IncidentFXMLController extends GenericController {
         //calls the logicManager register functio
         /*try{
             FXMLLoader loader = new FXMLLoader(getClass()
-                    .getResource("/signupsigninuidesktop/ui/fxml/UIGuestFXMLController.fxml"));
+                    .getResource("/albergueperronclient/ui/fxml/UIGuest.fxml"));
             Parent root = loader.load();
             //Get controller from the loader
             UIGuestFXMLController guestController = loader.getController();
@@ -509,7 +545,7 @@ public class IncidentFXMLController extends GenericController {
     public void goToPetsView(ActionEvent event){
          /*try{
             FXMLLoader loader = new FXMLLoader(getClass()
-                    .getResource("/signupsigninuidesktop/ui/fxml/UIPetFXMLController.fxml"));
+                    .getResource("/albergueperronclient/ui/fxml/UIPet.fxml"));
             Parent root = loader.load();
             //Get controller from the loader
             UIPetFXMLController petController = loader.getController();
@@ -531,7 +567,7 @@ public class IncidentFXMLController extends GenericController {
     public void goToStaysView(ActionEvent event){
         /*try{
             FXMLLoader loader = new FXMLLoader(getClass()
-                    .getResource("/signupsigninuidesktop/ui/fxml/UIStayFXMLController.fxml"));
+                    .getResource("/albergueperronclient/ui/fxml/UIStay.fxml"));
             Parent root = loader.load();
             //Get controller from the loader
             UIStayFXMLController stayController = loader.getController();
@@ -553,7 +589,7 @@ public class IncidentFXMLController extends GenericController {
     public void goToBlackListView(ActionEvent event){
         /*try{
             FXMLLoader loader = new FXMLLoader(getClass()
-                    .getResource("/signupsigninuidesktop/ui/fxml/UIBlackListFXMLController.fxml"));
+                    .getResource("/albergueperronclient/ui/fxml/UIBlackList.fxml"));
             Parent root = loader.load();
             //Get controller from the loader
             UIBlackListFXMLController blackListController = loader.getController();
@@ -575,14 +611,14 @@ public class IncidentFXMLController extends GenericController {
     public void goToRoomView(ActionEvent event){
         try{
             FXMLLoader loader = new FXMLLoader(getClass()
-                    .getResource("/signupsigninuidesktop/ui/fxml/RoomFXMLController.fxml"));
+                    .getResource("/albergueperronclient/ui/fxml/Room.fxml"));
             Parent root = loader.load();
             //Get controller from the loader
             RoomFXMLController roomController = loader.getController();
         
             roomController.setLogicManager(RoomManagerFactory.getRoomManager());
             //Send the current stage for coming back later
-            roomController.setPreviousStage(stage);
+            //roomController.setPreviousStage(stage);
             //Initialize the primary stage of the application
             roomController.initStage(root);
             //--TOFIX --> Decidir si esconder el stage o cerrarlo
@@ -590,7 +626,7 @@ public class IncidentFXMLController extends GenericController {
             stage.close();
         }catch(Exception e){
             LOGGER.severe(e.getMessage());
-            showErrorAlert("Error al redirigir a la vista de estancias.");
+            showErrorAlert("Error al redirigir a la vista de habitaciones.");
         }
     }
     
@@ -618,8 +654,8 @@ public class IncidentFXMLController extends GenericController {
             cbRoom.getSelectionModel().select(selectedIncident.getRoom());
             
             cbEmployee.getSelectionModel().select(selectedIncident.getEmployee());
-            lstImplicateds.setItems(FXCollections.observableArrayList(selectedIncident.getGuests()));
-            
+            //lstImplicateds.setItems(FXCollections.observableArrayList(selectedIncident.getGuests()));
+            lstImplicateds.setItems(selectedIncident.getGuests());
             btnModify.setDisable(false);
             btnDelete.setDisable(false);
             
@@ -634,7 +670,7 @@ public class IncidentFXMLController extends GenericController {
             cbEmployee.getSelectionModel().clearSelection();
             cbRoom.getSelectionModel().clearSelection();
             cbGuests.getSelectionModel().clearSelection();
-            //lstImplicateds.getSelectionModel().clearSelection();
+            lstImplicateds.getSelectionModel().clearSelection();
             lstImplicateds.getItems().clear();
             btnModify.setDisable(true);
             btnDelete.setDisable(true);

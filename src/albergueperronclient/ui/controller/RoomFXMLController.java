@@ -5,18 +5,23 @@
  */
 package albergueperronclient.ui.controller;
 
+import albergueperronclient.exceptions.UpdateException;
 import albergueperronclient.logic.IncidentManager;
 import albergueperronclient.logic.IncidentManagerFactory;
 import albergueperronclient.logic.RoomManager;
 import albergueperronclient.logic.RoomManagerFactory;
 import albergueperronclient.logic.UsersManager;
 import albergueperronclient.logic.UsersManagerFactory;
+import albergueperronclient.modelObjects.Privilege;
 import albergueperronclient.modelObjects.RoomBean;
 import albergueperronclient.modelObjects.UserBean;
+import albergueperronclient.modelObjects.Status;
 import static albergueperronclient.ui.controller.GenericController.LOGGER;
 import java.util.Optional;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -28,7 +33,9 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -78,37 +85,66 @@ public class RoomFXMLController extends GenericController {
     private MenuItem menuLogOut;
     @FXML
     private MenuItem menuExit;
+    @FXML
+    private TableView tableRoom;
     
     private RoomManager roomManager;
+    private RoomBean selectedRoom;
     
     public void setLogicManager(RoomManager roomManager){
         this.roomManager = roomManager;
     }
     
     /**
-     * InitStage method for the UILogin view
+     * InitStage method for the Room view
      * @param root 
      */
     public void initStage(Parent root){
-        //Create scene
-        Scene scene = new Scene(root);
-        stage = new Stage();
-         //Associate scene to stage
-        stage.setScene(scene);
-        stage.setTitle("Room");
-        stage.setResizable(false);
-        //set window's events handlers
-        stage.setOnShowing(this::handleWindowShowing);
+        try{
+            //Create scene
+            Scene scene = new Scene(root);
+            stage = new Stage();
+            //Associate scene to stage
+            stage.setScene(scene);
+            stage.setTitle("Room");
+            stage.setResizable(false);
+            //set window's events handlers
+            stage.setOnShowing(this::handleWindowShowing);
         
-        txtTotal.textProperty().addListener(this::onTextChanged);
-        menuGuest.setOnAction(this::goToGuestsView);
-        menuPet.setOnAction(this::goToPetsView);
-        menuStay.setOnAction(this::goToStaysView);
-        menuBlackList.setOnAction(this::goToBlackListView);
-        menuLogOut.setOnAction(this::logOut);
-        menuExit.setOnAction(this::exit);
+            ObservableList<RoomBean> rooms =
+                    FXCollections.observableArrayList(roomManager.findAllRooms());
         
-        stage.show();
+            columnRoomNum.setCellValueFactory(
+                    new PropertyValueFactory<>("roomNum"));
+            columnTotal.setCellValueFactory(
+                    new PropertyValueFactory<>("totalSpace"));
+            columnFree.setCellValueFactory(
+                    new PropertyValueFactory<>("availableSpace"));
+            columnStatus.setCellValueFactory(
+                    new PropertyValueFactory<>("status"));
+            
+            tableRoom.setItems(rooms);
+            
+            cbStatus.setItems(FXCollections.observableArrayList(Status.values()));
+            
+            menuGuest.setOnAction(this::goToGuestsView);
+            menuPet.setOnAction(this::goToPetsView);
+            menuStay.setOnAction(this::goToStaysView);
+            menuBlackList.setOnAction(this::goToBlackListView);
+            menuLogOut.setOnAction(this::logOut);
+            menuExit.setOnAction(this::exit);
+            btnReturn.setOnAction(this::returnToMenu);
+            btnModify.setOnAction(this::enableUpdateForm);
+            btnSaveChanges.setOnAction(this::updateRoom);
+            btnCancel.setOnAction(this::disposeUpdateForm);
+            tableRoom.getSelectionModel().selectedItemProperty().
+                    addListener(this::onTableSelectionChanged);
+            txtTotal.textProperty().addListener(this::onTextChanged);
+        
+            stage.show();
+        } catch(Exception ex){
+            
+        }
     }
     
     /**
@@ -123,70 +159,70 @@ public class RoomFXMLController extends GenericController {
         txtTotal.setDisable(true);
         cbStatus.setDisable(true);
         menuIncidents.setDisable(true);
-        /*btnLogin.setDisable(true);
-        btnLogin.setMnemonicParsing(true);
-        btnLogin.setText("_Iniciar Sesión");
-        btnExit.setMnemonicParsing(true);
-        btnExit.setText("_Salir");
-        txtUsername.requestFocus();*/
-        //Settear promptText
     }
     
-    /**
-     * Method for the login of a user
-     * @param event 
-     */
-    /*public void login(ActionEvent event){
-        
-        try{
-            //Sends a user to the logic controller with the entered parameters
-            logicManager.login(new UserBean(txtUsername.getText(), 
-                    pfPassword.getText()));
-            FXMLLoader loader = new FXMLLoader(getClass()
-                    .getResource("/signupsigninuidesktop/ui/fxml/UILogged.fxml"));
-            Parent root = loader.load();
-            //Get controller from the loader
-            UILoggedFXMLController loggedController = loader.getController();
-            loggedController.setLogicManager(logicManager);
-            //Initialize the primary stage of the application
-            loggedController.initStage(root);
-            
-            stage.hide();
-        } catch(IncorrectLoginException ile){
-            LOGGER.info("Error. Incorrect login.");
-            txtUsername.setStyle("-fx-border-color: red");
-            showErrorAlert(ile.getMessage());
-        } catch(IncorrectPasswordException ipe){
-            LOGGER.info("Error.Incorrect password.");
-            pfPassword.setStyle("-fx-border-color: red");
-            showErrorAlert(ipe.getMessage());
-        } catch(Exception e){
-            LOGGER.info(e.getMessage());
-            showErrorAlert("Error en el inicio de sesión.");
-        }
-    }*/
+    public void enableUpdateForm(ActionEvent event){
+        txtTotal.setDisable(false);
+        btnCancel.setDisable(false);
+        btnSaveChanges.setDisable(false);
+        cbStatus.setDisable(false);
+        btnModify.setDisable(true);
+        tableRoom.setDisable(true);
+    }
     
-    /**
-     * Method for the register of a new user
-     * @param event 
-     */
-    /*public void register(ActionEvent event){
-        //calls the logicManager register functio
+    public void updateRoom(ActionEvent event){
         try{
-            FXMLLoader loader = new FXMLLoader(getClass()
-                    .getResource("/signupsigninuidesktop/ui/fxml/UIRegister.fxml"));
-            Parent root = loader.load();
-            //Get controller from the loader
-            UIRegisterFXMLController registerController = loader.getController();
-            registerController.setLogicManager(logicManager);
-            //Initialize the primary stage of the application
-            registerController.initStage(root);
-            
-            stage.hide();
-        }catch(Exception e){
-            LOGGER.info(e.getMessage());
-            showErrorAlert("Error al redirigir al registro de usuario.");
+            if(checkForData()){
+                RoomBean roomToModify = selectedRoom;
+                roomToModify.setTotalSpace(Integer.parseInt(txtTotal.getText()));
+                roomToModify.setStatus((Status)cbStatus.getSelectionModel().getSelectedItem());
+                roomManager.updateRoom(roomToModify);
+        
+                txtTotal.setDisable(true);
+                btnCancel.setDisable(true);
+                btnSaveChanges.setDisable(true);
+                cbStatus.setDisable(true);
+                btnModify.setDisable(false);
+                tableRoom.setDisable(false);
+                tableRoom.refresh();
+            }
+            else{
+                //--TOFIX --> Mostrar un aviso al usuario para advertirle de que se requieren todos los datos para poder actualizar
+            }
+        }catch(UpdateException ue){
+            //--TOFIX --> Exception handling
+        }catch(Exception ex){
+            //--TOFIX --> Exception handling
         }
+    }
+    
+    public Boolean checkForData(){
+        //--TOFIX --> When clicking the save changes or insert buttons,
+        //check all fields are correctly filled before allowing the logic
+        //manager operations to happen
+        Boolean formHasCorrectData = true;
+        if(txtTotal.getText().trim().length()==0){
+            formHasCorrectData = false;
+        }
+        return formHasCorrectData;
+    }
+    
+    public void disposeUpdateForm(ActionEvent event){
+        txtTotal.setDisable(true);
+        btnCancel.setDisable(true);
+        btnSaveChanges.setDisable(true);
+        cbStatus.setDisable(true);
+        btnModify.setDisable(false);
+        tableRoom.setDisable(false);
+    }
+    
+    public void returnToMenu(ActionEvent event){
+        
+    }
+    
+    /*public void returnToPrevious(ActionEvent event){
+        stage.close();
+        previousStage.show();
     }*/
     
     /**
@@ -212,6 +248,7 @@ public class RoomFXMLController extends GenericController {
     
     /**
      * Method to exit the application
+     * @param event
      */
     public void exit(ActionEvent event){
         Platform.exit();
@@ -221,7 +258,7 @@ public class RoomFXMLController extends GenericController {
         //calls the logicManager register functio
         /*try{
             FXMLLoader loader = new FXMLLoader(getClass()
-                    .getResource("/signupsigninuidesktop/ui/fxml/UIGuestFXMLController.fxml"));
+                    .getResource("/albergueperronclient/ui/fxml/UIGuest.fxml"));
             Parent root = loader.load();
             //Get controller from the loader
             UIGuestFXMLController guestController = loader.getController();
@@ -243,7 +280,7 @@ public class RoomFXMLController extends GenericController {
     public void goToPetsView(ActionEvent event){
          /*try{
             FXMLLoader loader = new FXMLLoader(getClass()
-                    .getResource("/signupsigninuidesktop/ui/fxml/UIPetFXMLController.fxml"));
+                    .getResource("/albergueperronclient/ui/fxml/UIPet.fxml"));
             Parent root = loader.load();
             //Get controller from the loader
             UIPetFXMLController petController = loader.getController();
@@ -265,7 +302,7 @@ public class RoomFXMLController extends GenericController {
     public void goToStaysView(ActionEvent event){
         /*try{
             FXMLLoader loader = new FXMLLoader(getClass()
-                    .getResource("/signupsigninuidesktop/ui/fxml/UIStayFXMLController.fxml"));
+                    .getResource("/albergueperronclient/ui/fxml/UIStay.fxml"));
             Parent root = loader.load();
             //Get controller from the loader
             UIStayFXMLController stayController = loader.getController();
@@ -287,7 +324,7 @@ public class RoomFXMLController extends GenericController {
     public void goToBlackListView(ActionEvent event){
         /*try{
             FXMLLoader loader = new FXMLLoader(getClass()
-                    .getResource("/signupsigninuidesktop/ui/fxml/UIBlackListFXMLController.fxml"));
+                    .getResource("/albergueperronclient/ui/fxml/UIBlackList.fxml"));
             Parent root = loader.load();
             //Get controller from the loader
             UIBlackListFXMLController blackListController = loader.getController();
@@ -338,42 +375,22 @@ public class RoomFXMLController extends GenericController {
     public void onTableSelectionChanged(ObservableValue observable,
              Object oldValue,
              Object newValue){
-        //--TOFIX
-        /*if(newValue!=null){
+        if(newValue!=null){            
             selectedRoom = (RoomBean)newValue;
-            txtTotal.setText(selectedRoom.get());
-            txtDescription.setText(selectedRoom.getDescription());
-            //--TOFIX --> Crear una forma de recibir solo el empleado
-            List<UserBean> users = selectedIncident.getImplicateds();
-            List<UserBean> guests = null;
-            List<UserBean> employees = null;
-            for(UserBean u: users){
-                if(u.getPrivilege().equals(Privilege.EMPLOYEE)){
-                    employees.add(u);
-                }
-                else{
-                    guests.add(u);
-                }
-            }
-            cbEmployee.getSelectionModel().select(employees);
-            cbRoom.getSelectionModel().select(selectedIncident.getRoom());
-            lstImplicateds.getSelectionModel().select(guests);
+            txtTotal.setText(selectedRoom.getTotalSpace().toString());
+            cbStatus.getSelectionModel().select(selectedRoom.getStatus());
+            lblAvailableSpace.setText(selectedRoom.getAvailableSpace().toString());
             
             btnModify.setDisable(false);
-            btnDelete.setDisable(false);
-            
-            //--TOFIX Pensar si quiero pedir el foco ahí
-            //btnModify.requestFocus();
         }else{
         //If there is not a row selected, clean window fields 
         //and disable create, modify and delete buttons
-            selectedRoom = null;
-            txtIncidentType.setText("");
-            txtDescription.setText("");
-            cbEmployee.getSelectionModel().clearSelection();
-            cbRoom.getSelectionModel().clearSelection();
-            lstImplicateds.getSelectionModel().clearSelection();
-        }*/
+            lblRoomNum.setText("");
+            txtTotal.setText("");
+            lblAvailableSpace.setText("");
+            cbStatus.getSelectionModel().clearSelection();
+            btnModify.setDisable(true);
+        }
     }
     
     /**
@@ -386,8 +403,16 @@ public class RoomFXMLController extends GenericController {
     public void onTextChanged(ObservableValue observable,
              String oldValue,
              String newValue){
-        /*if(true){
-            
-        }*/
+         if (!newValue.matches("\\d*")) {
+            txtTotal.setText(newValue.replaceAll("[^\\d]", ""));
+        }
+        if(!(newValue.equalsIgnoreCase(selectedRoom.getTotalSpace().toString())) || oldValue.length() == 3){
+        //if(!oldValue.equals("")){
+            if(txtTotal.getText().trim().isEmpty() || txtTotal.getText().trim().length() > 2 || txtTotal.getText().trim().equals("0") || txtTotal.getText().trim().equals("00")){
+                btnSaveChanges.setDisable(true);
+            }else{
+                btnSaveChanges.setDisable(false);
+            }
+        }
     }
 }

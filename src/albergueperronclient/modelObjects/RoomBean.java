@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.util.List;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -24,7 +25,7 @@ public class RoomBean implements Serializable {
     private SimpleIntegerProperty roomNum;
     private SimpleIntegerProperty totalSpace;
     private SimpleIntegerProperty availableSpace;
-    private SimpleStringProperty status;
+    private SimpleObjectProperty<Status> status;
     private SimpleListProperty<IncidentBean> incidents;
     private SimpleListProperty<Stay> stays;
     
@@ -32,33 +33,14 @@ public class RoomBean implements Serializable {
         this.roomNum = new SimpleIntegerProperty();
         this.totalSpace = new SimpleIntegerProperty();
         this.availableSpace = new SimpleIntegerProperty();
-        this.status = new SimpleStringProperty();
-        this.incidents = new SimpleListProperty();
-        this.stays = new SimpleListProperty();
+        this.status = new SimpleObjectProperty<Status>();
     }
     
-    /*public RoomBean(Integer roomNum, Integer totalSpace, Integer availableSpace,
-            String status){
-        this.roomNum = new SimpleIntegerProperty(roomNum);
-        this.totalSpace = new SimpleIntegerProperty(totalSpace);
-        this.availableSpace = new SimpleIntegerProperty(availableSpace);
-        this.status = new SimpleStringProperty(status);
-    }
-    */
-    public RoomBean(SimpleIntegerProperty roomNum, SimpleIntegerProperty totalSpace, SimpleIntegerProperty availableSpace, SimpleStringProperty status) {
+    public RoomBean(SimpleIntegerProperty roomNum, SimpleIntegerProperty totalSpace, SimpleIntegerProperty availableSpace, SimpleObjectProperty status) {
         this.roomNum = roomNum;
         this.totalSpace = totalSpace;
         this.availableSpace = availableSpace;
         this.status = status;
-    }
-    
-    public RoomBean(SimpleIntegerProperty roomNum, SimpleIntegerProperty totalSpace, SimpleIntegerProperty availableSpace, SimpleStringProperty status, SimpleListProperty<IncidentBean> incidents, SimpleListProperty<Stay> stays) {
-        this.roomNum = roomNum;
-        this.totalSpace = totalSpace;
-        this.availableSpace = availableSpace;
-        this.status = status;
-        this.incidents = incidents;
-        this.stays = stays;
     }
     
     /**
@@ -107,14 +89,14 @@ public class RoomBean implements Serializable {
     /**
      * @return the status
      */
-    public String getStatus() {
+    public Status getStatus() {
         return this.status.get();
     }
 
     /**
      * @param status the status to set
      */
-    public void setStatus(String status) {
+    public void setStatus(Status status) {
         this.status.set(status);
     }
     

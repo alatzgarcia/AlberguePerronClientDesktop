@@ -12,6 +12,7 @@ import albergueperronclient.logic.RoomManagerFactory;
 import albergueperronclient.logic.UsersManager;
 import albergueperronclient.logic.UsersManagerFactory;
 import albergueperronclient.ui.controller.IncidentFXMLController;
+import albergueperronclient.ui.controller.RoomFXMLController;
 import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -44,15 +45,26 @@ public class App extends Application {
             Parent root = loader.load();
             //Get controller from the loader
             IncidentFXMLController incidentController = loader.getController();
-            /*Set a reference in the controller 
-                for the UILogin view for the logic manager object           
-            */
+            
             incidentController.setLogicManager(incidentManager, roomManager,
                     userManager);
             //Set a reference for Stage in the UILogin view controller
             incidentController.setStage(primaryStage);
             //Initialize the primary stage of the application
             incidentController.initStage(root);
+            
+            //Load the fxml file
+            /*FXMLLoader loader = new FXMLLoader(getClass()
+                    .getResource("/albergueperronclient/ui/fxml/Room.fxml"));
+            Parent root = loader.load();
+            //Get controller from the loader
+            RoomFXMLController roomController = loader.getController();
+            
+            roomController.setLogicManager(roomManager);
+            //Set a reference for Stage in the UILogin view controller
+            roomController.setStage(primaryStage);
+            //Initialize the primary stage of the application
+            roomController.initStage(root);*/
         }catch(Exception e){
             LOGGER.info(e.getMessage());
         }  

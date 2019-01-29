@@ -22,7 +22,7 @@ import javax.ws.rs.core.GenericType;
  *        client.close();
  * </pre>
  *
- * @author 2dam
+ * @author Alatz
  */
 public class IncidentRESTClient {
 

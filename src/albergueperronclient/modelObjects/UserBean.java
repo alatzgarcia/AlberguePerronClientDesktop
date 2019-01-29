@@ -281,8 +281,18 @@ public class UserBean implements Serializable {
             return false;
         }
         UserBean other = (UserBean) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        /*if ((this.id == null && other.id != null) || (this.id != null && !this.login.equals(other.login))) {
             return false;
+        }*/
+        if(this.id == null){
+            if(other.id!=null){
+                return false;
+            }
+        }
+        if(this.id != null){
+            if(!(this.getLogin().equalsIgnoreCase(other.getLogin()))){
+                return false;
+            }
         }
         return true;
     }
@@ -293,6 +303,6 @@ public class UserBean implements Serializable {
      */
     @Override
     public String toString() {
-        return getName() + " " + getSurname1() + getSurname2();
+        return getName() + " " + getSurname1() + " " + getSurname2();
     }
 }
