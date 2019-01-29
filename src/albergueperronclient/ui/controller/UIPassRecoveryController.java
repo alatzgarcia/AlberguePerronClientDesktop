@@ -57,7 +57,7 @@ public class UIPassRecoveryController extends GenericController {
         txtEmail.textProperty().addListener(this::onTextChanged);
         txtEmail.focusedProperty().addListener(this::onFocusChanged);
                 
-        btnSend.setOnAction(this::checkEmail);
+        btnSend.setOnAction(this::recoverEmail);
         
         
         stage.show();
@@ -92,6 +92,32 @@ public class UIPassRecoveryController extends GenericController {
                         useLower(true).build();
                 String password = randomPass.generate(8);
                 user.setPassword(password);
+                //Calls the logic method to update the password
+                recoveryManager.recoverEmail(user);
+            }else{
+                throw new IncorrectEmailException();
+            }
+            
+            txtEmail.setText("");
+            
+            stage.hide();
+        } catch(IncorrectEmailException iee){
+            LOGGER.severe("Error. Incorrect email. Detailed error "
+                    + iee.getMessage());
+            txtEmail.setStyle("-fx-border-color: red");
+            lblError.setText("Error. El email introducido no existe.");
+        }
+    }
+    
+    public void recoverEmail(ActionEvent event){
+        
+        try{
+            //Sends a user to the logic controller with the entered parameters
+            String email = txtEmail.getText();
+            
+            UserBean user = recoveryManager.getUserByEmail(email);
+            if(user!=null){
+                
                 //Calls the logic method to update the password
                 recoveryManager.recoverEmail(user);
             }else{

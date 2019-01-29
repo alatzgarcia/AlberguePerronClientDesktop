@@ -20,7 +20,7 @@ import javax.ws.rs.client.WebTarget;
  *        client.close();
  * </pre>
  *
- * @author Nerea Jimenexz
+ * @author 2dam
  */
 public class UserREST {
 
@@ -75,15 +75,15 @@ public class UserREST {
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
     
-    public <T> T passRecovery(Class<T> responseType, String email, String password) throws ClientErrorException {
+    public <T> T passRecovery(Class<T> responseType, String email) throws ClientErrorException {
         WebTarget resource = webTarget;
-        resource = resource.path(java.text.MessageFormat.format("recoveryEmail/{0}/{1}", new Object[]{email, password}));
+        resource = resource.path(java.text.MessageFormat.format("recoveryEmail/{0}", new Object[]{email}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
-    
 
     public void close() {
         client.close();
     }
+    
     
 }

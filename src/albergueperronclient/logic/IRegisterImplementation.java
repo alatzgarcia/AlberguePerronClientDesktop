@@ -70,6 +70,7 @@ public class IRegisterImplementation implements IRegister{
         
         String passString= DatatypeConverter.printHexBinary(encryptedPass);
         userBean.setPassword(passString);
+       
         try{
           
            webClient.create(userBean);

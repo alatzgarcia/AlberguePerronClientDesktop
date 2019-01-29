@@ -49,7 +49,7 @@ public class App extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
-        try{
+         try{
            //Get the logic manager object for the initial stage
             ILogin loginManager = ILoginFactory.getLoginManager();
             

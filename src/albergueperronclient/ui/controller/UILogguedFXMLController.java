@@ -145,13 +145,11 @@ public class UILogguedFXMLController extends GenericController {
 
             //UsersManager usersManager = UserManagerFactory.createUserManager();
             //Get controller from the loader
-            UIGuestFXMLController loggedController = loader.getController();
+            //UIGuestFXMLController loggedController = loader.getController();
 
             //Initialize the primary stage of the application
-            loggedController.initStage(root);
+            //loggedController.initStage(root);
         } catch (IOException ex) {
-            Logger.getLogger(UILogguedFXMLController.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (BusinessLogicException ex) {
             Logger.getLogger(UILogguedFXMLController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

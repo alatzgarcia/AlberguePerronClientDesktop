@@ -74,17 +74,18 @@ public class IRecoveryImplementation implements IRecovery{
     @Override
     public void recoverEmail(UserBean user){
         
-       String pass = user.getPassword();
+       //String pass = user.getPassword();
+       user.setPassword("");
        //encrypt the password before it is passed on to the server side
-       byte[] encryptedPass =encrypt(user.getPassword());
-       String passString= DatatypeConverter.printHexBinary(encryptedPass);
-       user.setPassword(passString);
+       //byte[] encryptedPass =encrypt(user.getPassword());
+       //String passString= DatatypeConverter.printHexBinary(encryptedPass);
+       //user.setPassword(passString);
        //calls the pass recovery method od the UserREST
-       UserBean userN = webClient.passRecovery(UserBean.class,user.getEmail(),passString); 
+       UserBean userN = webClient.passRecovery(UserBean.class,user.getEmail()); 
        
        //if the update of the password has been sucessful send an email
        if(userN!=null){
-           sendEmail(userN, pass);
+           //sendEmail(userN, pass);
        }
     }
 
@@ -136,8 +137,6 @@ public class IRecoveryImplementation implements IRecovery{
                 
                 } catch (EmailException ex) {
                    LOGGER.severe(ex.getMessage());
-                }catch(Exception e){
-                   LOGGER.severe(e.getMessage());
                 }
     }
     

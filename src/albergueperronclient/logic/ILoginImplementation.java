@@ -77,6 +77,8 @@ public class ILoginImplementation implements ILogin{
         //the password is encrypted before it is passed on to the server
         byte[] encryptedPass =encrypt(userBean.getPassword());
         String passString= DatatypeConverter.printHexBinary(encryptedPass);
+       // String passString= encryptedPass.toString();
+        LOGGER.info("Password encriptada en string en cliente: "+passString);
         userBean.setPassword(passString);
         UserBean user=null;
         try{

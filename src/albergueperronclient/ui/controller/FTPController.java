@@ -112,7 +112,7 @@ public class FTPController extends GenericController{
         btnDownload.setOnAction(this::download);
         btnCrear.setOnAction(this::createDir);
         btnDeleteD.setOnAction(this::deleteDir);
-               
+        btnBack.setOnAction(this::goBack);
         treeFile.getSelectionModel().selectedItemProperty().addListener(this::itemSelected);
         
       
@@ -236,7 +236,7 @@ public class FTPController extends GenericController{
         TreeItem<MyFile> directoryToCreate = new TreeItem<MyFile>(file,rootIcon1);
         itemSelected.getChildren().add(directoryToCreate);
         treeFile.refresh();
-        ftpManager.createDirectory();
+       
         
         
     }
@@ -290,6 +290,10 @@ public class FTPController extends GenericController{
                 }
       
             }
+     }
+     
+     public void goBack(ActionEvent event){
+         ftpManager.disconnect();
      }
 
 }
