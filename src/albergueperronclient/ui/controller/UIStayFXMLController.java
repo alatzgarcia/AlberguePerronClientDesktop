@@ -16,6 +16,7 @@ import albergueperronclient.modelObjects.StayBean;
 import albergueperronclient.modelObjects.UserBean;
 import static albergueperronclient.ui.controller.GenericController.LOGGER;
 import java.net.URL;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
@@ -23,6 +24,8 @@ import java.util.EventListener;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -115,6 +118,8 @@ public class UIStayFXMLController extends GenericController{
         
         stage.setOnShowing(this::handleWindowShowing);
         
+        txtDate.textProperty().addListener(this::onTextChanged);
+        
         //Sets the columns the attributes to use
         columnGuests.setCellValueFactory(new PropertyValueFactory<>("guest"));
         columnRoom.setCellValueFactory(new PropertyValueFactory<>("room"));
@@ -135,8 +140,8 @@ public class UIStayFXMLController extends GenericController{
             rooms=FXCollections.observableArrayList(roomsManager.findRoomsWithAvailableSpace());
             
             //Insert the combo
-            cbGuest.setItems(guests);
-            cbRoom.setItems(rooms);
+            //cbGuest.setItems(guests);
+            //cbRoom.setItems(rooms);
         }catch(BusinessLogicException ble){
             LOGGER.severe(ble.getMessage());
         }catch(ReadException re){
@@ -309,9 +314,8 @@ public class UIStayFXMLController extends GenericController{
                 break;
             case 5:
                 //Deletes all the existing data
-//QUITAR LA SELECCION
-                //cbGuest.
-                //cbRoom.setText("");
+                cbGuest.getSelectionModel().clearSelection();
+                cbRoom.getSelectionModel().clearSelection();
                 txtDate.setText("");
                 break;
         }
@@ -322,18 +326,26 @@ public class UIStayFXMLController extends GenericController{
         stay= new StayBean();
         
         //Sets the attributes with the fields
-        /*SimpleDateFormat parser=new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy");
-        Date date = parser.parse(txtDate.getText().toString());
-        
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        String formattedDate = formatter.format(date);
-
-        stay.setDate(date);*/
-        stay.setGuest(cbGuest.getValue());
-        stay.setRoom(cbRoom.getValue());
-        stay.setId(tableStay.getSelectionModel().getSelectedItem().getId());
-        
+        SimpleDateFormat parser=new SimpleDateFormat("yyyy-MM-dd");
+        Date date;
+        try {
+            date = parser.parse(txtDate.getText().toString());
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            String formattedDate = formatter.format(date);
+            stay.setDate(date);
+            stay.setGuest(cbGuest.getSelectionModel().getSelectedItem());
+            stay.setRoom(cbRoom.getSelectionModel().getSelectedItem());
+            stay.setId(tableStay.getSelectionModel().getSelectedItem().getId());
+        } catch (ParseException ex) {
+            LOGGER.info(ex.getMessage());
+        }        
         return stay;
+    }
+    
+    public void onTextChanged(ObservableValue observable,
+            String oldValue,
+            String newValue){
+        
     }
     
     public void cancel(ActionEvent event){

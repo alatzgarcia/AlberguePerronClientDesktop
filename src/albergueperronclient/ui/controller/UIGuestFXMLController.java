@@ -119,8 +119,15 @@ public class UIGuestFXMLController extends GenericController{
         
         stage.setOnShowing(this::handleWindowShowing);
         
-        /*        
-        //Sets the button methods when they are clicked*/
+        //The listeners for the fields
+        txtDni.textProperty().addListener(this::onTextChanged);
+        txtEmail.textProperty().addListener(this::onTextChanged);
+        txtFirstSurname.textProperty().addListener(this::onTextChanged);
+        txtLogin.textProperty().addListener(this::onTextChanged);
+        txtName.textProperty().addListener(this::onTextChanged);
+        txtDni.textProperty().addListener(this::onTextChanged);
+        
+        //Sets the button methods when they are clicked
         btnReturn.setOnAction(this::returnWindow);
         btnCancel.setOnAction(this::cancel);
         btnNewGuest.setOnAction(this::newGuest);
@@ -194,7 +201,7 @@ public class UIGuestFXMLController extends GenericController{
         //Enable the buttons needed to modify a guest
         btnCancel.setDisable(false);
         btnSaveChanges.setVisible(true);
-        btnSaveChanges.setDisable(false);
+        btnSaveChanges.setDisable(true);
         btnSaveChanges.toFront();
         
         btnDeleteGuest.setDisable(true);
@@ -210,10 +217,10 @@ public class UIGuestFXMLController extends GenericController{
         // Enable the buttons needed to create a new guest
         btnCancel.setDisable(false);
         btnInsertGuest.setVisible(true);
-        btnInsertGuest.setDisable(false);
+        btnInsertGuest.setDisable(true);
         btnModifyGuest.setDisable(true);
         btnDeleteGuest.setDisable(true);
-        
+        btnNewGuest.setDisable(true);
         // Enables all the fields
         fieldChange(enable);
         fieldChange(visible);        
@@ -432,19 +439,39 @@ public class UIGuestFXMLController extends GenericController{
     public void onTextChanged(ObservableValue observable,
             String oldValue,
             String newValue){
-        LOGGER.info("Cambio de texto");
-        /*if(txtDni.getText().trim().length()!=9||
-                txtEmail.getText().matches("^[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,4}$")||
+        if(txtDni.getText().trim().length()!=9||
+                !txtEmail.getText().matches("^[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,4}$")||
+                txtSecondSurname.getText().trim().length()<userPasswordMinLength||txtSecondSurname.getText().trim().length()>userPasswordMaxLength||
                 txtFirstSurname.getText().trim().length()<userPasswordMinLength||txtFirstSurname.getText().trim().length()>userPasswordMaxLength||
                 txtLogin.getText().trim().length()<userPasswordMinLength||txtLogin.getText().trim().length()>userPasswordMaxLength||
                 txtName.getText().trim().length()<userPasswordMinLength||txtName.getText().trim().length()>userPasswordMaxLength){
             
-        }*/
+            if(btnSaveChanges.isVisible()){
+                btnSaveChanges.setDisable(true);
+            }
+            if(btnInsertGuest.isVisible()){
+                btnInsertGuest.setDisable(true);
+            }
+        }else if(txtDni.getText().trim().length()==9&&
+                txtEmail.getText().matches("^[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,4}$")&&
+                txtSecondSurname.getText().trim().length()>fullNameMinLength&&txtSecondSurname.getText().trim().length()<userPasswordMaxLength&&
+                txtFirstSurname.getText().trim().length()>fullNameMinLength&&txtFirstSurname.getText().trim().length()<userPasswordMaxLength&&
+                txtLogin.getText().trim().length()>fullNameMinLength&&txtLogin.getText().trim().length()<userPasswordMaxLength&&
+                txtName.getText().trim().length()>fullNameMinLength&&txtName.getText().trim().length()<userPasswordMaxLength){
+            
+            if(btnSaveChanges.isVisible()){
+                btnSaveChanges.setDisable(false);
+            }
+            if(btnInsertGuest.isVisible()){
+                btnInsertGuest.setDisable(false);
+            }
+        }
+        /*
         Boolean formatOK=true;
         if(txtDni.getText().length()!=9){
             formatOK=false;
         }
-        if(txtEmail.getText().matches("^[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,4}$")){
+        if(!txtEmail.getText().matches("^[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,4}$")){
             formatOK=false;
         }
         if(txtFirstSurname.getText().trim().length()<userPasswordMinLength||txtFirstSurname.getText().trim().length()>userPasswordMaxLength){
@@ -470,7 +497,7 @@ public class UIGuestFXMLController extends GenericController{
             if(btnInsertGuest.isVisible()){
                 btnInsertGuest.setDisable(false);
             }
-        }
+        }*/
     }
     
      public byte[] encrypt(String pass){

@@ -46,7 +46,7 @@ public class App extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
-        try{
+        /*try{
             //Get the logic manager object for the initial stage
             //UsersManager userManager = UserManagerFactory.createUserManager();
             StaysManager stayManager=StayManagerFactory.createStayManager();
@@ -58,12 +58,33 @@ public class App extends Application {
             //Get controller from the loader
             UIStayFXMLController stayController = loader.getController();
             /*Set a reference in the controller for the UILogin view for the logic manager object           
-            */
+            *
             stayController.setStaysManager(stayManager);
             //Set a reference for Stage in the UILogin view controller
             stayController.setStage(primaryStage);
             //Initialize the primary stage of the application
             stayController.initStage(root);
+        }catch(Exception e){
+            LOGGER.severe(e.getMessage());
+        }*/
+        try{
+            //Get the logic manager object for the initial stage
+            //UsersManager userManager = UserManagerFactory.createUserManager();
+            UsersManager userManager=UserManagerFactory.createUserManager();
+            
+            //Load the fxml file
+            FXMLLoader loader = new FXMLLoader(getClass()
+                    .getResource("/albergueperronclient/ui/fxml/UIGuest.fxml"));
+            Parent root = loader.load();
+            //Get controller from the loader
+            UIGuestFXMLController userController = loader.getController();
+            //Set a reference in the controller for the UILogin view for the logic manager object           
+            
+            userController.setUsersManager(userManager);
+            //Set a reference for Stage in the UILogin view controller
+            userController.setStage(primaryStage);
+            //Initialize the primary stage of the application
+            userController.initStage(root);
         }catch(Exception e){
             LOGGER.severe(e.getMessage());
         }  
