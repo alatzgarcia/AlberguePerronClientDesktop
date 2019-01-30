@@ -7,6 +7,7 @@ package albergueperronclient.modelObjects;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleListProperty;
@@ -29,6 +30,7 @@ public class IncidentBean implements Serializable {
     private List<UserBean> implicateds;
     private SimpleStringProperty description;
     private SimpleObjectProperty<RoomBean> room;
+    private SimpleObjectProperty<Date> date;
 
     public IncidentBean(){
         this.id = new SimpleIntegerProperty();
@@ -36,6 +38,7 @@ public class IncidentBean implements Serializable {
         this.implicateds = new ArrayList<UserBean>();
         this.description = new SimpleStringProperty();
         this.room = new SimpleObjectProperty<RoomBean>();
+        this.date = new SimpleObjectProperty<Date>();
     }
     
     public Integer getId() {
@@ -120,6 +123,14 @@ public class IncidentBean implements Serializable {
      */
     public void setRoom(RoomBean room) {
         this.room.set(room);
+    }
+    
+    public Date getDate(){
+        return this.date.get();
+    }
+    
+    public void setDate(Date date){
+        this.date.set(date);
     }
 
     @Override

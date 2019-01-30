@@ -55,7 +55,7 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.view.JasperViewer;
-
+import java.sql.Date;
 /**
  * Controller class for the Incident view of the application
  * @author Alatz
@@ -385,6 +385,10 @@ public class IncidentFXMLController extends GenericController {
                 incidentToModify.setImplicateds(implicateds);
                 incidentToModify.setIncidentType(txtIncidentType.getText());
                 incidentToModify.setRoom((RoomBean)cbRoom.getSelectionModel().getSelectedItem());
+                
+                java.sql.Date date = java.sql.Date.valueOf(incidentDate.getValue());
+                incidentToModify.setDate(date);
+                
                 incidentManager.updateIncident(incidentToModify);
                 
                 btnCancel.setDisable(true);
