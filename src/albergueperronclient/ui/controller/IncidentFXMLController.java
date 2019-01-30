@@ -39,6 +39,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
@@ -116,6 +117,8 @@ public class IncidentFXMLController extends GenericController {
     private MenuItem menuReport;
     @FXML
     private Button btnReport;
+    @FXML
+    private DatePicker incidentDate;
     
     private IncidentManager incidentManager;
     private RoomManager roomManager;
@@ -224,6 +227,7 @@ public class IncidentFXMLController extends GenericController {
         cbRoom.setDisable(true);
         cbRoom.getSelectionModel().selectFirst();
         menuIncidents.setDisable(true);
+        incidentDate.setDisable(true);
         
         //--TOFIX
         /*btnLogin.setDisable(true);
@@ -261,6 +265,7 @@ public class IncidentFXMLController extends GenericController {
         
         btnModify.setDisable(true);
         btnDelete.setDisable(true);
+        incidentDate.setDisable(false);
     }
     
     public void createIncident(ActionEvent event){
@@ -292,6 +297,9 @@ public class IncidentFXMLController extends GenericController {
                 btnListAdd.setDisable(true);
                 btnListRemove.setDisable(true);
                 cbGuests.setDisable(true);
+                incidentDate.getEditor().clear();
+                //incidentDate.setValue(null);
+                incidentDate.setDisable(true);
             
                 tableIncidents.getItems().add(newIncident);
                 tableIncidents.setDisable(false); 
@@ -315,6 +323,8 @@ public class IncidentFXMLController extends GenericController {
             lstImplicateds.getItems().clear();
             txtDescription.setText("");
             txtIncidentType.setText("");
+            //incidentDate.setValue(null);
+            incidentDate.getEditor().clear();
         } else{
             cbEmployee.getSelectionModel().select(selectedIncident.getEmployee());
             cbRoom.getSelectionModel().select(selectedIncident.getRoom());
@@ -340,6 +350,7 @@ public class IncidentFXMLController extends GenericController {
         btnListRemove.setDisable(true);
         cbGuests.setDisable(true);
         tableIncidents.setDisable(false);
+        incidentDate.setDisable(true);
    }
     
     public void enableUpdateIncidentForm(ActionEvent event){
@@ -360,6 +371,7 @@ public class IncidentFXMLController extends GenericController {
         btnInsert.setVisible(false);
         selectedIncident.getDescription();
         tableIncidents.setDisable(true);
+        incidentDate.setDisable(false);
     }
     
     public void updateIncident(ActionEvent event){
@@ -389,6 +401,9 @@ public class IncidentFXMLController extends GenericController {
                 cbGuests.setDisable(true);
                 btnNew.setDisable(false);
                 btnDelete.setDisable(false);
+                incidentDate.getEditor().clear();
+                //incidentDate.setValue(null);
+                incidentDate.setDisable(true);
             
             tableIncidents.refresh();
             tableIncidents.setDisable(false);
@@ -405,7 +420,6 @@ public class IncidentFXMLController extends GenericController {
     
     public void deleteIncident(ActionEvent event){
         try{
-            
             incidentManager.deleteIncident(selectedIncident.getId());
             tableIncidents.getItems().remove(selectedIncident);
             tableIncidents.refresh();
@@ -422,7 +436,7 @@ public class IncidentFXMLController extends GenericController {
                 txtIncidentType.getText().trim().length()== 0 ||
                 !(cbRoom.getSelectionModel().getSelectedItem() instanceof RoomBean)||
                 !(cbEmployee.getSelectionModel().getSelectedItem() instanceof UserBean )
-                || lstImplicateds.getItems().isEmpty()){
+                || lstImplicateds.getItems().isEmpty() || incidentDate.getValue() == null){
             formHasCorrectData = false;
         }
         return formHasCorrectData;
@@ -627,6 +641,7 @@ public class IncidentFXMLController extends GenericController {
             lstImplicateds.setItems(selectedIncident.getGuests());
             btnModify.setDisable(false);
             btnDelete.setDisable(false);
+            //incidentDate.setValue(selectedIncident.getDate());
         }else{
         //If there is not a row selected, clean window fields 
         //and disable create, modify and delete buttons
@@ -638,6 +653,8 @@ public class IncidentFXMLController extends GenericController {
             cbGuests.getSelectionModel().clearSelection();
             lstImplicateds.getSelectionModel().clearSelection();
             lstImplicateds.getItems().clear();
+            incidentDate.getEditor().clear();
+            //incidentDate.setValue(null);
             btnModify.setDisable(true);
             btnDelete.setDisable(true);
         }
