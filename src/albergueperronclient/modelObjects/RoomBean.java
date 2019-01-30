@@ -103,6 +103,7 @@ public class RoomBean implements Serializable {
     /**
      * @return the incidents
      */
+    @XmlTransient
     public SimpleListProperty<IncidentBean> getIncidents() {
         //--TOFIX
         return this.incidents;
@@ -118,6 +119,7 @@ public class RoomBean implements Serializable {
     /**
      * @return the stays
      */
+    @XmlTransient
     public SimpleListProperty<Stay> getStays() {
         //--TOFIX
         return this.stays;

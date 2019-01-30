@@ -18,7 +18,10 @@ import albergueperronclient.modelObjects.Privilege;
 import albergueperronclient.modelObjects.RoomBean;
 import albergueperronclient.modelObjects.UserBean;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -44,9 +47,16 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.WindowEvent;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
 
 /**
- * Controller class for the IncidentBean view of the application
+ * Controller class for the Incident view of the application
  * @author Alatz
  */
 public class IncidentFXMLController extends GenericController {
@@ -102,6 +112,10 @@ public class IncidentFXMLController extends GenericController {
     private Button btnListRemove;
     @FXML
     private ComboBox cbGuests;
+    @FXML
+    private MenuItem menuReport;
+    @FXML
+    private Button btnReport;
     
     private IncidentManager incidentManager;
     private RoomManager roomManager;
@@ -133,11 +147,9 @@ public class IncidentFXMLController extends GenericController {
             stage.setScene(scene);
             stage.setTitle("Incidents");
             stage.setResizable(false);
-            
             stage.setOnShowing(this::handleWindowShowing);
             
             txtIncidentType.textProperty().addListener(this::onTextChanged);
-            //--TOFIX Controllar que no escriba más de X caracteres en la descripción
             txtDescription.textProperty().addListener(this::onTextChanged);
             tableIncidents.getSelectionModel().selectedItemProperty().
                     addListener(this::onTableSelectionChanged);
@@ -146,10 +158,7 @@ public class IncidentFXMLController extends GenericController {
                     new PropertyValueFactory<>("incidentType"));
             columnDescription.setCellValueFactory(
                     new PropertyValueFactory<>("description"));
-            /*ObservableList<Incident> incidents =
-                    FXCollections.observableArrayList(incidentManager.findAllIncidents());
-            //--TOFIX --> Insertar incidentes en la tabla
-            */ObservableList<RoomBean> rooms =
+            ObservableList<RoomBean> rooms =
                     FXCollections.observableArrayList(roomManager.findAllRooms());
             cbRoom.setItems(rooms);
             ObservableList<UserBean> employees =
@@ -160,7 +169,6 @@ public class IncidentFXMLController extends GenericController {
             ObservableList<UserBean> guests =
                     FXCollections.observableArrayList(userManager.findUsersByPrivilege(Privilege.USER));
             cbGuests.setItems(guests);
-            //--TOFIX Coger datos para la tabla
             ObservableList<IncidentBean> incidents = 
                     FXCollections.observableArrayList(incidentManager.findAllIncidents());
             tableIncidents.setItems(incidents);
@@ -174,6 +182,7 @@ public class IncidentFXMLController extends GenericController {
             btnReturn.setOnAction(this::returnToMenu);
             btnListAdd.setOnAction(this::addToList);
             btnListRemove.setOnAction(this::removeFromList);
+            btnReport.setOnAction(this::generateReport);
             menuGuests.setOnAction(this::goToGuestsView);
             menuPets.setOnAction(this::goToPetsView);
             menuStays.setOnAction(this::goToStaysView);
@@ -184,7 +193,8 @@ public class IncidentFXMLController extends GenericController {
             
             stage.show();
         } catch (Exception ex){
-//} catch (BusinessLogicException ex) {
+            //--TOFIX
+        //} catch (BusinessLogicException ex) {
             Logger.getLogger(IncidentFXMLController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -215,6 +225,7 @@ public class IncidentFXMLController extends GenericController {
         cbRoom.getSelectionModel().selectFirst();
         menuIncidents.setDisable(true);
         
+        //--TOFIX
         /*btnLogin.setDisable(true);
         btnLogin.setMnemonicParsing(true);
         btnLogin.setText("_Iniciar Sesión");
@@ -225,8 +236,6 @@ public class IncidentFXMLController extends GenericController {
     }
     
     public void enableNewIncidentForm(ActionEvent event){
-        //Must be disabled until all data is inserted
-        //btnInsert.setDisable(false);
         btnInsert.setVisible(true);
         btnCancel.setDisable(false);
         btnNew.setDisable(true);
@@ -239,7 +248,6 @@ public class IncidentFXMLController extends GenericController {
         btnListRemove.setDisable(false);
         cbGuests.setDisable(false);
         
-        //selectedIncident = null;
         btnSaveChanges.setDisable(true);
         btnSaveChanges.setVisible(false);
         txtDescription.setText("");
@@ -258,12 +266,9 @@ public class IncidentFXMLController extends GenericController {
     public void createIncident(ActionEvent event){
         try{
             if(checkForData()){
-               //--TOFIX --> Send data of the form
                 IncidentBean newIncident = new IncidentBean();
                 newIncident.setDescription(txtDescription.getText());
-                //--TOFIX --> Conseguir juntar cbEmpleado + listaImplicados
                 List<UserBean> implicateds = lstImplicateds.getItems();
-                //List<UserBean> implicateds = new ArrayList<UserBean>();
                 implicateds.add((UserBean)cbEmployee.getSelectionModel().getSelectedItem());
                 newIncident.setImplicateds(implicateds);
                 newIncident.setIncidentType(txtIncidentType.getText());
@@ -326,17 +331,14 @@ public class IncidentFXMLController extends GenericController {
         btnInsert.setVisible(false);
         btnCancel.setDisable(true);
         btnNew.setDisable(false);
-        
         txtIncidentType.setDisable(true);
         txtDescription.setDisable(true);
         lstImplicateds.setDisable(true);
         cbEmployee.setDisable(true);
         cbRoom.setDisable(true);
-        
         btnListAdd.setDisable(true);
         btnListRemove.setDisable(true);
         cbGuests.setDisable(true);
-        
         tableIncidents.setDisable(false);
    }
     
@@ -348,31 +350,23 @@ public class IncidentFXMLController extends GenericController {
         btnListRemove.setDisable(false);
         btnNew.setDisable(true);
         btnDelete.setDisable(true);
-        
         txtIncidentType.setDisable(false);
         txtDescription.setDisable(false);
         lstImplicateds.setDisable(false);
-        //cbEmployee.setItems(FXCollections.observableArrayList(selectedIncident.getEmployee()));
         cbEmployee.setDisable(false);
         cbRoom.setDisable(false);
         cbGuests.setDisable(false);
-        
         btnInsert.setDisable(true);
         btnInsert.setVisible(false);
-        //selectedIncident = (IncidentBean) tableIncidents.getSelectionModel().getSelectedItem();
-        
         selectedIncident.getDescription();
         tableIncidents.setDisable(true);
-        //tableIncidents.getSelectionModel().clearSelection();
     }
     
     public void updateIncident(ActionEvent event){
         try{
             if(checkForData()){
-                //--TOFIX --> Send data of the form
                 IncidentBean incidentToModify = selectedIncident;
                 incidentToModify.setDescription(txtDescription.getText());
-                //--TOFIX -- Conseguir loopear la selección de combobox de empleado + lista de implicados
                 List<UserBean> implicateds = new ArrayList<UserBean>();
                 implicateds.addAll(lstImplicateds.getItems());
                 implicateds.add((UserBean)cbEmployee.getSelectionModel().getSelectedItem());
@@ -384,15 +378,10 @@ public class IncidentFXMLController extends GenericController {
                 btnCancel.setDisable(true);
                 btnSaveChanges.setDisable(true);
                 btnSaveChanges.setVisible(false);
-                //txtDescription.setText("");
                 txtDescription.setDisable(true);
-                //txtIncidentType.setText("");
                 txtIncidentType.setDisable(true);
-                //cbEmployee.setItems(null);
                 cbEmployee.setDisable(true);
-                //lstImplicateds.setItems(null);
                 lstImplicateds.setDisable(true);
-                //lstImplicateds.getSelectionModel().clearSelection();
                 cbRoom.getSelectionModel().selectFirst();
                 cbRoom.setDisable(true);
                 btnListAdd.setDisable(true);
@@ -402,7 +391,6 @@ public class IncidentFXMLController extends GenericController {
                 btnDelete.setDisable(false);
             
             tableIncidents.refresh();
-            //tableIncidents.getSelectionModel().clearSelection();
             tableIncidents.setDisable(false);
             }
             else{
@@ -429,9 +417,6 @@ public class IncidentFXMLController extends GenericController {
     }
     
     public Boolean checkForData(){
-        //--TOFIX --> When clicking the save changes or insert buttons,
-        //check all fields are correctly filled before allowing the logic
-        //manager operations to happen
         Boolean formHasCorrectData = true;
         if(txtDescription.getText().trim().length()==0 || 
                 txtIncidentType.getText().trim().length()== 0 ||
@@ -446,9 +431,7 @@ public class IncidentFXMLController extends GenericController {
     public void addToList(ActionEvent event){
         if(cbGuests.getSelectionModel().getSelectedItem() instanceof UserBean){
             Boolean alreadyOnList = false;
-            //--TOFIX --> Loopear items en la lista de implicados para comprobar si el que el método ha recibido se encuentra ya en dicha lista
             for(int i = 0; i < lstImplicateds.getItems().size(); i++){
-                //--TOFIX --> Programar metodo equals del UserBean para comparar dos usuarios
                 if(cbGuests.getSelectionModel().getSelectedItem().equals(lstImplicateds.getItems().get(i))){
                     alreadyOnList = true;
                     break;
@@ -458,7 +441,6 @@ public class IncidentFXMLController extends GenericController {
                 lstImplicateds.getItems().add(cbGuests.getSelectionModel().getSelectedItem());
             }
         }
-        //--TOFIX --> Controlar que si el elemento ya está dentro no se pueda volver a introducir
     }
     
     public void removeFromList(ActionEvent event){
@@ -638,29 +620,13 @@ public class IncidentFXMLController extends GenericController {
             selectedIncident = (IncidentBean)newValue;
             txtIncidentType.setText(selectedIncident.getIncidentType());
             txtDescription.setText(selectedIncident.getDescription());
-            //--TOFIX --> Crear una forma de recibir solo el empleado
-            //List<UserBean> users = selectedIncident.getImplicateds();
-            //List<UserBean> guests = null;
-            //List<UserBean> employees = null;
-            /*for(UserBean u: users){
-                if(u.getPrivilege().equals(Privilege.EMPLOYEE)){
-                    employees.add(u);
-                }
-                else{
-                    guests.add(u);
-                }
-            }
-            cbEmployee.getSelectionModel().select(employees);*/
+
             cbRoom.getSelectionModel().select(selectedIncident.getRoom());
             
             cbEmployee.getSelectionModel().select(selectedIncident.getEmployee());
-            //lstImplicateds.setItems(FXCollections.observableArrayList(selectedIncident.getGuests()));
             lstImplicateds.setItems(selectedIncident.getGuests());
             btnModify.setDisable(false);
             btnDelete.setDisable(false);
-            
-            //--TOFIX Pensar si quiero pedir el foco ahí
-            //btnModify.requestFocus();
         }else{
         //If there is not a row selected, clean window fields 
         //and disable create, modify and delete buttons
@@ -712,6 +678,35 @@ public class IncidentFXMLController extends GenericController {
             else if(btnInsert.isVisible()){
                 btnInsert.setDisable(false);
             }
+        }
+    }
+
+    public void generateReport(ActionEvent event){
+        try {
+            JasperReport report=
+                JasperCompileManager.compileReport(getClass()
+                    .getResourceAsStream("/albergueperronclient/ui/report/InciReport.jrxml"));
+            //Data for the report: a collection of UserBean passed as a JRDataSource 
+            //implementation 
+            JRBeanCollectionDataSource dataItems=
+                    new JRBeanCollectionDataSource((Collection<IncidentBean>)this.tableIncidents.getItems());
+            //Map of parameter to be passed to the report
+            Map<String,Object> parameters=new HashMap<>();
+            //Fill report with data
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report,parameters,dataItems);
+            //Create and show the report window. The second parameter false value makes 
+            //report window not to close app.
+            JasperViewer jasperViewer = new JasperViewer(jasperPrint,false);
+            jasperViewer.setVisible(true);
+           // jasperViewer.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+        } catch (JRException ex) {
+            //If there is an error show message and
+            //log it.
+            showErrorAlert("Error al imprimir:\n"+
+                            ex.getMessage());
+            LOGGER.log(Level.SEVERE,
+                        "UI GestionUsuariosController: Error printing report: {0}",
+                        ex.getMessage());
         }
     }
 }
