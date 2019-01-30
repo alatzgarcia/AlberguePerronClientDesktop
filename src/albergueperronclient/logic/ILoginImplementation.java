@@ -78,52 +78,5 @@ public class ILoginImplementation implements ILogin{
         
     }
    
-    /**
-     * Method for the encryption of the password
-     * @param pass The password
-     * @return encrypted password
-     */
-    public String encrypt(String pass){
-            FileInputStream fis;
-            byte[] encodedMessage = null;
-		try {
-			
-		    //gets the public key that has been previously generated
-                    //with a matching private key that it is kept in the server side
-                    fis = new FileInputStream("public.key");
-                    byte[] publicKey = new byte[fis.available()];
-                    fis.read(publicKey);
-			
-                    X509EncodedKeySpec pubKeySpec = new X509EncodedKeySpec(publicKey);
-                    KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-			 
-                    PublicKey pubKey = keyFactory.generatePublic(pubKeySpec);
-                    
-                    Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-                    cipher.init(Cipher.ENCRYPT_MODE, pubKey);
-                    encodedMessage = cipher.doFinal(pass.getBytes());
-					
-                    LOGGER.info("Message encrypted");
-	
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		} catch (InvalidKeySpecException e) {
-			e.printStackTrace();
-		} catch (NoSuchPaddingException e) {
-			e.printStackTrace();
-		} catch (InvalidKeyException e) {
-			e.printStackTrace();
-		} catch (IllegalBlockSizeException e) {
-			e.printStackTrace();
-		} catch (BadPaddingException e) {
-			e.printStackTrace();
-		}
-        return DatatypeConverter.printHexBinary(encodedMessage);
-    }
-
     
 }
