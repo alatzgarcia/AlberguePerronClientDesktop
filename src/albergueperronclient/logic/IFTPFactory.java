@@ -6,7 +6,7 @@
 package albergueperronclient.logic;
 
 /**
- *
+ * This class is a factory for IFTP interface implementing objects.
  * @author Nerea Jimenez
  */
 public class IFTPFactory {

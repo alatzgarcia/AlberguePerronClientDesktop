@@ -62,12 +62,6 @@ public class UserREST {
         WebTarget resource = webTarget;
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
-
-    public <T> T findUserByLogin(Class<T> responseType, String login) throws ClientErrorException {
-        WebTarget resource = webTarget;
-        resource = resource.path(java.text.MessageFormat.format("login/{0}", new Object[]{login}));
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
-    }
     
     public <T> T findUserByEmail(Class<T> responseType, String email) throws ClientErrorException {
         WebTarget resource = webTarget;
@@ -80,6 +74,13 @@ public class UserREST {
         resource = resource.path(java.text.MessageFormat.format("recoveryEmail/{0}", new Object[]{email}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
+    
+    public <T> T changePassword(Class<T> responseType, String login, String password) throws ClientErrorException {
+        WebTarget resource = webTarget;
+        resource = resource.path(java.text.MessageFormat.format("changepass/{0}/{1}", new Object[]{login, password}));
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+    }
+
 
     public void close() {
         client.close();

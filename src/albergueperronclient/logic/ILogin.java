@@ -5,24 +5,16 @@
  */
 package albergueperronclient.logic;
 
+import albergueperronclient.exceptions.BusinessLogicException;
 import albergueperronclient.modelObjects.UserBean;
-import java.util.Collection;
 
 /**
  * Business logic interface encapsulating business methods for users login.
- * @author Nerea JImenez
+ * @author Nerea Jimenez
  */
 public interface ILogin {
-    /**
-     * This method returns an user with a given id
-     * @param id The id of the user
-     * @return the user
-     */
-  
-    public UserBean login(UserBean userBean);
-    /**
-     * 
-     */
-    public void close();
+   
+    public UserBean login(UserBean userBean)throws BusinessLogicException;
+
     
 }

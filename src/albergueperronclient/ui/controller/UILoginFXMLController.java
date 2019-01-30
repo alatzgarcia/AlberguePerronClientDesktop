@@ -30,13 +30,13 @@ import albergueperronclient.modelObjects.UserBean;
 import static albergueperronclient.ui.controller.GenericController.LOGGER;
 import java.io.IOException;
 
-
-
 /**
  * Controller class for UILogin.fxml
+ *
  * @author Nerea Jimenez
  */
 public class UILoginFXMLController extends GenericController {
+
     /**
      * TextField for the login of the user
      */
@@ -46,7 +46,7 @@ public class UILoginFXMLController extends GenericController {
      * PasswordField for the password of the user
      */
     @FXML
-    private PasswordField pfPassword; 
+    private PasswordField pfPassword;
     /**
      * Label to show error on incorrect login
      */
@@ -72,74 +72,77 @@ public class UILoginFXMLController extends GenericController {
      */
     @FXML
     private Hyperlink hlRemindPass;
-    
+
     /**
      * InitStage method for the UILogin view
+     *
      * @param root parent object to initialize the new scene
      */
-    public void initStage(Parent root){
+    public void initStage(Parent root) {
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setTitle("Login");
         stage.setResizable(false);
-        
+
         stage.setOnShowing(this::handleWindowShowing);
-        
+
         txtUsername.textProperty().addListener(this::onTextChanged);
         pfPassword.textProperty().addListener(this::onTextChanged);
-        
+
         txtUsername.focusedProperty().addListener(this::onFocusChanged);
         pfPassword.focusedProperty().addListener(this::onFocusChanged);
-        
+
         btnExit.setOnAction(this::exit);
         btnLogin.setOnAction(this::login);
         hlRemindPass.setOnAction(this::passwordRecovery);
-        
+
         stage.show();
     }
-    
+
     /**
      * OnShowing handler for the UILogin view
+     *
      * @param event event of window showing/opening that calls to the method
      */
-    public void handleWindowShowing(WindowEvent event){
+    public void handleWindowShowing(WindowEvent event) {
         btnLogin.setDisable(true);
         btnLogin.setMnemonicParsing(true);
         btnLogin.setText("_Iniciar Sesión");
         btnExit.setMnemonicParsing(true);
         btnExit.setText("_Salir");
         txtUsername.requestFocus();
-        
+
     }
-    
+
     /**
      * Method for the login of the user
+     *
      * @param event event that has caused the call to the function
      */
-    public void login(ActionEvent event){
-        
-        try{
+    public void login(ActionEvent event) {
+
+        try {
             //Sends a user to the logic controller with the entered parameters
-            UserBean user = new UserBean(txtUsername.getText(), 
+            UserBean user = new UserBean(txtUsername.getText(),
                     pfPassword.getText());
-         
-            user=loginManager.login(user);
-            
+
+            user = loginManager.login(user);
+
             //if the user exists and it is an admin the loggued view opens
-            if(user!=null && user.getPrivilege()==Privilege.ADMIN){
-                
+            if (user != null && user.getPrivilege() == Privilege.ADMIN) {
+
                 FXMLLoader loader = new FXMLLoader(getClass()
                         .getResource("/albergueperronclient/ui/fxml/UILoggedAdmin.fxml"));
 
                 Parent root;
                 try {
                     root = loader.load();
-                    
+
                     //Get controller from the loader
                     UILogguedFXMLController loggedController = loader.getController();
                     /*Set a reference in the controller 
                         for the UILogin view for the logic manager object           
-                    */
+                     */
                     loggedController.setUsersManager(usersManager);
                     //Send the user to the controller
                     loggedController.setUser(user);
@@ -150,40 +153,38 @@ public class UILoginFXMLController extends GenericController {
                     txtUsername.setText("");
                     pfPassword.setText("");
                     stage.hide();
-               
+
                 } catch (IOException ex) {
                     LOGGER.severe(ex.getMessage());
                 }
-            }else if(user==null){
+            } else if (user == null) {
                 throw new IncorrectLoginException();
-            }else if(user.getPrivilege()!=Privilege.ADMIN){
+            } else if (user != null||user.getPrivilege() != Privilege.ADMIN) {
                 showErrorAlert("Tiene que ser administrador para acceder");
             }
-            
-        
-        
-            
-        } catch(IncorrectLoginException ile){
+
+        } catch (IncorrectLoginException ile) {
             LOGGER.severe("Error. Incorrect login. Detailed error "
                     + ile.getMessage());
             txtUsername.setStyle("-fx-border-color: red");
             pfPassword.setStyle("-fx-border-color: red");
             lblUsernameError.setText("Error. El usuario o la contraseña "
                     + "introducidos no son correctos.");
-       
-        }catch(Exception e){
+
+        } catch (Exception e) {
             LOGGER.severe(e.getMessage());
             showErrorAlert("Se ha producido un error en el inicio de sesión.");
         }
-}
-    
+    }
+
     /**
      * Method for the recovery of the password
+     *
      * @param event event that has caused the call to the function
      */
-    public void passwordRecovery(ActionEvent event){
+    public void passwordRecovery(ActionEvent event) {
         //opens the password recovery view
-        try{
+        try {
             IRecovery recoveryManager = IRecoveryFactory.getRecoveryManager();
             FXMLLoader loader = new FXMLLoader(getClass()
                     .getResource("/albergueperronclient/ui/fxml/UIPasswordRecovery.fxml"));
@@ -192,104 +193,104 @@ public class UILoginFXMLController extends GenericController {
             UIPassRecoveryController recoveryController = loader.getController();
             /*Set a reference in the controller 
                 for the UIController view for the logic manager object           
-            */
+             */
             recoveryController.setRecoveryManager(recoveryManager);
-            //Send the current stage for coming back later
-            //recoveryController.setPreviousStage(stage);
+            
             //Initialize the primary stage of the application
             recoveryController.initStage(root);
             txtUsername.setText("");
             pfPassword.setText("");
             stage.hide();
-        }catch(Exception e){
+        } catch (IOException e) {
             LOGGER.severe(e.getMessage());
             showErrorAlert("Error al redirigir");
         }
     }
-    
+
     /**
      * Method to exit the application
+     *
      * @param event event that has caused the call to the function
      */
-    public void exit(ActionEvent event){
-         try{
+    public void exit(ActionEvent event) {
+        try {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Cerrar aplicación");
             alert.setContentText("¿Desea salir de la aplicación?");
-        
+
             Optional<ButtonType> result = alert.showAndWait();
-            if(result.get()== ButtonType.OK){
+            if (result.get() == ButtonType.OK) {
                 LOGGER.info("Exiting the application.");
-                loginManager.close();
                 Platform.exit();
-            }else{
+            } else {
                 LOGGER.info("Exit cancelled.");
-            } 
-        } catch(Exception ex){
+            }
+        } catch (Exception ex) {
             LOGGER.severe(ex.getMessage());
             showErrorAlert("Error al intentar cerrar la aplicación.");
         }
     }
-    
+
     /**
-     * Method that checks if any any of the fillable fields are empty to enable 
+     * Method that checks if any any of the fillable fields are empty to enable
      * or disable the "btnLogin" button depending on the result
+     *
      * @param observable observable value
      * @param oldValue old value of the element that has called to the method
      * @param newValue new value of the element that has called to the method
      */
     public void onTextChanged(ObservableValue observable,
-             String oldValue,
-             String newValue){
+            String oldValue,
+            String newValue) {
         /*Checks if any of the fields have no text entered 
             and disables the btnLogin button if true  
-        */
-        if(txtUsername.getText().trim().length()<userPasswordMinLength 
-                ||txtUsername.getText().trim().length()>userPasswordMaxLength
-                || pfPassword.getText().trim().length()<userPasswordMinLength
-                || pfPassword.getText().trim().length()>userPasswordMaxLength){
-            btnLogin.setDisable(true);            
-        }
-        else if(txtUsername.getText().trim().length()>=userPasswordMinLength 
-                && txtUsername.getText().trim().length()<=userPasswordMaxLength 
-                && pfPassword.getText().trim().length()>=userPasswordMinLength
-                && pfPassword.getText().trim().length()<=userPasswordMaxLength){
+         */
+        if (txtUsername.getText().trim().length() < userPasswordMinLength
+                || txtUsername.getText().trim().length() > userPasswordMaxLength
+                || pfPassword.getText().trim().length() < userPasswordMinLength
+                || pfPassword.getText().trim().length() > userPasswordMaxLength) {
+            btnLogin.setDisable(true);
+        } else if (txtUsername.getText().trim().length() >= userPasswordMinLength
+                && txtUsername.getText().trim().length() <= userPasswordMaxLength
+                && pfPassword.getText().trim().length() >= userPasswordMinLength
+                && pfPassword.getText().trim().length() <= userPasswordMaxLength) {
             btnLogin.setDisable(false);
         }
-        TextField tf = ((TextField)((ReadOnlyProperty)observable).getBean());
+        TextField tf = ((TextField) ((ReadOnlyProperty) observable).getBean());
         tf.setStyle("");
-        if(tf == txtUsername){
+        if (tf == txtUsername) {
             lblUsernameError.setText("");
-        } else{
+        } else {
             lblPasswordError.setText("");
         }
     }
-    
+
     /**
      * Method to check if the text of a fillable field that has lost the focus
      * has the correct length
+     *
      * @param observable observable value
      * @param oldValue old value of the element that has called to the method
      * @param newValue new value of the element that has called to the method
      */
     //--TOFIX
     public void onFocusChanged(ObservableValue observable,
-             Boolean oldValue,
-             Boolean newValue){
-        if(oldValue){
-            TextField tf = ((TextField)((ReadOnlyProperty)observable).getBean());
-            if(tf.getText().length()!=0){
-                if(tf.getText().length() < userPasswordMinLength ||
-                    tf.getText().length() > userPasswordMaxLength){
-                    if(tf == txtUsername){
+            Boolean oldValue,
+            Boolean newValue) {
+        if (oldValue) {
+            TextField tf = ((TextField) ((ReadOnlyProperty) observable).getBean());
+            if (tf.getText().length() != 0) {
+                if (tf.getText().length() < userPasswordMinLength
+                        || tf.getText().length() > userPasswordMaxLength) {
+                    if (tf == txtUsername) {
                         lblUsernameError.setText("Error. El usuario "
                                 + "debe contener entre 8 y 30 caracteres.");
                     } else {
                         lblPasswordError.setText("Error. La contraseña "
-                            + "debe contener entre 8 y 30 caracteres.");
+                                + "debe contener entre 8 y 30 caracteres.");
                     }
                     tf.setStyle("-fx-border-color: red");
-                } else{
+                } else {
                     tf.setStyle("");
                 }
             }

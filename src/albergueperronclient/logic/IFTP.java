@@ -10,11 +10,10 @@ import albergueperronclient.modelObjects.MyFile;
 import java.io.IOException;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
-import org.apache.commons.net.ftp.FTPClient;
-import org.apache.commons.net.ftp.FTPFile;
+
 
 /**
- *
+ * Business logic interface encapsulating business methods for the FTP client
  * @author Nerea Jimenez
  */
 public interface IFTP {
@@ -34,8 +33,8 @@ public interface IFTP {
 
     public void deleteDirectory(String name);
     
-    public void buildFileTree(TreeItem treeNode) throws IOException;
-    
+    public void buildTree(TreeItem treeNode) throws IOException;
+
     public void changeDirectory(String path);
 
     public void setTreeFile(TreeView treeFile);

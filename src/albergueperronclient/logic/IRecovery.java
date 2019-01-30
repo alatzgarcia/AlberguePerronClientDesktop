@@ -5,8 +5,8 @@
  */
 package albergueperronclient.logic;
 
+import albergueperronclient.exceptions.BusinessLogicException;
 import albergueperronclient.modelObjects.UserBean;
-import java.util.Collection;
 
 /**
  * Business logic interface encapsulating business methods for the recovery 
@@ -15,13 +15,7 @@ import java.util.Collection;
  */
 public interface IRecovery {
   
-    public void close();
+    public void recoverEmail(UserBean user) throws BusinessLogicException;
     
-    /**
-     * Method for the recovery of the user password
-     * @param user The user
-     */
-    public void recoverEmail(UserBean user);
-    
-    public UserBean getUserByEmail(String email);
+    public UserBean getUserByEmail(String email) throws BusinessLogicException;
 }
