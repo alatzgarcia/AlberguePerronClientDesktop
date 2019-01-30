@@ -6,6 +6,7 @@
 package albergueperronclient.logic;
 
 import albergueperronclient.exceptions.BusinessLogicException;
+import albergueperronclient.modelObjects.Privilege;
 import albergueperronclient.modelObjects.UserBean;
 import java.util.Collection;
 import javafx.collections.FXCollections;
@@ -26,5 +27,5 @@ public interface UsersManager {
     
     public void deleteUser(String id) throws BusinessLogicException;
     
-    public void getUserByPrivilege(String privilege) throws BusinessLogicException;
+    public Collection<UserBean> findUsersByPrivilege(Privilege privilege) throws BusinessLogicException;
 }

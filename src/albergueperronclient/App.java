@@ -67,6 +67,7 @@ public class App extends Application {
         }catch(Exception e){
             LOGGER.severe(e.getMessage());
         }*/
+        
         try{
             //Get the logic manager object for the initial stage
             //UsersManager userManager = UserManagerFactory.createUserManager();
@@ -87,7 +88,7 @@ public class App extends Application {
             userController.initStage(root);
         }catch(Exception e){
             LOGGER.severe(e.getMessage());
-        }  
+        }
     }
 }
 

@@ -15,23 +15,15 @@ import albergueperronclient.modelObjects.RoomBean;
 import albergueperronclient.modelObjects.StayBean;
 import albergueperronclient.modelObjects.UserBean;
 import static albergueperronclient.ui.controller.GenericController.LOGGER;
-import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
 import java.util.Date;
-import java.util.EventListener;
 import java.util.Optional;
-import java.util.ResourceBundle;
-import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -98,8 +90,8 @@ public class UIStayFXMLController extends GenericController{
     @FXML
     private Button btnDateToToday;
     private ObservableList<StayBean> staysData;
-    ObservableList<UserBean> guests;
-    ObservableList<RoomBean> rooms;
+    private ObservableList<UserBean> guests;
+    private ObservableList<RoomBean> rooms;
     private StayBean stay;
     private int visible=1;
     private int invisible=2;
@@ -140,8 +132,8 @@ public class UIStayFXMLController extends GenericController{
             rooms=FXCollections.observableArrayList(roomsManager.findRoomsWithAvailableSpace());
             
             //Insert the combo
-            //cbGuest.setItems(guests);
-            //cbRoom.setItems(rooms);
+            cbGuest.setItems(guests);
+            cbRoom.setItems(rooms);
         }catch(BusinessLogicException ble){
             LOGGER.severe(ble.getMessage());
         }catch(ReadException re){

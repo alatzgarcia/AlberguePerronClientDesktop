@@ -20,7 +20,7 @@ import javax.xml.bind.annotation.XmlTransient;
  *
  * @author Alatz
  */
-@XmlRootElement(name="stayRoom")
+@XmlRootElement(name="room")
 public class RoomBean implements Serializable {
     private static long serialVersionUID = 1L;
     private SimpleIntegerProperty roomNum;
