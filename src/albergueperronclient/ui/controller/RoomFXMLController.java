@@ -41,7 +41,7 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 /**
- *
+ * Controller class for the Room view
  * @author Alatz
  */
 public class RoomFXMLController extends GenericController {
@@ -91,6 +91,10 @@ public class RoomFXMLController extends GenericController {
     private RoomManager roomManager;
     private RoomBean selectedRoom;
     
+    /**
+     * Sets the logic manager for the room view
+     * @param roomManager logic manager
+    */
     public void setLogicManager(RoomManager roomManager){
         this.roomManager = roomManager;
     }
@@ -148,7 +152,7 @@ public class RoomFXMLController extends GenericController {
     }
     
     /**
-     * OnShowing handler for the UILogin view
+     * OnShowing handler for the Room view
      * @param event 
      */
     public void handleWindowShowing(WindowEvent event){
@@ -161,6 +165,10 @@ public class RoomFXMLController extends GenericController {
         menuIncidents.setDisable(true);
     }
     
+    /**
+     * Enables the view fields for room update of the selected room
+     * @param event 
+     */
     public void enableUpdateForm(ActionEvent event){
         txtTotal.setDisable(false);
         btnCancel.setDisable(false);
@@ -170,6 +178,10 @@ public class RoomFXMLController extends GenericController {
         tableRoom.setDisable(true);
     }
     
+    /**
+     * Updates the selected room
+     * @param event 
+     */
     public void updateRoom(ActionEvent event){
         try{
             if(checkForData()){
@@ -196,6 +208,10 @@ public class RoomFXMLController extends GenericController {
         }
     }
     
+    /**
+     * Checks if the needed data to create/update a room is inserted
+     * @return 
+     */
     public Boolean checkForData(){
         //--TOFIX --> When clicking the save changes or insert buttons,
         //check all fields are correctly filled before allowing the logic
@@ -207,6 +223,10 @@ public class RoomFXMLController extends GenericController {
         return formHasCorrectData;
     }
     
+    /**
+     * Disables the view fields for the room update
+     * @param event 
+     */
     public void disposeUpdateForm(ActionEvent event){
         txtTotal.setDisable(true);
         btnCancel.setDisable(true);
@@ -216,17 +236,34 @@ public class RoomFXMLController extends GenericController {
         tableRoom.setDisable(false);
     }
     
+    /**
+     * Returns to the menu view
+     * @param event 
+     */
     public void returnToMenu(ActionEvent event){
+        /*try{
+            FXMLLoader loader = new FXMLLoader(getClass()
+                    .getResource("/albergueperronclient/ui/fxml/UILogged.fxml"));
+            Parent root = loader.load();
+            //Get controller from the loader
+            UILoggedFXMLController menuController = loader.getController();
         
+            menuController.setLogicManager(UILoggedManagerFactory.getLoggedManager());
+            //Send the current stage for coming back later
+            //roomController.setPreviousStage(stage);
+            //Initialize the primary stage of the application
+            menuController.initStage(root);
+            //--TOFIX --> Decidir si esconder el stage o cerrarlo
+            stage.hide();
+            stage.close();
+        }catch(Exception e){
+            LOGGER.severe(e.getMessage());
+            showErrorAlert("Error al redirigir al menú.");
+        }*/
     }
     
-    /*public void returnToPrevious(ActionEvent event){
-        stage.close();
-        previousStage.show();
-    }*/
-    
     /**
-     * 
+     * Logs out, sending the user to the login page
      * @param event 
      */
     public void logOut(ActionEvent event){
@@ -238,6 +275,25 @@ public class RoomFXMLController extends GenericController {
             if(result.get()== ButtonType.OK){
                 stage.close();
                 //--TOFIX --> Abrir la ventana de login
+                /*try{
+                    FXMLLoader loader = new FXMLLoader(getClass()
+                            .getResource("/albergueperronclient/ui/fxml/UILogin.fxml"));
+                    Parent root = loader.load();
+                    //Get controller from the loader
+                    UILoginFXMLController menuController = loader.getController();
+        
+                    menuController.setLogicManager(UILoginManagerFactory.getLoginManager());
+                    //Send the current stage for coming back later
+                    //roomController.setPreviousStage(stage);
+                    //Initialize the primary stage of the application
+                    menuController.initStage(root);
+                    //--TOFIX --> Decidir si esconder el stage o cerrarlo
+                    stage.hide();
+                    stage.close();
+                }catch(Exception e){
+                    LOGGER.severe(e.getMessage());
+                    showErrorAlert("Error al redirigir al menú.");
+                }*/
             }else{
                 LOGGER.info("Logout cancelled.");
             } 
@@ -254,6 +310,10 @@ public class RoomFXMLController extends GenericController {
         Platform.exit();
     }
     
+    /**
+     * Opens the guest view
+     * @param event 
+     */
     public void goToGuestsView(ActionEvent event){
         //calls the logicManager register functio
         /*try{
@@ -277,6 +337,10 @@ public class RoomFXMLController extends GenericController {
         }*/
     }
     
+    /**
+     * Opens the pet view
+     * @param event 
+     */
     public void goToPetsView(ActionEvent event){
          /*try{
             FXMLLoader loader = new FXMLLoader(getClass()
@@ -299,6 +363,10 @@ public class RoomFXMLController extends GenericController {
         }*/
     }
     
+    /**
+     * Opens the stay view
+     * @param event 
+     */
     public void goToStaysView(ActionEvent event){
         /*try{
             FXMLLoader loader = new FXMLLoader(getClass()
@@ -321,6 +389,10 @@ public class RoomFXMLController extends GenericController {
         }*/
     }
     
+    /**
+     * Opens the blacklist view
+     * @param event 
+     */
     public void goToBlackListView(ActionEvent event){
         /*try{
             FXMLLoader loader = new FXMLLoader(getClass()
@@ -343,6 +415,10 @@ public class RoomFXMLController extends GenericController {
         }*/
     }
     
+    /**
+     * Opens the incident view
+     * @param event 
+     */
     public void goToIncidentView(ActionEvent event){
         /*try{
             //Get the logic manager object for the initial stage
@@ -372,6 +448,12 @@ public class RoomFXMLController extends GenericController {
         }*/
     }
     
+    /**
+     * Handles the table selection action
+     * @param observable
+     * @param oldValue
+     * @param newValue 
+     */
     public void onTableSelectionChanged(ObservableValue observable,
              Object oldValue,
              Object newValue){
@@ -403,7 +485,7 @@ public class RoomFXMLController extends GenericController {
     public void onTextChanged(ObservableValue observable,
              String oldValue,
              String newValue){
-         if (!newValue.matches("\\d*")) {
+        if (!newValue.matches("\\d*")) {
             txtTotal.setText(newValue.replaceAll("[^\\d]", ""));
         }
         if(!(newValue.equalsIgnoreCase(selectedRoom.getTotalSpace().toString())) || oldValue.length() == 3){

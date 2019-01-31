@@ -55,7 +55,10 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.view.JasperViewer;
-import java.sql.Date;
+import java.util.Date;
+import java.time.LocalDate;
+import java.time.ZoneId;
+
 /**
  * Controller class for the Incident view of the application
  * @author Alatz
@@ -126,11 +129,13 @@ public class IncidentFXMLController extends GenericController {
     private IncidentBean selectedIncident;
     
     /**
-     * Sets the logic Manager for IncidentBean
+     * Sets the logic managers for incident view
      * @param incidentManager manager of the client application logic side
      * for incidents
-     * @param roomManager
-     * @param userManager
+     * @param roomManager manager of the client application logic side
+     * for rooms
+     * @param userManager manager of the client application logic side
+     * for users
      */
     public void setLogicManager(IncidentManager incidentManager,
             RoomManager roomManager, UsersManager userManager){
@@ -140,7 +145,7 @@ public class IncidentFXMLController extends GenericController {
     }
     
     /**
-     * InitStage method for the UILogin view
+     * InitStage method for the incident view
      * @param root 
      * @throws albergueperronclient.exceptions.ReadException 
      */
@@ -203,7 +208,7 @@ public class IncidentFXMLController extends GenericController {
     }
     
     /**
-     * OnShowing handler for the UILogin view
+     * OnShowing handler for the incident view
      * @param event event of window showing/opening that calls to the method
      */
     public void handleWindowShowing(WindowEvent event){
@@ -229,6 +234,7 @@ public class IncidentFXMLController extends GenericController {
         menuIncidents.setDisable(true);
         incidentDate.setDisable(true);
         
+        
         //--TOFIX
         /*btnLogin.setDisable(true);
         btnLogin.setMnemonicParsing(true);
@@ -239,6 +245,10 @@ public class IncidentFXMLController extends GenericController {
         //Settear promptText
     }
     
+    /**
+     * Enables the view fields for incident creation
+     * @param event 
+     */
     public void enableNewIncidentForm(ActionEvent event){
         btnInsert.setVisible(true);
         btnCancel.setDisable(false);
@@ -266,8 +276,13 @@ public class IncidentFXMLController extends GenericController {
         btnModify.setDisable(true);
         btnDelete.setDisable(true);
         incidentDate.setDisable(false);
+        incidentDate.getEditor().setDisable(true);
     }
     
+    /**
+     * Creates a new incident
+     * @param event 
+     */
     public void createIncident(ActionEvent event){
         try{
             if(checkForData()){
@@ -278,6 +293,9 @@ public class IncidentFXMLController extends GenericController {
                 newIncident.setImplicateds(implicateds);
                 newIncident.setIncidentType(txtIncidentType.getText());
                 newIncident.setRoom((RoomBean)cbRoom.getSelectionModel().getSelectedItem());
+                Date date = Date.from(incidentDate.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());
+                //java.sql.Date date = java.sql.Date.valueOf(incidentDate.getValue());
+                newIncident.setDate(date);
                 incidentManager.createIncident(newIncident);
             
                 btnCancel.setDisable(true);
@@ -314,6 +332,10 @@ public class IncidentFXMLController extends GenericController {
         }
     }
     
+    /**
+     * Disables the view fields for incident creation/update
+     * @param event 
+     */
     public void disposeIncidentForm(ActionEvent event){
         if(btnInsert.isVisible()){
             btnNew.setDisable(false);
@@ -332,6 +354,9 @@ public class IncidentFXMLController extends GenericController {
             lstImplicateds.setItems(FXCollections.observableArrayList(selectedIncident.getGuests()));
             txtDescription.setText(selectedIncident.getDescription());
             txtIncidentType.setText(selectedIncident.getIncidentType());
+            //--TOFIX --> Revisar
+            LocalDate localdate = selectedIncident.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            incidentDate.setValue(localdate);
             btnDelete.setDisable(true);
         }
         
@@ -353,6 +378,10 @@ public class IncidentFXMLController extends GenericController {
         incidentDate.setDisable(true);
    }
     
+    /**
+     * Enables the view fields for incident update of the selected room
+     * @param event 
+     */
     public void enableUpdateIncidentForm(ActionEvent event){
         btnSaveChanges.setDisable(false);
         btnSaveChanges.setVisible(true);
@@ -372,8 +401,13 @@ public class IncidentFXMLController extends GenericController {
         selectedIncident.getDescription();
         tableIncidents.setDisable(true);
         incidentDate.setDisable(false);
+        incidentDate.getEditor().setDisable(true);
     }
     
+    /**
+     * Updates the selected incident
+     * @param event 
+     */
     public void updateIncident(ActionEvent event){
         try{
             if(checkForData()){
@@ -386,7 +420,8 @@ public class IncidentFXMLController extends GenericController {
                 incidentToModify.setIncidentType(txtIncidentType.getText());
                 incidentToModify.setRoom((RoomBean)cbRoom.getSelectionModel().getSelectedItem());
                 
-                java.sql.Date date = java.sql.Date.valueOf(incidentDate.getValue());
+                Date date = Date.from(incidentDate.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());
+                //java.sql.Date date = java.sql.Date.valueOf(incidentDate.getValue());
                 incidentToModify.setDate(date);
                 
                 incidentManager.updateIncident(incidentToModify);
@@ -405,12 +440,10 @@ public class IncidentFXMLController extends GenericController {
                 cbGuests.setDisable(true);
                 btnNew.setDisable(false);
                 btnDelete.setDisable(false);
-                incidentDate.getEditor().clear();
-                //incidentDate.setValue(null);
                 incidentDate.setDisable(true);
             
-            tableIncidents.refresh();
-            tableIncidents.setDisable(false);
+                tableIncidents.refresh();
+                tableIncidents.setDisable(false);
             }
             else{
                 //--TOFIX --> Mostrar un aviso al usuario para advertirle de que se requieren todos los datos para poder actualizar
@@ -422,6 +455,10 @@ public class IncidentFXMLController extends GenericController {
         }
     }
     
+    /**
+     * Deletes the selected incident
+     * @param event 
+     */
     public void deleteIncident(ActionEvent event){
         try{
             incidentManager.deleteIncident(selectedIncident.getId());
@@ -434,18 +471,26 @@ public class IncidentFXMLController extends GenericController {
         }
     }
     
+    /**
+     * Checks if the needed data to create/update a room is inserted
+     * @return 
+     */
     public Boolean checkForData(){
         Boolean formHasCorrectData = true;
         if(txtDescription.getText().trim().length()==0 || 
                 txtIncidentType.getText().trim().length()== 0 ||
                 !(cbRoom.getSelectionModel().getSelectedItem() instanceof RoomBean)||
                 !(cbEmployee.getSelectionModel().getSelectedItem() instanceof UserBean )
-                || lstImplicateds.getItems().isEmpty() || incidentDate.getValue() == null){
+                || lstImplicateds.getItems().isEmpty() || incidentDate.getEditor().getText().equalsIgnoreCase("") || !(incidentDate.getValue() instanceof LocalDate)){
             formHasCorrectData = false;
         }
         return formHasCorrectData;
     }
     
+    /**
+     * Adds the selected user to the implicateds list
+     * @param event 
+     */
     public void addToList(ActionEvent event){
         if(cbGuests.getSelectionModel().getSelectedItem() instanceof UserBean){
             Boolean alreadyOnList = false;
@@ -461,10 +506,18 @@ public class IncidentFXMLController extends GenericController {
         }
     }
     
+    /**
+     * Removes the selected user from the implicateds list
+     * @param event 
+     */
     public void removeFromList(ActionEvent event){
         lstImplicateds.getItems().remove(lstImplicateds.getSelectionModel().getSelectedItem());
     }
     
+    /**
+     * Returns to the menu view
+     * @param event 
+     */
     public void returnToMenu(ActionEvent event){
         /*try{
             FXMLLoader loader = new FXMLLoader(getClass()
@@ -494,6 +547,10 @@ public class IncidentFXMLController extends GenericController {
         previousStage.show();
     }*/
     
+    /**
+     * Logs out, sending the user to the login view
+     * @param event 
+     */
     public void logOut(ActionEvent event){
         try{
             Alert alert = new Alert(AlertType.CONFIRMATION);
@@ -503,6 +560,25 @@ public class IncidentFXMLController extends GenericController {
             if(result.get()== ButtonType.OK){
                 stage.close();
                 //--TOFIX --> Abrir la ventana de login
+                /*try{
+                    FXMLLoader loader = new FXMLLoader(getClass()
+                            .getResource("/albergueperronclient/ui/fxml/UILogin.fxml"));
+                    Parent root = loader.load();
+                    //Get controller from the loader
+                    UILoginFXMLController menuController = loader.getController();
+        
+                    menuController.setLogicManager(UILoginManagerFactory.getLoginManager());
+                    //Send the current stage for coming back later
+                    //roomController.setPreviousStage(stage);
+                    //Initialize the primary stage of the application
+                    menuController.initStage(root);
+                    //--TOFIX --> Decidir si esconder el stage o cerrarlo
+                    stage.hide();
+                    stage.close();
+                }catch(Exception e){
+                    LOGGER.severe(e.getMessage());
+                    showErrorAlert("Error al redirigir al menú.");
+                }*/
             }else{
                 LOGGER.info("Logout cancelled.");
             } 
@@ -519,6 +595,10 @@ public class IncidentFXMLController extends GenericController {
         Platform.exit();
     }
     
+    /**
+     * Opens the guest view
+     * @param event 
+     */
     public void goToGuestsView(ActionEvent event){
         //calls the logicManager register functio
         /*try{
@@ -542,6 +622,10 @@ public class IncidentFXMLController extends GenericController {
         }*/
     }
     
+    /**
+     * Opens the pet view
+     * @param event 
+     */
     public void goToPetsView(ActionEvent event){
          /*try{
             FXMLLoader loader = new FXMLLoader(getClass()
@@ -564,6 +648,10 @@ public class IncidentFXMLController extends GenericController {
         }*/
     }
     
+    /**
+     * Opens the stay view
+     * @param event 
+     */    
     public void goToStaysView(ActionEvent event){
         /*try{
             FXMLLoader loader = new FXMLLoader(getClass()
@@ -586,6 +674,10 @@ public class IncidentFXMLController extends GenericController {
         }*/
     }
     
+    /**
+     * Opens the blacklist view
+     * @param event 
+     */
     public void goToBlackListView(ActionEvent event){
         /*try{
             FXMLLoader loader = new FXMLLoader(getClass()
@@ -608,6 +700,10 @@ public class IncidentFXMLController extends GenericController {
         }*/
     }
     
+    /**
+     * Opens the room view
+     * @param event 
+     */
     public void goToRoomView(ActionEvent event){
         try{
             FXMLLoader loader = new FXMLLoader(getClass()
@@ -630,6 +726,12 @@ public class IncidentFXMLController extends GenericController {
         }
     }
     
+    /**
+     * Handles the table selection action
+     * @param observable
+     * @param oldValue
+     * @param newValue 
+     */
     public void onTableSelectionChanged(ObservableValue observable,
              Object oldValue,
              Object newValue){
@@ -643,6 +745,11 @@ public class IncidentFXMLController extends GenericController {
             
             cbEmployee.getSelectionModel().select(selectedIncident.getEmployee());
             lstImplicateds.setItems(selectedIncident.getGuests());
+            //--TOFIX --> Revisar
+            if(selectedIncident.getDate() != null){
+                LocalDate localdate = selectedIncident.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                incidentDate.setValue(localdate);
+            }
             btnModify.setDisable(false);
             btnDelete.setDisable(false);
             //incidentDate.setValue(selectedIncident.getDate());
@@ -702,6 +809,11 @@ public class IncidentFXMLController extends GenericController {
         }
     }
 
+    /**
+     * Generates the JasperReport with information of the incidents shown 
+     * in the table
+     * @param event 
+     */
     public void generateReport(ActionEvent event){
         try {
             JasperReport report=
