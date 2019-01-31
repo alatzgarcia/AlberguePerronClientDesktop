@@ -38,7 +38,7 @@ public class UserBean implements Serializable{
         this.name = new SimpleStringProperty();
         this.surname1 =  new SimpleStringProperty();
         this.surname2 =  new SimpleStringProperty();
-        this.privilege =  new SimpleObjectProperty<Privilege>();
+        this.privilege =  new SimpleObjectProperty();
         this.login =  new SimpleStringProperty();
         this.email =  new SimpleStringProperty();
         this.password =  new SimpleStringProperty();

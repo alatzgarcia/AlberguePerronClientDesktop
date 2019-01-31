@@ -6,9 +6,11 @@
 package albergueperronclient.modelObjects;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -116,6 +118,6 @@ public class StayBean implements Serializable {
 
     @Override
     public String toString() {
-        return "alberguePerronServer.entity.Stay[ id=" + getId() + " ]";
+        return getId().toString();
     }
 }
