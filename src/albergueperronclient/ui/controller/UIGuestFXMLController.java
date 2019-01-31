@@ -215,6 +215,7 @@ public class UIGuestFXMLController extends GenericController{
         //Enables all the fields
         fieldChange(visible);
         fieldChange(enable);
+        txtDni.setDisable(true);
     }
     
     public void newGuest(ActionEvent event){
@@ -396,21 +397,9 @@ public class UIGuestFXMLController extends GenericController{
         user.setId(txtDni.getText().toString());
         user.setPrivilege(Privilege.USER);
         
-        LOGGER.info("GENERATION PASSWORD");
-        
-        PasswordGenerator passwordGenerator = new PasswordGenerator.PasswordGeneratorBuilder()
-                .useDigits(true)
-                .useLower(true)
-                .useUpper(true)
-                .usePunctuation(true)
-                .build();
-        String password = passwordGenerator.generate(8);
         //DatatypeConverter.parseHexBinary(password);
-        byte[] passwordByte=encrypt(password);
-        password=DatatypeConverter.printHexBinary(passwordByte);
             
             
-        user.setPassword(password);
         Date lastPasswordChange= new Date();
         user.setLastPasswordChange(lastPasswordChange);
         

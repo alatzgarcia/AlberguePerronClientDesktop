@@ -38,6 +38,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import org.eclipse.persistence.jpa.jpql.parser.DateTime;
 
 /**
  * FXML Controller class
@@ -69,6 +70,8 @@ public class UIStayFXMLController extends GenericController{
     @FXML
     private Button btnReturn;
     @FXML
+    private DatePicker datePicker;
+    @FXML
     private MenuItem menuGuest;
     @FXML
     private MenuItem menuPet;
@@ -86,7 +89,7 @@ public class UIStayFXMLController extends GenericController{
     private ComboBox<UserBean> cbGuest;
     @FXML
     private ComboBox<RoomBean> cbRoom;
-    private DatePicker datePicker;
+    
     private ObservableList<StayBean> staysData;
     private ObservableList<UserBean> guests;
     private ObservableList<RoomBean> rooms;
@@ -108,7 +111,7 @@ public class UIStayFXMLController extends GenericController{
         
         stage.setOnShowing(this::handleWindowShowing);
         
-        datePicker.promptTextProperty().addListener(this::onTextChanged);
+        //datePicker.promptTextProperty().addListener(this::onTextChanged);
         cbGuest.promptTextProperty().addListener(this::onTextChanged);
         cbRoom.promptTextProperty().addListener(this::onTextChanged);
         
@@ -158,7 +161,8 @@ public class UIStayFXMLController extends GenericController{
             StayBean stay=(StayBean)newValue;
             cbGuest.getSelectionModel().select(tableStay.getSelectionModel().getSelectedItem().getGuest());
             cbRoom.getSelectionModel().select(tableStay.getSelectionModel().getSelectedItem().getRoom());
-            datePicker.setValue(tableStay.getSelectionModel().getSelectedItem().getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+            //datePicker.setValue(tableStay.getSelectionModel().getSelectedItem().getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+            //datePicker.setValue(LocalDate.from(tableStay.getSelectionModel().getSelectedItem().getDate().));
             
             //Enables the correspondent buttons
             btnDelete.setDisable(false);
@@ -177,6 +181,7 @@ public class UIStayFXMLController extends GenericController{
                 staysManager.deleteStay(tableStay.getSelectionModel().getSelectedItem().getId().toString());
                 tableStay.getItems().remove(tableStay.getSelectionModel().getSelectedItem());
                 tableStay.refresh();
+                finishOperation();
             }else if(result.get()==ButtonType.CANCEL){
                 alert.close();
             }
@@ -228,15 +233,17 @@ public class UIStayFXMLController extends GenericController{
         btnInsert.setDisable(false);
         btnModify.setDisable(true);
         btnNew.setDisable(true);
-        btnCancel.setDisable(true);
+        btnCancel.setDisable(false);
         
+        btnInsert.setOnAction(this::saveNewStay);
         
         fieldChange(enable);
         fieldChange(visible);
     }
     
-    public void saveNewStay(){
+    public void saveNewStay(ActionEvent event){
         try{
+            btnCancel.setDisable(false);
             staysManager.createStay(getStayFromFields());
             tableStay.getItems().add(stay);
             tableStay.refresh();
@@ -270,6 +277,8 @@ public class UIStayFXMLController extends GenericController{
         btnInsert.setDisable(true);
         btnReturn.setVisible(true);
         btnReturn.setDisable(false);
+        btnCancel.setDisable(true);
+        datePicker.getEditor().setEditable(false);
         fieldChange(clean);
         fieldChange(disable);
         fieldChange(invisible);
@@ -297,6 +306,7 @@ public class UIStayFXMLController extends GenericController{
                 cbGuest.setDisable(false);
                 cbRoom.setDisable(false);
                 datePicker.setDisable(false);
+                datePicker.getEditor().setDisable(true);
                 break;
             case 4:
                 //Disables the fields
@@ -308,7 +318,7 @@ public class UIStayFXMLController extends GenericController{
                 //Deletes all the existing data
                 cbGuest.getSelectionModel().clearSelection();
                 cbRoom.getSelectionModel().clearSelection();
-                datePicker.setValue(null);
+                datePicker.getEditor().clear();
                 break;
         }
     }
@@ -321,22 +331,24 @@ public class UIStayFXMLController extends GenericController{
         SimpleDateFormat parser=new SimpleDateFormat("yyyy-MM-dd");
         Date date;
         try {
-            /*date = parser.parse(txtDate.getText().toString());
+            date = parser.parse(datePicker.getValue().toString());
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-            String formattedDate = formatter.format(date);*/
+            String formattedDate = formatter.format(date);
             
-            LocalDate localDate = datePicker.getValue();
+            /*LocalDate localDate = datePicker.getValue();
             Instant instant = Instant.from(localDate.atStartOfDay(ZoneId.systemDefault()));
-            Date dateFinal = Date.from(instant);
+            Date dateFinal = Date.from(instant);*/
             
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            //Date date=Date.from(datePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());
             
-            Date date2=sdf.parse(dateFinal.toString());
-            LOGGER.info(date2.toString());
-            stay.setDate(date2);
+            /*SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            
+            Date date2=sdf.parse(date.toString());*/
+            LOGGER.info(date.toString());
+            stay.setDate(date);
             stay.setGuest(cbGuest.getSelectionModel().getSelectedItem());
             stay.setRoom(cbRoom.getSelectionModel().getSelectedItem());
-            stay.setId(tableStay.getSelectionModel().getSelectedItem().getId());
+            //stay.setId(tableStay.getSelectionModel().getSelectedItem().getId());
         /*} catch (ParseException ex) {
             LOGGER.info(ex.getMessage());*/ 
         }catch(Exception e){
@@ -387,6 +399,7 @@ public class UIStayFXMLController extends GenericController{
     }
     
     public void finishOperation(){
+        tableStay.getSelectionModel().clearSelection();
         fieldChange(invisible);
         fieldChange(clean);
         btnCancel.setDisable(true);
@@ -395,7 +408,7 @@ public class UIStayFXMLController extends GenericController{
         btnSaveChanges.setDisable(true);
         btnInsert.setDisable(true);
         btnNew.setDisable(false);
-        tableStay.getSelectionModel().clearSelection();
+        btnModify.setDisable(false);
         tableStay.setDisable(false);
     }
 

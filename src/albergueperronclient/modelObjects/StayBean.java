@@ -68,7 +68,7 @@ public class StayBean implements Serializable {
      * Gets room value for stay.
      * @return The room value.
      */
-    @XmlElement(name="stayRoom")
+    @XmlElement(name="room")
     public RoomBean getRoom() {
         return this.room.get();
     }
