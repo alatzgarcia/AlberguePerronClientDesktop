@@ -19,8 +19,9 @@ import javax.ws.rs.core.GenericType;
  *        // do whatever with response
  *        client.close();
  * </pre>
- *
- * @author 2dam
+ * 
+ * RoomRESTClient class for the AlberguePerronClient application
+ * @author Alatz
  */
 public class RoomRESTClient {
 

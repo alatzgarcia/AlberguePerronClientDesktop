@@ -41,15 +41,24 @@ public class IncidentBean implements Serializable {
         this.date = new SimpleObjectProperty<Date>();
     }
     
+    /**
+     * Getter for the incident id attribute
+     * @return 
+     */
     public Integer getId() {
         return this.id.get();
     }
 
+    /**
+     * Setter for the incident id attribute
+     * @param id 
+     */
     public void setId(Integer id) {
         this.id.set(id);
     }
     
     /**
+     * Getter for the incidentType attribute
      * @return the incidentType
      */
     public String getIncidentType() {
@@ -57,6 +66,7 @@ public class IncidentBean implements Serializable {
     }
 
     /**
+     * Setter for the incident incidentType attribute
      * @param incidentType the incidentType to set
      */
     public void setIncidentType(String incidentType) {
@@ -64,20 +74,15 @@ public class IncidentBean implements Serializable {
     }
 
     /**
+     * Getter for the implicatesds attribute
      * @return the implicateds
      */
     public List<UserBean> getImplicateds() {
         return this.implicateds;
     }
-    
-    /**
-     * @return the implicateds
-     */
-    /*public List<UserBean> getImplicateds() {
-        return this.implicateds.get();
-    }*/
 
     /**
+     * Setter for the implicatesds attribute
      * @param implicateds the implicateds to set
      */
     public void setImplicateds(List<UserBean> implicateds) {
@@ -90,14 +95,7 @@ public class IncidentBean implements Serializable {
     }
     
     /**
-     * @param implicateds the implicateds to set
-     */
-    /*public void setImplicateds(List<UserBean> implicateds) {
-        //--TOFIX
-        this.implicateds.set(implicateds);
-    }*/
-
-    /**
+     * Getter for the description attribute
      * @return the description
      */
     public String getDescription() {
@@ -105,6 +103,7 @@ public class IncidentBean implements Serializable {
     }
 
     /**
+     * Setter for the description attribute
      * @param description the description to set
      */
     public void setDescription(String description) {
@@ -112,6 +111,7 @@ public class IncidentBean implements Serializable {
     }
     
     /**
+     * Getter for the room attribute
      * @return the room
      */
     public RoomBean getRoom() {
@@ -119,20 +119,33 @@ public class IncidentBean implements Serializable {
     }
 
     /**
+     * Setter for the room attribute
      * @param room the room to set
      */
     public void setRoom(RoomBean room) {
         this.room.set(room);
     }
     
+    /**
+     * Getter for the date attribute
+     * @return the date
+     */
     public Date getDate(){
         return this.date.get();
     }
     
+    /**
+     * Setter for the date attribute
+     * @param date the date
+     */
     public void setDate(Date date){
         this.date.set(date);
     }
 
+    /**
+     * Hash code method
+     * @return 
+     */
     @Override
     public int hashCode() {
         int hash = 0;
@@ -140,6 +153,11 @@ public class IncidentBean implements Serializable {
         return hash;
     }
 
+    /**
+     * Compares two objects to see if they are the same object
+     * @param object
+     * @return 
+     */
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
@@ -153,11 +171,19 @@ public class IncidentBean implements Serializable {
         return true;
     }
 
+    /**
+     * Gets the incident in string format
+     * @return the incident as a string
+     */
     @Override
     public String toString() {
-        return "alberguePerronServer.entity.Incident[ id=" + getId() + " ]";
+        return ("Incident id: " + this.getId().toString());
     }
 
+    /**
+     * Gets the user of type employee from the implicateds list
+     * @return the employee user
+     */
     public UserBean getEmployee(){
         UserBean employee = null;
         List<UserBean> users = this.getImplicateds();
@@ -169,6 +195,10 @@ public class IncidentBean implements Serializable {
         return employee;
     }
     
+    /**
+     * Gets the users of type guest from the implicateds list
+     * @return the guest users
+     */
     public ObservableList<UserBean> getGuests(){
         List<UserBean> guests = new ArrayList<UserBean>();
         List<UserBean> users = this.getImplicateds();

@@ -21,7 +21,8 @@ import javax.ws.rs.core.GenericType;
  *        // do whatever with response
  *        client.close();
  * </pre>
- *
+ * 
+ * IncidentREST class for the AlberguePerronClient application
  * @author Alatz
  */
 public class IncidentRESTClient {
