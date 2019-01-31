@@ -6,9 +6,10 @@
 package albergueperronclient.logic;
 
 import albergueperronclient.exceptions.BusinessLogicException;
-import utils.Encryptation;
+
 import albergueperronclient.modelObjects.UserBean;
 import albergueperronclient.rest.UserREST;
+import albergueperronclient.utils.Encryptation;
 import java.util.logging.Level;
 
 import java.util.logging.Logger;

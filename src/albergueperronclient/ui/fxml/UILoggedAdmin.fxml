@@ -21,7 +21,7 @@
           </Menu>
             <Menu disable="true" mnemonicParsing="false">
                <graphic>
-                  <AnchorPane prefHeight="18.0" prefWidth="1110.0" />
+                  <AnchorPane prefHeight="19.0" prefWidth="1028.0" />
                </graphic>
             </Menu>
           <Menu mnemonicParsing="false" text="Cerrar">
