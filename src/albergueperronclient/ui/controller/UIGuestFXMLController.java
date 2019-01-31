@@ -109,11 +109,11 @@ public class UIGuestFXMLController extends GenericController{
     private int disable=4;
     private int clean=5;
     
-    public void initStage(Parent root) throws BusinessLogicException{
+    public void initStage(Parent root){
         Scene scene = new Scene(root);
         Stage stage=new Stage();
         stage.setScene(scene);
-        stage.setTitle("Login");
+        stage.setTitle("Huespedes");
         stage.setResizable(false);
         
         stage.setOnShowing(this::handleWindowShowing);
@@ -140,9 +140,13 @@ public class UIGuestFXMLController extends GenericController{
         columnDni.setCellValueFactory(new PropertyValueFactory<>("id"));
         columnName.setCellValueFactory(new PropertyValueFactory<>("fullname"));
         
-        //Create an observable lis for the users
-        usersData = FXCollections.observableArrayList
-        (usersManager.findUsersByPrivilege(Privilege.USER));
+        try {
+            //Create an observable lis for the users
+            usersData = FXCollections.observableArrayList
+                (usersManager.findUsersByPrivilege(Privilege.USER));
+        } catch (BusinessLogicException ex) {
+            LOGGER.severe(ex.getMessage());
+        }
         
         //Set the observable data
         tableGuest.setItems(usersData);
@@ -307,35 +311,27 @@ public class UIGuestFXMLController extends GenericController{
     }
 
    private void saveUpdateGuest(ActionEvent event){
-        LOGGER.info("SE HACE EL BOTON DE UPDATE");
-        //if (checkFields()){
-            //Cuando se quiera hacer algo con el CRUD usar userManager
-            //UserBean userUpdate=new UserBean();
-            //userUpdate=getUserFromFields();
-        
-            LOGGER.info("Entrando en save update guest");
-            //Updates the user
-            try{
-                usersManager.updateUser(getUserFromFieldsUpdate(),tableGuest.getSelectionModel().getSelectedItem().getId());
-                tableGuest.getItems().remove(tableGuest.getSelectionModel().getSelectedItem());
-                tableGuest.getItems().add(user);
-                tableGuest.refresh();
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION.INFORMATION);
-                alert.setTitle("Modificado");
-                alert.setContentText("Se modificó el usuario ");    
-                Optional<ButtonType> result = alert.showAndWait();
-                if(result.get()== ButtonType.OK){
-                    tableGuest.getSelectionModel().clearSelection();
-                    tableGuest.setDisable(true);
-                    finishOperation();
-                    alert.close();                    
-                }
-            }catch(BusinessLogicException ble){
-                LOGGER.info("The update failed "+ble.getMessage());
-            }
-            
-        //}
-        
+       LOGGER.info("SE HACE EL BOTON DE UPDATE");
+       LOGGER.info("Entrando en save update guest");
+       //Updates the user
+       try {
+           usersManager.updateUser(getUserFromFieldsUpdate(), tableGuest.getSelectionModel().getSelectedItem().getId());
+           tableGuest.getItems().remove(tableGuest.getSelectionModel().getSelectedItem());
+           tableGuest.getItems().add(user);
+           tableGuest.refresh();
+           Alert alert = new Alert(Alert.AlertType.CONFIRMATION.INFORMATION);
+           alert.setTitle("Modificado");
+           alert.setContentText("Se modificó el usuario ");
+           Optional<ButtonType> result = alert.showAndWait();
+           if (result.get() == ButtonType.OK) {
+               tableGuest.getSelectionModel().clearSelection();
+               tableGuest.setDisable(true);
+               finishOperation();
+               alert.close();
+           }
+       } catch (BusinessLogicException ble) {
+           LOGGER.info("The update failed " + ble.getMessage());
+       }     
     }
     
     public void cancel(ActionEvent event){
@@ -356,16 +352,16 @@ public class UIGuestFXMLController extends GenericController{
     
     public void finishOperation(){
         fieldChange(invisible);
-                fieldChange(clean);
-                btnCancel.setDisable(true);
-                btnModifyGuest.setDisable(true);
-                btnSaveChanges.setVisible(false);
-                btnInsertGuest.setVisible(false);
-                btnSaveChanges.setDisable(true);
-                btnInsertGuest.setDisable(true);
-                btnNewGuest.setDisable(false);
-                tableGuest.getSelectionModel().clearSelection();
-                tableGuest.setDisable(false);      
+        fieldChange(clean);
+        btnCancel.setDisable(true);
+        btnModifyGuest.setDisable(true);
+        btnSaveChanges.setVisible(false);
+        btnInsertGuest.setVisible(false);
+        btnSaveChanges.setDisable(true);
+        btnInsertGuest.setDisable(true);
+        btnNewGuest.setDisable(false);
+        tableGuest.getSelectionModel().clearSelection();
+        tableGuest.setDisable(false);
     }
     
     private UserBean getUserFromFieldsUpdate() {

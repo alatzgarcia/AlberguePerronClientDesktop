@@ -8,15 +8,15 @@ package albergueperronclient.ui.controller;
 import albergueperronclient.exceptions.BusinessLogicException;
 import albergueperronclient.exceptions.ReadException;
 import albergueperronclient.logic.RoomManagerFactory;
-import albergueperronclient.logic.StayManagerFactory;
-import albergueperronclient.logic.StaysManager;
 import albergueperronclient.logic.UserManagerFactory;
 import albergueperronclient.modelObjects.RoomBean;
 import albergueperronclient.modelObjects.StayBean;
 import albergueperronclient.modelObjects.UserBean;
 import static albergueperronclient.ui.controller.GenericController.LOGGER;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.Optional;
 import javafx.beans.value.ObservableValue;
@@ -30,6 +30,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -85,19 +86,16 @@ public class UIStayFXMLController extends GenericController{
     private ComboBox<UserBean> cbGuest;
     @FXML
     private ComboBox<RoomBean> cbRoom;
-    @FXML
-    private TextField txtDate;
-    @FXML
-    private Button btnDateToToday;
+    private DatePicker datePicker;
     private ObservableList<StayBean> staysData;
     private ObservableList<UserBean> guests;
     private ObservableList<RoomBean> rooms;
     private StayBean stay;
-    private int visible=1;
-    private int invisible=2;
-    private int enable=3;
-    private int disable=4;
-    private int clean=5;
+    private final int visible=1;
+    private final int invisible=2;
+    private final int enable=3;
+    private final int disable=4;
+    private final int clean=5;
     /**
      * Initializes the controller class.
      */
@@ -105,12 +103,14 @@ public class UIStayFXMLController extends GenericController{
         Scene scene = new Scene(root);
         Stage stage=new Stage();
         stage.setScene(scene);
-        stage.setTitle("Login");
+        stage.setTitle("Estancias");
         stage.setResizable(false);
         
         stage.setOnShowing(this::handleWindowShowing);
         
-        txtDate.textProperty().addListener(this::onTextChanged);
+        datePicker.promptTextProperty().addListener(this::onTextChanged);
+        cbGuest.promptTextProperty().addListener(this::onTextChanged);
+        cbRoom.promptTextProperty().addListener(this::onTextChanged);
         
         //Sets the columns the attributes to use
         columnGuests.setCellValueFactory(new PropertyValueFactory<>("guest"));
@@ -158,7 +158,7 @@ public class UIStayFXMLController extends GenericController{
             StayBean stay=(StayBean)newValue;
             cbGuest.getSelectionModel().select(tableStay.getSelectionModel().getSelectedItem().getGuest());
             cbRoom.getSelectionModel().select(tableStay.getSelectionModel().getSelectedItem().getRoom());
-            txtDate.setText(tableStay.getSelectionModel().getSelectedItem().getDate().toString());
+            datePicker.setValue(tableStay.getSelectionModel().getSelectedItem().getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
             
             //Enables the correspondent buttons
             btnDelete.setDisable(false);
@@ -215,7 +215,7 @@ public class UIStayFXMLController extends GenericController{
                 alert.setContentText("Se modificó la estancia "+ tableStay.getSelectionModel().getSelectedItem().getId());    
                 Optional<ButtonType> result = alert.showAndWait();
                 if(result.get()== ButtonType.OK){
-                    tableStay.getSelectionModel().clearSelection();
+                    finishOperation();
                     alert.close();                    
                 }
             }catch(BusinessLogicException ble){
@@ -245,7 +245,7 @@ public class UIStayFXMLController extends GenericController{
             alert.setContentText("La estancia fue creada");    
             Optional<ButtonType> result = alert.showAndWait();
             if(result.get()== ButtonType.OK){
-                tableStay.getSelectionModel().clearSelection();
+                finishOperation();
                 alert.close();  
             }
         }catch(BusinessLogicException ble){
@@ -284,31 +284,31 @@ public class UIStayFXMLController extends GenericController{
                 //Sets visbles all the fields of the window
                 cbGuest.setVisible(true);
                 cbRoom.setVisible(true);
-                txtDate.setVisible(true);
+                datePicker.setVisible(true);
         break;
             case 2:
                 //Sets invisible all the fields of the window
                 cbGuest.setVisible(false);
                 cbRoom.setVisible(false);
-                txtDate.setVisible(false);
+                datePicker.setVisible(false);
                 break;
             case 3:
                 //Enables the fields
                 cbGuest.setDisable(false);
                 cbRoom.setDisable(false);
-                txtDate.setDisable(false);
+                datePicker.setDisable(false);
                 break;
             case 4:
                 //Disables the fields
                 cbGuest.setDisable(true);
                 cbRoom.setDisable(true);
-                txtDate.setDisable(true);
+                datePicker.setDisable(true);
                 break;
             case 5:
                 //Deletes all the existing data
                 cbGuest.getSelectionModel().clearSelection();
                 cbRoom.getSelectionModel().clearSelection();
-                txtDate.setText("");
+                datePicker.setValue(null);
                 break;
         }
     }
@@ -321,23 +321,53 @@ public class UIStayFXMLController extends GenericController{
         SimpleDateFormat parser=new SimpleDateFormat("yyyy-MM-dd");
         Date date;
         try {
-            date = parser.parse(txtDate.getText().toString());
+            /*date = parser.parse(txtDate.getText().toString());
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-            String formattedDate = formatter.format(date);
-            stay.setDate(date);
+            String formattedDate = formatter.format(date);*/
+            
+            LocalDate localDate = datePicker.getValue();
+            Instant instant = Instant.from(localDate.atStartOfDay(ZoneId.systemDefault()));
+            Date dateFinal = Date.from(instant);
+            
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            
+            Date date2=sdf.parse(dateFinal.toString());
+            LOGGER.info(date2.toString());
+            stay.setDate(date2);
             stay.setGuest(cbGuest.getSelectionModel().getSelectedItem());
             stay.setRoom(cbRoom.getSelectionModel().getSelectedItem());
             stay.setId(tableStay.getSelectionModel().getSelectedItem().getId());
-        } catch (ParseException ex) {
-            LOGGER.info(ex.getMessage());
-        }        
+        /*} catch (ParseException ex) {
+            LOGGER.info(ex.getMessage());*/ 
+        }catch(Exception e){
+            LOGGER.severe(e.getMessage());
+        }  
         return stay;
     }
     
     public void onTextChanged(ObservableValue observable,
             String oldValue,
             String newValue){
-        
+//preguntar como combrobar el combo
+        if (datePicker.getValue() == null
+                || cbGuest.getSelectionModel().getSelectedItem() == null
+                || cbRoom.getSelectionModel().getSelectedItem() == null) {
+            if (btnSaveChanges.isVisible()) {
+                btnSaveChanges.setDisable(true);
+            }
+            if (btnInsert.isVisible()) {
+                btnInsert.setDisable(true);
+            }
+        } else if (datePicker.getValue() != null
+                && cbGuest.getSelectionModel().getSelectedItem() != null
+                && cbRoom.getSelectionModel().getSelectedItem() != null) {
+            if (btnSaveChanges.isVisible()) {
+                btnSaveChanges.setDisable(false);
+            }
+            if (btnInsert.isVisible()) {
+                btnInsert.setDisable(false);
+            }
+        }
     }
     
     public void cancel(ActionEvent event){
@@ -347,20 +377,29 @@ public class UIStayFXMLController extends GenericController{
             alert.setContentText("¿Desea cancelar la operación?");    
             Optional<ButtonType> result = alert.showAndWait();
             if(result.get()== ButtonType.OK){
-                tableStay.getSelectionModel().clearSelection();
-                fieldChange(invisible);
-                fieldChange(clean);
-                btnCancel.setDisable(true);
-                btnSaveChanges.setVisible(false);
-                btnInsert.setVisible(false);
-                btnSaveChanges.setDisable(true);
-                btnInsert.setDisable(true);
-                btnNew.setDisable(false);
+                finishOperation();
             }else if(result.get()==ButtonType.CANCEL){
                 alert.close();
             }
         } catch(Exception ex){
             LOGGER.severe(ex.getMessage());
         }
+    }
+    
+    public void finishOperation(){
+        fieldChange(invisible);
+        fieldChange(clean);
+        btnCancel.setDisable(true);
+        btnSaveChanges.setVisible(false);
+        btnInsert.setVisible(false);
+        btnSaveChanges.setDisable(true);
+        btnInsert.setDisable(true);
+        btnNew.setDisable(false);
+        tableStay.getSelectionModel().clearSelection();
+        tableStay.setDisable(false);
+    }
+
+    @FXML
+    private void datePicker(ActionEvent event) {
     }
 }

@@ -12,6 +12,7 @@ import albergueperronclient.logic.UserManagerFactory;
 import albergueperronclient.logic.UsersManager;
 import albergueperronclient.ui.controller.UIGuestFXMLController;
 import albergueperronclient.ui.controller.UIStayFXMLController;
+import java.io.IOException;
 import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -45,30 +46,29 @@ public class App extends Application {
      * @throws Exception 
      */
     @Override
-    public void start(Stage primaryStage) throws Exception {
-        /*try{
+    public void start(Stage primaryStage) {
+        try{
             //Get the logic manager object for the initial stage
             //UsersManager userManager = UserManagerFactory.createUserManager();
             StaysManager stayManager=StayManagerFactory.createStayManager();
             
             //Load the fxml file
-            FXMLLoader loader = new FXMLLoader(getClass()
-                    .getResource("/albergueperronclient/ui/fxml/UIStay.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/albergueperronclient/ui/fxml/UIStay.fxml"));
             Parent root = loader.load();
             //Get controller from the loader
             UIStayFXMLController stayController = loader.getController();
-            /*Set a reference in the controller for the UILogin view for the logic manager object           
-            *
+            //Set a reference in the controller for the UILogin view for the logic manager object           
+            
             stayController.setStaysManager(stayManager);
             //Set a reference for Stage in the UILogin view controller
             stayController.setStage(primaryStage);
             //Initialize the primary stage of the application
             stayController.initStage(root);
-        }catch(Exception e){
+        }catch(IOException e){
             LOGGER.severe(e.getMessage());
-        }*/
+        }
         
-        try{
+        /*try{
             //Get the logic manager object for the initial stage
             //UsersManager userManager = UserManagerFactory.createUserManager();
             UsersManager userManager=UserManagerFactory.createUserManager();
@@ -88,7 +88,7 @@ public class App extends Application {
             userController.initStage(root);
         }catch(Exception e){
             LOGGER.severe(e.getMessage());
-        }
+        }*/
     }
 }
 
