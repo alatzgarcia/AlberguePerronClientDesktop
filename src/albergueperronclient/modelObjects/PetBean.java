@@ -18,14 +18,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name="pet")
 public class PetBean implements Serializable{
     private  SimpleIntegerProperty id;
-    private  SimpleObjectProperty<UserBean> owner; //sale la dir 
+    private  SimpleObjectProperty<UserBean> owner;  
     private  SimpleStringProperty specie;
     private  SimpleStringProperty race;
     private  SimpleStringProperty colour;
     private  SimpleStringProperty description;
     private  SimpleStringProperty name;
-    private  SimpleStringProperty dni; //no sale nada
-
+    private  SimpleStringProperty dni;
     
     public PetBean(){
            this.id=new SimpleIntegerProperty();
@@ -37,7 +36,7 @@ public class PetBean implements Serializable{
            this.name=new SimpleStringProperty("");
            this.dni = new SimpleStringProperty("");
     }
-
+    
     public Integer getId(){
         return this.id.get();
     }
@@ -93,5 +92,5 @@ public class PetBean implements Serializable{
     public void setDni(String dni){
         this.dni.set(dni);
     }
-    
+  
 }

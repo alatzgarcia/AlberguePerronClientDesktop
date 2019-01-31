@@ -52,6 +52,7 @@ public class App extends Application {
             //Set a reference for Stage in the UILogin view controller
             petController.setStage(primaryStage);
             //Initialize the primary stage of the application
+            //petController.initStage(root);
             petController.initStage(root);
         }catch(Exception e){
             Logger.getLogger(e.getMessage());

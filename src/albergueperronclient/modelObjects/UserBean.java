@@ -1,4 +1,4 @@
- /*
+/*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlTransient;
  */
 @XmlRootElement(name="user")
 public class UserBean implements Serializable{
-    private SimpleStringProperty id;//dni del user
+    private SimpleStringProperty id;
     private SimpleStringProperty name;
     private SimpleStringProperty surname1;
     private SimpleStringProperty surname2;
@@ -167,9 +167,10 @@ public class UserBean implements Serializable{
     public void setFullname(String fullname){
         this.fullname.set(fullname);
     }
-
-   @Override
-    public String toString() {
+    
+    @Override
+    public String toString(){
         return this.getFullname();
     }
+    
  }

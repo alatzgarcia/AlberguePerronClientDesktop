@@ -12,5 +12,5 @@ package albergueperronclient.logic;
 public class UserManagerFactory {
     public static UsersManager createUserManager(){
         return new UserManagerImplementation();
-    }
+    } 
 }

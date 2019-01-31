@@ -10,6 +10,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 import albergueperronclient.logic.PetsManager;
+import albergueperronclient.logic.UsersManager;
 
 /**
  *
@@ -28,6 +29,8 @@ public class GenericController {
      * The business logic object containing all business methods.
      */
     protected PetsManager petsManager;
+    
+    protected UsersManager usersManager;
     /**
      * Sets the business logic object to be used by this UI controller. 
      * @param petsManager An object implementing {@link PetSsManager} interface.
@@ -81,4 +84,6 @@ public class GenericController {
     public void setPreviousStage(Stage stage){
         this.previousStage = stage;
     }
+    
+    
 }

@@ -26,6 +26,7 @@ public interface PetsManager {
     /**
      * This method updates data for an existing UserBean data for user. 
      * @param pet The PetBean object to be updated.
+     * @param id
      * @throws BusinessLogicException If there is any error while processing.
      */
     public void updatePet(PetBean pet, Integer id)throws BusinessLogicException;

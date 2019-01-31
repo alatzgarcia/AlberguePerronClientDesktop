@@ -6,6 +6,7 @@
 package albergueperronclient.logic;
 
 import albergueperronclient.exceptions.BusinessLogicException;
+import albergueperronclient.modelObjects.Privilege;
 import albergueperronclient.modelObjects.UserBean;
 import albergueperronclient.rest.UserREST;
 import java.util.Collection;
@@ -90,14 +91,16 @@ public class UserManagerImplementation implements UsersManager{
     }
 
     @Override
-    public void getUserByPrivilege(String privilege) throws BusinessLogicException {
+    public Collection<UserBean> findUsersByPrivilege(Privilege privilege) throws BusinessLogicException {
+        Collection<UserBean> users =null;
         try{
-            webClient.findByPrivilege(UserBean.class, privilege);
+            //Ask webClient for all users' data.
+            users = webClient.findByPrivilege(new GenericType<List<UserBean>>() {}, privilege);
         }catch(Exception e){
             LOGGER.log(Level.SEVERE,
-                    "UsersManager: Exception getting user by privilege, ",
+                    "UsersManager: Exception finding all users, ",
                     e.getMessage());
-           throw new BusinessLogicException("Error getting user: \n"+e.getMessage() );
         }
-    }  
+        return users;
+    }
 }

@@ -6,6 +6,7 @@
 package albergueperronclient.controller;
 
 import albergueperronclient.exceptions.BusinessLogicException;
+import albergueperronclient.exceptions.ReadException;
 import albergueperronclient.logic.UserManagerFactory;
 import albergueperronclient.logic.UsersManager;
 import java.util.Optional;
@@ -33,9 +34,22 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import albergueperronclient.modelObjects.PetBean;
+import albergueperronclient.modelObjects.Privilege;
 import albergueperronclient.modelObjects.UserBean;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.ComboBox;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
 /**
  * FXML Controller class
  *
@@ -55,7 +69,7 @@ public class UIPetFXMLController extends GenericController {
     @FXML
     private Button btnNew;
     @FXML
-    private TextField txtDni;
+    private ComboBox<UserBean> cbUsers;
     @FXML
     private Button btnCancel;
     @FXML
@@ -90,8 +104,11 @@ public class UIPetFXMLController extends GenericController {
     private MenuItem menuLogOut;
     @FXML
     private MenuItem menuExit;
-  
+    @FXML
+    private Button btnReport;
+    
     private ObservableList<PetBean> petData;
+    private ObservableList<UserBean> usersData;
     private PetBean pet;
     private Integer petId;
     private UserBean owner;
@@ -108,7 +125,7 @@ public class UIPetFXMLController extends GenericController {
     public void initStage(Parent root) throws BusinessLogicException{ 
         try{
             Scene scene = new Scene(root);
-            stage = new Stage();
+            Stage stage=new Stage();
             stage.setScene(scene);
             stage.setTitle("Pet");
             stage.setResizable(false);
@@ -116,8 +133,10 @@ public class UIPetFXMLController extends GenericController {
             stage.setOnShowing(this::handleWindowShowing);
             
             //btn actions
+            btnReport.setOnAction(this::generateReport);
             btnModify.setOnAction(this::updatePet);
-            btnNew.setOnAction(this::createPet);
+            btnNew.setOnAction(this::newPet);
+            btnInsert.setOnAction(this::saveNewPet);
             btnReturn.setOnAction(this::toLogged);
             btnDelete.setOnAction(this::deletePet);
             btnCancel.setOnAction(this::cancelPet);
@@ -134,43 +153,60 @@ public class UIPetFXMLController extends GenericController {
             columnSpecie.setCellValueFactory(new PropertyValueFactory<>("specie"));
             columnName.setCellValueFactory(new PropertyValueFactory<>("name"));
             columnRaza.setCellValueFactory(new PropertyValueFactory<>("race"));
-       
+            try{
+                //Create an observable list for the users
+                petData = FXCollections.observableArrayList(petsManager.getAllPets());
+                //Set the observable data
+                tablePet.setItems(petData); 
+                //Create the interfaces
+                usersManager=UserManagerFactory.createUserManager(); 
+                //Insert the data at cbs
+                usersData=FXCollections.observableArrayList(usersManager.getAllUsers());
+                //Insert the combo
+                cbUsers.setItems(usersData);   
+            }catch(BusinessLogicException ble){
+                LOGGER.severe(ble.getMessage());
+            }
             petData=FXCollections.observableArrayList(petsManager.getAllPets());
-            tablePet.setItems(petData);
+            //tablePet.setItems(petData);
             tablePet.getSelectionModel().selectedItemProperty().addListener(this::handlePetsTableSelectionChanged);
             tablePet.getSelectionModel().selectedItemProperty().addListener(this::handlePetsTableFocus);
             stage.show();
         }catch(Exception e){
-            LOGGER.severe(e.getMessage()); 
+            e.printStackTrace(); 
         }
     }
+    
     public void handlePetsTableFocus(ObservableValue observable, Object oldValue
         , Object newValue ){
         
         fieldChange(visible);
         fieldChange(disable);
         btnSaveChanges.setDisable(true);
-        btnSaveChanges.setVisible(true);
+        btnSaveChanges.setVisible(false);
         btnInsert.setDisable(true);
         btnInsert.setVisible(false);
+        btnNew.setDisable(false);
         btnCancel.setDisable(false);
+        btnReport.setDisable(false);
         if(newValue!=null){
             PetBean pet=(PetBean)newValue;
-            txtDni.setText(pet.getOwner().toString());
+            cbUsers.getSelectionModel().select(tablePet.getSelectionModel().getSelectedItem().getOwner());
             txtColour.setText(pet.getColour());
             txtEspecie.setText(pet.getSpecie());
             txtRaza.setText(pet.getRace());
             txtName.setText(pet.getName());
             txtDescription.setText(pet.getDescription());
             
-            btnDelete.setDisable(false);
-            btnNew.setDisable(false);
-            btnModify.setDisable(false);
+            //btnDelete.setDisable(false);
+            btnNew.setDisable(true);
+            //btnModify.setDisable(false);
         }
         tablePet.refresh();
     }
     
     public void handleWindowShowing(WindowEvent event){
+       //Terminado
        btnCancel.setDisable(true);
        btnDelete.setDisable(true);
        btnNew.setDisable(false);
@@ -178,33 +214,34 @@ public class UIPetFXMLController extends GenericController {
        btnInsert.setVisible(false);
        btnSaveChanges.setVisible(false);
        btnModify.setDisable(true);
-       fieldChange(visible);
-       fieldChange(enable);
-       txtDni.setPromptText("Introduzca el nombre del propietario");
+       cbUsers.setDisable(true);
+       fieldChange(disable);
        txtName.setPromptText("Introduce el nombre de la mascota");
+       cbUsers.setPromptText("Introduce el dueño de la mascota");
        txtColour.setPromptText("Introduce el color de tu mascota");
        txtEspecie.setPromptText("Introduce la especie de tu mascota");
        txtRaza.setPromptText("Introduce la raza de tu mascota");
     }
     
     public void handlePetsTableSelectionChanged (ObservableValue observable, 
-                                             Object oldValue, Object newValue){
+        Object oldValue, Object newValue){
+        
         fieldChange(visible);
         fieldChange(disable);
         btnSaveChanges.setDisable(true);
         btnSaveChanges.setVisible(false);
         btnInsert.setDisable(true);
         btnInsert.setVisible(false);
+        btnNew.setDisable(true);
         if(newValue!=null){
             pet=(PetBean)newValue;
-
-            txtDni.setText(pet.getOwner().toString());//mirar
+            cbUsers.setItems(usersData);
             txtColour.setText(pet.getColour());
             txtDescription.setText(pet.getDescription());
             txtEspecie.setText(pet.getSpecie());
             txtName.setText(pet.getName());
             txtRaza.setText(pet.getRace());
-            
+            //set btns
             btnNew.setDisable(true);
             btnModify.setDisable(false);
             btnDelete.setDisable(false);
@@ -216,57 +253,69 @@ public class UIPetFXMLController extends GenericController {
             tablePet.refresh();*/
         }
     } 
-  
-    public void createPet(ActionEvent event){
+    
+  public void newPet(ActionEvent event){
+        //Set the btns
+        btnInsert.setVisible(true);
+        btnInsert.setDisable(false);
+        btnInsert.toFront();
+        btnModify.setDisable(true);
+        btnNew.setDisable(true);
+        btnCancel.setDisable(false);
+        //Set the fieldChange
+        fieldChange(enable);
+        fieldChange(visible);
+        cbUsers.setDisable(false);
+    }
+    
+    public void saveNewPet(ActionEvent event){
         try{
-            PetBean newPet = new PetBean();
-            newPet.setColour(txtColour.getText());
-            newPet.setDescription(txtDescription.getText());
-            newPet.setDni(txtDni.getText()); //mirar esto
-            newPet.setName(txtName.getText());
-            newPet.setRace(txtEspecie.getText());
-            newPet.setSpecie(txtEspecie.getText());
-            petsManager.createPet(newPet);
-            
-            btnCancel.setDisable(true);
-            btnInsert.setDisable(true);
-            btnInsert.setVisible(false);
-            txtDescription.setText("");
-                //txtDescription.setDisable(true);
-                txtName.setText("");
-                //txtName.setDisable(true);
-                txtRaza.setText("");
-                //txtRaza.setDisable(true);
-                txtEspecie.setText("");
-                //txtEspecie.setDisable(true);
-                txtColour.setText("");
-                //txtColour.setDisable(true);
-                txtDni.setText("");
-                //txtDni.setDisable(true);
-                
-                tablePet.getItems().add(newPet);
-                tablePet.setDisable(false);
+            if(checkFields()){
+                petsManager.createPet(getPetFromFields());
+                tablePet.getItems().add(pet);
+                tablePet.refresh();
+                Alert alert = new Alert(Alert.AlertType.INFORMATION.INFORMATION);
+                alert.setTitle("Nueva mascota");
+                alert.setContentText("La mascota fue registrada");    
+                Optional<ButtonType> result = alert.showAndWait();
+                if(result.get()== ButtonType.OK){
+                    tablePet.getSelectionModel().clearSelection();
+                    alert.close(); 
+                    fieldChange(clean);
+                    fieldChange(disable);
+                    btnDelete.setDisable(true);
+                    btnModify.setDisable(true);
+                    btnInsert.setDisable(true);
+                    btnInsert.setVisible(false);
+                    btnSaveChanges.setDisable(true);
+                    btnSaveChanges.setVisible(false);
+                    btnNew.setDisable(false);
+                    cbUsers.setDisable(true);
+                }
+            }else{
+                Alert alert=new Alert(Alert.AlertType.ERROR,"Introduce TODOS los datos."); 
+                alert.showAndWait();
+            }
+        }catch(BusinessLogicException ble){
+            LOGGER.info("The create failed "+ble.getMessage());
         }catch(Exception e){
-            LOGGER.info("Error: "+e);
+            LOGGER.info("The create failed "+e.getMessage());
         }
     }
      
     public void updatePet(ActionEvent event){
-        //TERMINADO
         try{
             btnCancel.setDisable(false);
             btnSaveChanges.setVisible(true);
             btnSaveChanges.setDisable(false);
-            btnSaveChanges.toFront();   
-            //PetBean petToModify = (PetBean)tablePet.getSelectionModel().getSelectedItem());;
-            PetBean petSelection =
-                        ((PetBean)tablePet.getSelectionModel().getSelectedItem());  
+            btnSaveChanges.toFront();     
             Alert alert=new Alert(Alert.AlertType.CONFIRMATION,
                              "¿Modificar la fila seleccionada?\n"
                              + "Esta operacion no se puede deshacer.",
                              ButtonType.OK, ButtonType.CANCEL);
             Optional<ButtonType> result = alert.showAndWait();
-            if(result.isPresent() && result.get() == ButtonType.OK){   
+            if(result.isPresent() && result.get() == ButtonType.OK){  
+                cbUsers.setDisable(false);
                 btnCancel.setDisable(false);
                 btnSaveChanges.setVisible(true);
                 btnSaveChanges.setDisable(false);
@@ -274,66 +323,58 @@ public class UIPetFXMLController extends GenericController {
                 //Enables all the fields
                 fieldChange(visible);
                 fieldChange(enable);
-                /*
-                petSelection.setDescription(txtDescription.getText()); 
-                petSelection.setName(txtName.getText());
-                petSelection.setColour(txtColour.getText());
-                petSelection.setRace(txtRaza.getText());
-                petSelection.setSpecie(txtEspecie.getText());
-                petsManager.updatePet(petSelection, petId);*/
-                 txtDescription.setText("");
-                //txtDescription.setDisable(true);
-                txtName.setText("");
-                //txtName.setDisable(true);
-                txtColour.setText("");
-                //txtColour.setDisable(true);
-                txtRaza.setText("");
-                //txtRaza.setDisable(true);
-                txtEspecie.setText("");
-                //txtEspecie.setDisable(true);
-                btnSaveChanges.setVisible(true);
-                
+                btnSaveChanges.setVisible(true);          
             }else{
                 LOGGER.info("No se modificara nada");
-                //tablePet.getSelectionModel().clearSelection();
                 //Set the btns
-                btnInsert.setDisable(true);
-                btnDelete.setDisable(true);
                 btnNew.setDisable(false);
                 btnCancel.setDisable(true);
-                btnSaveChanges.setDisable(false);
-                btnSaveChanges.setVisible(false);
-            }
-            
+            }  
         }catch(Exception e){
-            LOGGER.info("Error: "+e);
+            e.printStackTrace();
         }
     }
     
     public void saveUpdatePets(ActionEvent event){
-        //TERMINADO
-        LOGGER.info("SE HACE EL BOTON DE UPDATE");
         try{
-             btnSaveChanges.setVisible(true);
-              btnSaveChanges.setDisable(true);
-            //btnSaveChanges.setDisable(true);
-            
-            petsManager.updatePet(getPetFromFields(),tablePet.getSelectionModel().getSelectedItem().getId());
+            if(checkFields()){
+                Alert alert=new Alert(Alert.AlertType.CONFIRMATION,
+                                 "¿Seguro de modificar la fila seleccionada?\n"
+                                 + "Esta operacion no se puede deshacer.",
+                                 ButtonType.OK, ButtonType.CANCEL);
+                Optional<ButtonType> result = alert.showAndWait();
+                if(result.isPresent() && result.get() == ButtonType.OK){  
+                    petsManager.updatePet(getPetFromFields(),tablePet.getSelectionModel().getSelectedItem().getId()); 
+                    tablePet.setItems(FXCollections.observableArrayList(petsManager.getAllPets()));
+                    tablePet.refresh();
+                    fieldChange(clean);
+                    fieldChange(disable);
+                    cbUsers.setDisable(true);
+                    btnDelete.setDisable(true);
+                    btnModify.setDisable(true);
+                }else{
+                    LOGGER.info("No se modificara nada");
+                    //Set the btns
+                    btnNew.setDisable(false);
+                    btnCancel.setDisable(true);
+                }
+            }else{
+                Alert alert=new Alert(Alert.AlertType.ERROR,"Introduce TODOS los datos."); 
+                alert.showAndWait();
+            }
         }catch(Exception e){
             LOGGER.info("The update failed : "+e.getMessage());
         }
     }
     
     public PetBean getPetFromFields(){
-        //Terminado
         pet=new PetBean();
         //sets the attributes with the fields
         if(tablePet.getSelectionModel().getSelectedItem()!=null){
             //Actualizar mascota
             pet.setId(tablePet.getSelectionModel().getSelectedItem().getId());
         }
-        pet.setDni(txtDni.getText());
-        pet.setOwner(owner);
+        pet.setOwner(cbUsers.getSelectionModel().getSelectedItem());
         pet.setColour(txtColour.getText());
         pet.setDescription(txtDescription.getText());
         pet.setName(txtName.getText());
@@ -341,44 +382,34 @@ public class UIPetFXMLController extends GenericController {
         pet.setSpecie(txtEspecie.getText());
         return pet;
     }
-  
+    
     public void deletePet(ActionEvent event){
-        //TERMINADOS
-        Alert alert=null;
          try{
              PetBean petSelected =
                      ((PetBean)tablePet.getSelectionModel().getSelectedItem());
-             alert=new Alert(Alert.AlertType.CONFIRMATION,
+             Alert alert=new Alert(Alert.AlertType.CONFIRMATION,
                              "¿Borrar la fila seleccionada?\n"
                              + "Esta operacion no se puede deshacer.",
                              ButtonType.OK, ButtonType.CANCEL);
              Optional<ButtonType> result = alert.showAndWait();
              //if OK to delete pet
-             if(result.isPresent() && result.get() == ButtonType.OK){
-                //this.petsManager.deletePet(petSelected);
-                tablePet.getItems().remove(petSelected);
-                tablePet.refresh();
-                //Clear fields
-                txtDescription.setText("");
-                txtName.setText("");
-                txtRaza.setText("");
-                txtEspecie.setText("");
-                txtColour.setText("");
-                txtDni.setText("");
-                //clear and refresh table
-                tablePet.getSelectionModel().clearSelection();
+            if(result.isPresent() && result.get() == ButtonType.OK){
+                 petsManager.deletePet(tablePet.getSelectionModel().getSelectedItem().getId());
+                /*tablePet.getItems().remove(tablePet.getSelectionModel().getSelectedItem().getId());
+                tablePet.getSelectionModel().clearSelection();*/
+                tablePet.getItems().remove(pet);
                 tablePet.refresh();
                 fieldChange(enable);
-                fieldChange(visible);
-                 
-             }
+                fieldChange(visible);      
+             }else{
+                alert.close();
+            }
         }catch(Exception e){
-            LOGGER.info("Error"+e.getMessage());
+            e.printStackTrace();
         } 
     }
     
     public void cancelPet (ActionEvent event){
-        //TERMINADO
          try{
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION.CONFIRMATION);
             alert.setTitle("Cancelar");
@@ -392,6 +423,9 @@ public class UIPetFXMLController extends GenericController {
                 btnNew.setDisable(false);
                 btnModify.setDisable(true);
                 btnDelete.setDisable(true);
+                btnSaveChanges.setDisable(true);
+                btnInsert.setDisable(true);
+                btnInsert.setVisible(false);
                 /*btnSaveChanges.setVisible(false);
                 btnInsert.setVisible(false);*/
                 tablePet.getSelectionModel().clearSelection();
@@ -402,29 +436,25 @@ public class UIPetFXMLController extends GenericController {
              showErrorAlert("Error al cancelar la operación:\n"+ex.getMessage());
         }
     }
-    
-    public void toLogged (ActionEvent event){
-        //Terminado
-        try{
-            Alert alert = new Alert(AlertType.CONFIRMATION);
-            alert.setTitle("Volver al Menú");
-            alert.setContentText("¿Desea volver al menú?");
-            Optional<ButtonType> result = alert.showAndWait();
-            if(result.get()==ButtonType.OK){
-                stage.close();
-            }else{
-                LOGGER.severe("Operación cancelada");
-            }
-        }catch(Exception e){
-            LOGGER.severe(e.getMessage());
-        }
-    }
      
+    /**
+     * Checks that the fields are with data
+     */
+    public boolean checkFields(){
+        Boolean correctData =true;
+        if(txtColour.getText().trim().length()==0 
+            || txtDescription.getText().trim().length()==0|| txtEspecie.getText().trim().length()==0
+            ||txtName.getText().trim().length()==0 ||txtRaza.getText().trim().length()==0){
+                correctData=false;
+        }
+        return correctData;
+    }
+    
     public void fieldChange(int change){
         switch(change){
             case 1:
                 //sets visibles all the fields of the window
-                txtDni.setVisible(true);
+                //cbUsers.setVisible(true);
                 txtColour.setVisible(true);
                 txtDescription.setVisible(true);
                 txtEspecie.setVisible(true);
@@ -433,7 +463,7 @@ public class UIPetFXMLController extends GenericController {
                 break;
             case 2:
                 //sets invisible all the fiels of the window
-                txtDni.setVisible(false);
+                //cbUsers.setVisible(false);
                 txtColour.setVisible(false);
                 txtDescription.setVisible(false);
                 txtEspecie.setVisible(false);
@@ -442,7 +472,7 @@ public class UIPetFXMLController extends GenericController {
                 break;
             case 3:
                 //Enables the fields
-                txtDni.setEditable(true);
+                //cbUsers.setDisable(true);
                 txtColour.setEditable(true);
                 txtDescription.setEditable(true);
                 txtEspecie.setEditable(true);
@@ -450,8 +480,8 @@ public class UIPetFXMLController extends GenericController {
                 txtRaza.setEditable(true);
                 break;
             case 4:
-                //Disables the fields
-                txtDni.setEditable(false);
+                //Disables the field
+                //cbUsers.setDisable(false);
                 txtColour.setEditable(false);
                 txtDescription.setEditable(false);
                 txtEspecie.setEditable(false);
@@ -460,7 +490,6 @@ public class UIPetFXMLController extends GenericController {
                 break;
             case 5:
                 //Deletes all the existing data
-                txtDni.setText("");
                 txtColour.setText("");
                 txtDescription.setText("");
                 txtEspecie.setText("");
@@ -588,4 +617,49 @@ public class UIPetFXMLController extends GenericController {
         stage.close();
         previousStage.show();
     }
+    
+    public void toLogged (ActionEvent event){
+        try{
+            Alert alert = new Alert(AlertType.CONFIRMATION);
+            alert.setTitle("Volver al Menú");
+            alert.setContentText("¿Desea volver al menú?");
+            Optional<ButtonType> result = alert.showAndWait();
+            if(result.get()==ButtonType.OK){
+                stage.close();
+            }else{
+                LOGGER.severe("Operación cancelada");
+            }
+        }catch(Exception e){
+           e.printStackTrace();
+        }
+    }
+    
+    public void generateReport(ActionEvent event){
+        try {
+            JasperReport petReport=
+                JasperCompileManager.compileReport(getClass()
+                    .getResourceAsStream("/albergueperronclient/report/PetReport.jrxml"));
+            //Data for the report: a collection of UserBean passed as a JRDataSource .360
+            //implementation 
+            JRBeanCollectionDataSource dataItems=
+                    new JRBeanCollectionDataSource((Collection<PetBean>)this.tablePet.getItems());
+            //Map of parameter to be passed to the report
+            Map<String,Object> parameters=new HashMap<>();
+            //Fill report with data
+            JasperPrint jasperPrint = JasperFillManager.fillReport(petReport,parameters,dataItems);
+            //Create and show the report window. The second parameter false value makes 
+            //report window not to close app.
+            JasperViewer jasperViewer = new JasperViewer(jasperPrint,false);
+            jasperViewer.setVisible(true);
+           // jasperViewer.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+        } catch (JRException ex) {
+            //If there is an error show message and
+            //log it.
+            showErrorAlert("Error al imprimir:\n"+
+                            ex.getMessage());
+            LOGGER.log(Level.SEVERE,
+                        "UI GestionUsuariosController: Error printing report: {0}",
+                        ex.getMessage());
+        }
+    } 
 }

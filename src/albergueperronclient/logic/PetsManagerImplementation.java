@@ -33,16 +33,16 @@ public class PetsManagerImplementation implements PetsManager{
     
     @Override
     public Collection<PetBean> getAllPets() throws BusinessLogicException {
-       Collection<PetBean> pets =null;
+       Collection<PetBean> pets = null;
         try{
             LOGGER.info("PetsManager: Finding all users from REST service (XML).");
             //Ask webClient for all users' data.
            pets = webClient.findAllPets(new GenericType<List<PetBean>>() {});   
         }catch(Exception ex){
             LOGGER.log(Level.SEVERE,
-                    "PetssManager: Exception finding all users, {0}",
+                    "PetsManager: Exception finding all pets, {0}",
                     ex.getMessage());
-            throw new BusinessLogicException("Error finding all users:\n"+ex.getMessage());
+            throw new BusinessLogicException("Error finding all pets:\n"+ex.getMessage());
         }
         return pets;
     }
