@@ -96,13 +96,16 @@ public class UIPassRecoveryController extends GenericController {
 
                 //Calls the logic method to update the password
                 recoveryManager.recoverEmail(user);
+               
             } else {
                 throw new IncorrectEmailException();
             }
 
             txtEmail.setText("");
-
-            stage.hide();
+            Alert alert = new Alert(Alert.AlertType.INFORMATION,
+                    "Se ha enviado un email con la nueva contraseña");
+            alert.show();
+           lblError.setText("");
         } catch (IncorrectEmailException iee) {
             LOGGER.severe("Error. Incorrect email. Detailed error "
                     + iee.getMessage());

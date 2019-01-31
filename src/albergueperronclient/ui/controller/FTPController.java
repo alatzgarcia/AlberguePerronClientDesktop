@@ -226,21 +226,30 @@ public class FTPController extends GenericController {
      * @param event The ActionEvent object for the event.
      */
     public void upload(ActionEvent event) {
-        //if there is local file selected
-        if (!txtFile.getText().equals("")) {
-            TreeItem<MyFile> itemSelected
-                    = (TreeItem<MyFile>) treeFile.getSelectionModel().getSelectedItem();
-            MyFile file = ftpManager.uploadFile(txtFile.getText());
-            //create a treeitem with the new file
-            TreeItem<MyFile> fileToUpload = new TreeItem<MyFile>(
-                    file, new ImageView(new Image(getClass().getResourceAsStream("/albergueperronclient/file.png"))));
-            //add it to the selected tree item
-            itemSelected.getChildren().add(fileToUpload);
-            txtFile.setText("");
-            treeFile.refresh();
-        } else {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Elija un archivo local para subir");
-            alert.show();
+        try {
+            //if there is local file selected
+            if (!txtFile.getText().equals("")) {
+                TreeItem<MyFile> itemSelected
+                        = (TreeItem<MyFile>) treeFile.getSelectionModel().getSelectedItem();
+                MyFile file = ftpManager.uploadFile(txtFile.getText());
+
+                //create a treeitem with the new file
+                TreeItem<MyFile> fileToUpload = new TreeItem<MyFile>(
+                        file, new ImageView(new Image(getClass().getResourceAsStream("/albergueperronclient/file.png"))));
+                //add it to the selected tree item
+                itemSelected.getChildren().add(fileToUpload);
+                txtFile.setText("");
+                treeFile.refresh();
+                Alert alert = new Alert(Alert.AlertType.INFORMATION,
+                        "El archivo se ha subido correctamente");
+                alert.show();
+            } else {
+                showErrorAlert("Elija un archivo local para subir");
+
+            }
+        } catch (IOException ex) {
+            LOGGER.severe(ex.getMessage());
+            showErrorAlert("Error en la subida");
 
         }
 
@@ -252,20 +261,28 @@ public class FTPController extends GenericController {
      * @param event The ActionEvent object for the event.
      */
     public void delete(ActionEvent event) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "¿Quiere borrar el fichero?",
-                ButtonType.CANCEL, ButtonType.OK);
+        try {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "¿Quiere borrar el fichero?",
+                    ButtonType.CANCEL, ButtonType.OK);
 
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK) {
-            TreeItem<MyFile> treeItem
-                    = (TreeItem<MyFile>) treeFile.getSelectionModel().getSelectedItem();
-            //get the parent tree item of the item selected
-            TreeItem<MyFile> parent = treeItem.getParent();
-            //delete the file
-            ftpManager.deleteFile(treeItem.getValue().getName());
-            //remove the tree item from the parent item
-            parent.getChildren().remove(treeItem);
-            treeFile.refresh();
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == ButtonType.OK) {
+                TreeItem<MyFile> treeItem
+                        = (TreeItem<MyFile>) treeFile.getSelectionModel().getSelectedItem();
+                //get the parent tree item of the item selected
+                TreeItem<MyFile> parent = treeItem.getParent();
+                //delete the file
+                ftpManager.deleteFile(treeItem.getValue().getName());
+                //remove the tree item from the parent item
+                parent.getChildren().remove(treeItem);
+                treeFile.refresh();
+                showErrorAlert("El archivo se ha borrado correctamente");
+
+            }
+        } catch (IOException ex) {
+            LOGGER.severe(ex.getMessage());
+            showErrorAlert("Error en borrado");
+
         }
     }
 
@@ -275,9 +292,17 @@ public class FTPController extends GenericController {
      * @param event The ActionEvent object for the event.
      */
     public void download(ActionEvent event) {
-        TreeItem<MyFile> treeItem
-                = (TreeItem<MyFile>) treeFile.getSelectionModel().getSelectedItem();
-        ftpManager.downloadFile(treeItem.getValue().getName());
+        try {
+            TreeItem<MyFile> treeItem
+                    = (TreeItem<MyFile>) treeFile.getSelectionModel().getSelectedItem();
+            ftpManager.downloadFile(treeItem.getValue().getName());
+            showErrorAlert("El archivo se ha descargado correctamente");
+
+        } catch (IOException ex) {
+            LOGGER.severe(ex.getMessage());
+            showErrorAlert("Error en la bajada");
+
+        }
 
     }
 
@@ -287,16 +312,24 @@ public class FTPController extends GenericController {
      * @param event The ActionEvent object for the event.
      */
     public void createDir(ActionEvent event) {
-        TreeItem<MyFile> itemSelected
-                = (TreeItem<MyFile>) treeFile.getSelectionModel().getSelectedItem();
+        try {
+            TreeItem<MyFile> itemSelected
+                    = (TreeItem<MyFile>) treeFile.getSelectionModel().getSelectedItem();
 
-        MyFile file = ftpManager.createDirectory();
-        //Create a tree item with the new directory
-        TreeItem<MyFile> directoryToCreate = new TreeItem<MyFile>(file, new ImageView(new Image(getClass().
-                getResourceAsStream("/albergueperronclient/root.png"))));
-        //add the new tree item to the item selected
-        itemSelected.getChildren().add(directoryToCreate);
-        treeFile.refresh();
+            MyFile file = ftpManager.createDirectory();
+            //Create a tree item with the new directory
+            TreeItem<MyFile> directoryToCreate = new TreeItem<MyFile>(file, new ImageView(new Image(getClass().
+                    getResourceAsStream("/albergueperronclient/root.png"))));
+            //add the new tree item to the item selected
+            itemSelected.getChildren().add(directoryToCreate);
+            treeFile.refresh();
+            showErrorAlert("El directorio se ha creado correctamente");
+
+        } catch (IOException ex) {
+            LOGGER.severe(ex.getMessage());
+            showErrorAlert("Error en la creación del directorio");
+
+        }
 
     }
 
@@ -306,19 +339,26 @@ public class FTPController extends GenericController {
      * @param event The ActionEvent object for the event.
      */
     public void deleteDir(ActionEvent event) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "¿Quiere borrar el directorio?",
-                ButtonType.CANCEL, ButtonType.OK);
+        try {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "¿Quiere borrar el directorio?",
+                    ButtonType.CANCEL, ButtonType.OK);
 
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK) {
-            TreeItem<MyFile> treeItem
-                    = (TreeItem<MyFile>) treeFile.getSelectionModel().getSelectedItem();
-            TreeItem<MyFile> parent = treeItem.getParent();
-            //delete the directory
-            ftpManager.deleteDirectory(treeItem.getValue().getPath());
-            //remove the tree item
-            parent.getChildren().remove(treeItem);
-            treeFile.refresh();
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == ButtonType.OK) {
+                TreeItem<MyFile> treeItem
+                        = (TreeItem<MyFile>) treeFile.getSelectionModel().getSelectedItem();
+                TreeItem<MyFile> parent = treeItem.getParent();
+                //delete the directory
+                ftpManager.deleteDirectory(treeItem.getValue().getPath());
+                //remove the tree item
+                parent.getChildren().remove(treeItem);
+                treeFile.refresh();
+                showErrorAlert("El directorio se ha borrado correctamente");
+
+            }
+        } catch (IOException ex) {
+            LOGGER.severe(ex.getMessage());
+            showErrorAlert("Error en borrado del directorio");
 
         }
 
@@ -372,6 +412,7 @@ public class FTPController extends GenericController {
      * @param event The ActionEvent object for the event.
      */
     public void goBack(ActionEvent event) {
+
         ftpManager.disconnect();
         stage.hide();
 

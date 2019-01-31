@@ -5,7 +5,7 @@
  */
 package albergueperronclient.utils;
 
-import utils.*;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;

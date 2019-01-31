@@ -92,9 +92,10 @@ public class IFTPImplementation implements IFTP {
      *
      * @param path The path of th file to upload
      * @return The file
+     * @throws java.io.IOException
      */
     @Override
-    public MyFile uploadFile(String path) {
+    public MyFile uploadFile(String path) throws IOException{
 
         MyFile filetoUP = null;
 
@@ -117,8 +118,6 @@ public class IFTPImplementation implements IFTP {
 
         } catch (FileNotFoundException ex) {
             LOGGER.severe(ex.getMessage());
-        } catch (IOException ex) {
-            LOGGER.severe(ex.getMessage());
         }
 
         return filetoUP;
@@ -131,7 +130,7 @@ public class IFTPImplementation implements IFTP {
      * @return if the file has been deleted or not
      */
     @Override
-    public boolean deleteFile(String name) {
+    public boolean deleteFile(String name) throws IOException{
         boolean deleted = false;
         try {
             if (ftp.deleteFile(name)) {
@@ -156,7 +155,7 @@ public class IFTPImplementation implements IFTP {
      * @param name The name of the file
      */
     @Override
-    public void downloadFile(String name) {
+    public void downloadFile(String name) throws IOException {
 
         //choose a directory to download the file to locally
         DirectoryChooser dirChooser = new DirectoryChooser();
@@ -199,7 +198,7 @@ public class IFTPImplementation implements IFTP {
      * @return The file
      */
     @Override
-    public MyFile createDirectory() {
+    public MyFile createDirectory() throws IOException{
         MyFile dir = new MyFile();
         try {
 
@@ -230,7 +229,7 @@ public class IFTPImplementation implements IFTP {
      * @param path The path of the directory
      */
     @Override
-    public void deleteDirectory(String path) {
+    public void deleteDirectory(String path) throws IOException{
         try {
             ftp.removeDirectory(path);
         } catch (IOException ex) {
@@ -242,7 +241,7 @@ public class IFTPImplementation implements IFTP {
      * Method to disconnect the FTP client
      */
     @Override
-    public void disconnect() {
+    public void disconnect(){
         try {
             ftp.logout();
             ftp.disconnect();
@@ -307,7 +306,7 @@ public class IFTPImplementation implements IFTP {
      * @param path the path
      */
     @Override
-    public void changeDirectory(String path) {
+    public void changeDirectory(String path){
         try {
             ftp.changeWorkingDirectory(path);
         } catch (IOException ex) {
