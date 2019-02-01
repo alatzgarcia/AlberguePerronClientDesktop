@@ -18,137 +18,164 @@ import javax.xml.bind.annotation.XmlTransient;
  */
 @XmlRootElement(name="user")
 public class UserBean implements Serializable{
-    private String id;
-    private String name;
-    private String surname1;
-    private String surname2;
-    private Privilege privilege;
-    private String login;
-    private String email;
-    private String password;
-    private String lastPasswordChange;
-    private List<IncidentBean> incidents;
-    private List<PetBean> pets;
-    private List<StayBean> stays;
+    private SimpleStringProperty id;
+    private SimpleStringProperty name;
+    private SimpleStringProperty surname1;
+    private SimpleStringProperty surname2;
+    private SimpleObjectProperty<Privilege> privilege;
+    private SimpleStringProperty login;
+    private SimpleStringProperty email;
+    private SimpleStringProperty password;
+    private SimpleObjectProperty lastPasswordChange;
+    private SimpleListProperty<IncidentBean> incidents;
+    private SimpleListProperty<PetBean> pets;
+    private SimpleListProperty<StayBean> stays;
     
-    //quite las list alv
+    private SimpleStringProperty fullname;
 
     public UserBean() {
-        
+        this.id = new SimpleStringProperty();
+        this.name = new SimpleStringProperty();
+        this.surname1 =  new SimpleStringProperty();
+        this.surname2 =  new SimpleStringProperty();
+        this.privilege =  new SimpleObjectProperty();
+        this.login =  new SimpleStringProperty();
+        this.email =  new SimpleStringProperty();
+        this.password =  new SimpleStringProperty();
+        this.lastPasswordChange =  new SimpleObjectProperty();
+        this.incidents = new SimpleListProperty<>();
+        this.pets = new SimpleListProperty<>();
+        this.stays = new SimpleListProperty<>();
+    }
+    
+    
+
+    public UserBean(String id, String name, String surname1, String surname2, Privilege privilege, 
+            String login, String email, String password, String lastPasswordChange) {
+        this.id = new SimpleStringProperty(id);
+        this.name = new SimpleStringProperty(name);
+        this.surname1 =  new SimpleStringProperty(surname1);
+        this.surname2 =  new SimpleStringProperty(surname2);
+        this.privilege =  new SimpleObjectProperty<Privilege>(privilege);
+        this.login =  new SimpleStringProperty(login);
+        this.email =  new SimpleStringProperty(email);
+        this.password =  new SimpleStringProperty(password);
+        this.lastPasswordChange =  new SimpleObjectProperty(lastPasswordChange);
+        /*this.fullname = new SimpleStringProperty(name+" "+surname1+" "+surname2);*/
     }
 
-    public UserBean(String login, String password) {
-        this.login = login;
-        this.password = password;
+    public UserBean(String id, String password) {
+        this.id=new SimpleStringProperty(id);
+        this.password=new SimpleStringProperty(password);
     }
 
-    public UserBean(String id, String login, String email, String password) {
-        this.id = id;
-        this.login = login;
-        this.email = email;
-        this.password = password;
+    public String getId(){
+        return this.id.get();
     }
-
-   
-
-    public String getId() {
-        return id;
+    
+    public void setId(String id){
+        this.id.set(id);
     }
-
-    public void setId(String id) {
-        this.id = id;
+    
+    public String getName(){
+        return this.name.get();
     }
-
-    public String getName() {
-        return name;
+    
+    public void setName(String name){
+        this.name.set(name);
     }
-
-    public void setName(String name) {
-        this.name = name;
+    
+    public String getSurname1(){
+        return this.surname1.get();
     }
-
-    public String getSurname1() {
-        return surname1;
+    
+    public void setSurname1(String surname1){
+        this.surname1.set(surname1);
     }
-
-    public void setSurname1(String surname1) {
-        this.surname1 = surname1;
+    
+    public String getSurname2(){
+        return this.surname2.get();
     }
-
-    public String getSurname2() {
-        return surname2;
+    
+    public void setSurname2(String surname2){
+        this.surname2.set(surname2);
     }
-
-    public void setSurname2(String surname2) {
-        this.surname2 = surname2;
+    
+    public Privilege getPrivilege(){
+        return this.privilege.get();
     }
-
-    public Privilege getPrivilege() {
-        return privilege;
+    
+    public void setPrivilege(Privilege privilege){
+        this.privilege.set(privilege);
     }
-
-    public void setPrivilege(Privilege privilege) {
-        this.privilege = privilege;
+    
+    public String getLogin(){
+        return this.login.get();
     }
-
-    public String getLogin() {
-        return login;
+    
+    public void setLogin(String login){
+        this.login.set(login);
     }
-
-    public void setLogin(String login) {
-        this.login = login;
+    
+    public String getEmail(){
+        return this.email.get();
     }
-
-    public String getEmail() {
-        return email;
+    
+    public void setEmail(String email){
+        this.email.set(email);
     }
-
-    public void setEmail(String email) {
-        this.email = email;
+    
+    public String getPassword(){
+        return this.password.get();
     }
-
-    public String getPassword() {
-        return password;
+    
+    public void setPassword(String password){
+        this.password.set(password);
     }
-
-    public void setPassword(String password) {
-        this.password = password;
+//TOCHECK
+    public Date getLastPasswordChange(){
+        return (Date)this.lastPasswordChange.get();
     }
-
-    public String getLastPasswordChange() {
-        return lastPasswordChange;
-    }
-
-    public void setLastPasswordChange(String lastPasswordChange) {
-        this.lastPasswordChange = lastPasswordChange;
+    
+    public void setLastPasswordChange(Date lastPasswordChange){
+        this.lastPasswordChange.set(lastPasswordChange);
     }
 
     public List<IncidentBean> getIncidents() {
-        return incidents;
+        return this.incidents.get();
     }
-
+//
     public void setIncidents(List<IncidentBean> incidents) {
-        this.incidents = incidents;
+        this.incidents.setAll(incidents);
     }
 
     public List<PetBean> getPets() {
-        return pets;
+        return this.pets.get();
     }
 
     public void setPets(List<PetBean> pets) {
-        this.pets = pets;
+        this.pets.setAll(pets);
     }
 
     public List<StayBean> getStays() {
-        return stays;
+        return this.stays.get();
     }
 
     public void setStays(List<StayBean> stays) {
-        this.stays = stays;
+        this.stays.setAll(stays);
+    } 
+    
+    public String getFullname(){      
+        return this.name.get()+" "+this.surname1.get()+" "+this.surname2.get();
     }
     
+    public void setFullname(String fullname){
+        this.fullname.set(fullname);
+    }
     
-
-    
+    @Override
+    public String toString(){
+        return this.getFullname();
+    }
     
  }

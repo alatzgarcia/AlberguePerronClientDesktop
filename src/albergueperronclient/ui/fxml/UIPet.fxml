@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
@@ -14,12 +15,12 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="albergueperronclient.gui.fxml.MascotasController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="albergueperronclient.controller.UIPetFXMLController">
    <children>
-      <TableView fx:id="tablePet" layoutX="26.0" layoutY="51.0" prefHeight="593.0" prefWidth="698.0">
+      <TableView fx:id="tablePet" layoutX="14.0" layoutY="44.0" prefHeight="593.0" prefWidth="698.0">
         <columns>
-          <TableColumn fx:id="columnName" prefWidth="203.0" text="DNI del dueño" />
-          <TableColumn fx:id="columnDni" prefWidth="141.0" text="Especie" />
+          <TableColumn fx:id="columnDni" prefWidth="203.0" text="Nombre del dueño" />
+          <TableColumn fx:id="columnSpecie" prefWidth="141.0" text="Especie" />
             <TableColumn fx:id="columnName" prefWidth="175.0" text="Nombre" />
             <TableColumn fx:id="columnRaza" prefWidth="178.0" text="Raza" />
         </columns>
@@ -28,15 +29,14 @@
          </opaqueInsets>
       </TableView>
       <Button fx:id="btnNew" layoutX="602.0" layoutY="660.0" mnemonicParsing="false" prefHeight="37.0" prefWidth="122.0" style="-fx-background-color: #42A5F5;" text="Añadir Mascota" />
-      <Text layoutX="785.0" layoutY="137.0" strokeType="OUTSIDE" strokeWidth="0.0" text="DNI/NIE:">
+      <Text layoutX="769.0" layoutY="134.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Nombre completo:">
          <font>
             <Font size="14.0" />
          </font>
       </Text>
-      <TextField fx:id="txtDni" layoutX="785.0" layoutY="144.0" prefHeight="25.0" prefWidth="455.0" />
       <Separator layoutX="766.0" layoutY="187.0" prefHeight="3.0" prefWidth="479.0" />
       <Button fx:id="btnCancel" layoutX="1120.0" layoutY="660.0" mnemonicParsing="false" prefHeight="37.0" prefWidth="122.0" style="-fx-background-color: #42A5F5;" text="Cancelar" />
-      <Button fx:id="btnSaveChanges" disable="true" layoutX="970.0" layoutY="660.0" mnemonicParsing="false" prefHeight="37.0" prefWidth="122.0" style="-fx-background-color: #42A5F5;" text="Guardar cambios" />
+      <Button fx:id="btnSaveChanges" disable="true" layoutX="928.0" layoutY="660.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="122.0" style="-fx-background-color: #42A5F5;" text="Guardar cambios" />
       <Button fx:id="btnDelete" disable="true" layoutX="452.0" layoutY="660.0" mnemonicParsing="false" prefHeight="37.0" prefWidth="122.0" style="-fx-background-color: #42A5F5;" text="Borrar Mascota" />
       <Button fx:id="btnModify" disable="true" layoutX="302.0" layoutY="660.0" mnemonicParsing="false" prefHeight="37.0" prefWidth="122.0" style="-fx-background-color: #42A5F5;" text="Modificar Mascota" />
       <Text layoutX="1040.0" layoutY="366.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Raza">
@@ -61,7 +61,7 @@
             <Font name="System Italic" size="16.0" />
          </font>
       </Text>
-      <Button fx:id="btnInsert" disable="true" layoutX="970.0" layoutY="660.0" mnemonicParsing="false" prefHeight="37.0" prefWidth="122.0" style="-fx-background-color: #42A5F5;" text="Añadir datos" />
+      <Button fx:id="btnInsert" disable="true" layoutX="928.0" layoutY="660.0" mnemonicParsing="false" prefHeight="37.0" prefWidth="122.0" style="-fx-background-color: #42A5F5;" text="Añadir datos" />
       <Button fx:id="btnReturn" layoutX="26.0" layoutY="660.0" mnemonicParsing="false" prefHeight="37.0" prefWidth="122.0" style="-fx-background-color: #42A5F5;" text="Volver al menú" />
       <Text layoutX="790.0" layoutY="281.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Nombre:">
          <font>
@@ -86,7 +86,6 @@
             <Menu mnemonicParsing="false" text="Navegación">
                <items>
                   <MenuItem fx:id="menuGuest" mnemonicParsing="false" text="Huéspedes" />
-                  <MenuItem fx:id="menuPet" mnemonicParsing="false" text="Mascotas" />
                   <MenuItem fx:id="menuIncidences" mnemonicParsing="false" text="Incidencias" />
                   <MenuItem fx:id="menuRoom" mnemonicParsing="false" text="Estancias" />
                   <MenuItem fx:id="menuBlackList" mnemonicParsing="false" text="Lista Negra" />
@@ -105,5 +104,6 @@
             </Menu>
          </menus>
       </MenuBar>
+      <ComboBox fx:id="cbUsers" layoutX="769.0" layoutY="155.0" prefHeight="26.0" prefWidth="479.0" />
    </children>
 </AnchorPane>

@@ -15,6 +15,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.ResourceBundle;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -32,9 +33,11 @@ public class Encryptation {
             byte[] encodedMessage = null;
 		try {
 			
+                     String pubKeyPath = ResourceBundle.getBundle("albergueperronclient.config.parameters")
+                        .getString("publicKey");
 		    //gets the public key that has been previously generated
                     //with a matching private key that it is kept in the server side
-                    fis = new FileInputStream("public.key");
+                    fis = new FileInputStream(pubKeyPath);
                     byte[] publicKey = new byte[fis.available()];
                     fis.read(publicKey);
 			

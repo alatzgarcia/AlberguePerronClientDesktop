@@ -276,7 +276,9 @@ public class FTPController extends GenericController {
                 //remove the tree item from the parent item
                 parent.getChildren().remove(treeItem);
                 treeFile.refresh();
-                showErrorAlert("El archivo se ha borrado correctamente");
+                Alert alert2 = new Alert(Alert.AlertType.INFORMATION,
+                        "El archivo se ha borrado correctamente");
+                alert2.show();
 
             }
         } catch (IOException ex) {
@@ -296,7 +298,9 @@ public class FTPController extends GenericController {
             TreeItem<MyFile> treeItem
                     = (TreeItem<MyFile>) treeFile.getSelectionModel().getSelectedItem();
             ftpManager.downloadFile(treeItem.getValue().getName());
-            showErrorAlert("El archivo se ha descargado correctamente");
+            Alert alert2 = new Alert(Alert.AlertType.INFORMATION,
+                    "El archivo se ha descargado correctamente");
+            alert2.show();
 
         } catch (IOException ex) {
             LOGGER.severe(ex.getMessage());
@@ -323,7 +327,9 @@ public class FTPController extends GenericController {
             //add the new tree item to the item selected
             itemSelected.getChildren().add(directoryToCreate);
             treeFile.refresh();
-            showErrorAlert("El directorio se ha creado correctamente");
+            Alert alert2 = new Alert(Alert.AlertType.INFORMATION,
+                    "El directorio se ha creado correctamente");
+            alert2.show();
 
         } catch (IOException ex) {
             LOGGER.severe(ex.getMessage());
@@ -353,7 +359,9 @@ public class FTPController extends GenericController {
                 //remove the tree item
                 parent.getChildren().remove(treeItem);
                 treeFile.refresh();
-                showErrorAlert("El directorio se ha borrado correctamente");
+                Alert alert2 = new Alert(Alert.AlertType.INFORMATION,
+                        "El directorio se ha borrado correctamente");
+                alert2.show();
 
             }
         } catch (IOException ex) {
@@ -459,7 +467,7 @@ public class FTPController extends GenericController {
 
             //UsersManager usersManager = UserManagerFactory.createUserManager();
             //Get controller from the loader
-            UIStayController stayController = loader.getController();
+            UIStayFXMLController stayController = loader.getController();
 
             //Initialize the primary stage of the application
             //stayController.initStage(root);

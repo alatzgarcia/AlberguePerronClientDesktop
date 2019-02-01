@@ -5,10 +5,12 @@
  */
 package albergueperronclient.rest;
 
+import albergueperronclient.modelObjects.Privilege;
 import java.util.ResourceBundle;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.GenericType;
 
 /**
  * Jersey REST client generated for REST resource:UserREST [users]<br>
@@ -20,7 +22,7 @@ import javax.ws.rs.client.WebTarget;
  *        client.close();
  * </pre>
  *
- * @author 2dam
+ * @author Nerea, Diego
  */
 public class UserREST {
 
@@ -44,7 +46,7 @@ public class UserREST {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
     }
 
-    public void update(Object requestEntity) throws ClientErrorException {
+    public void edit(Object requestEntity) throws ClientErrorException {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
     }
 
@@ -54,11 +56,18 @@ public class UserREST {
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public void delete(String id) throws ClientErrorException {
+    public void remove(String id) throws ClientErrorException {
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete();
     }
 
-    public <T> T findAll(Class<T> responseType) throws ClientErrorException {
+    /**
+     * The method used to find all the users
+     * @param <T>
+     * @param responseType
+     * @return
+     * @throws ClientErrorException 
+     */
+    public <T> T findAll(GenericType<T> responseType) throws ClientErrorException {
         WebTarget resource = webTarget;
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
@@ -82,6 +91,23 @@ public class UserREST {
     }
 
 
+   /**
+     * The method that find an user by the privilege
+     * @param <T>
+     * @param responseType
+     * @param privilege
+     * @return
+     * @throws ClientErrorException 
+     */
+    public <T> T findByPrivilege(GenericType<T> responseType, Privilege privilege) throws ClientErrorException {
+        WebTarget resource = webTarget;
+        resource = resource.path(java.text.MessageFormat.format("privilege/{0}", new Object[]{privilege}));
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+    }
+    
+    /**
+     * The method used to close the project
+     */
     public void close() {
         client.close();
     }

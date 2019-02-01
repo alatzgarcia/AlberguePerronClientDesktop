@@ -43,14 +43,15 @@
             <Label fx:id="lblUsernameError" layoutX="59.0" layoutY="96.0" prefHeight="28.0" prefWidth="357.0" textFill="RED" />
             <ImageView fitHeight="129.0" fitWidth="422.0" layoutX="-188.0" layoutY="-36.0" rotate="143.7">
                <image>
-                  <Image url="@../Proyecto_equipo2/img/readmore1600.png" />
+                  <Image url="@../../../fxmlimages/icons/readmore1600.png" />
                </image>
             </ImageView>
             <ImageView fitHeight="65.0" fitWidth="336.0" layoutX="-200.0" layoutY="-80.0" rotate="-39.8">
                <image>
-                  <Image url="@../Proyecto_equipo2/img/readmore1600.png" />
+                  <Image url="@../../../fxmlimages/icons/readmore1600.png" />
                </image>
             </ImageView>
+
             <Hyperlink fx:id="hlRemindPass" layoutX="246.0" layoutY="291.0" text="Click aquí" />
             <Label layoutX="90.0" layoutY="294.0" text="¿Has olvidado tu contraseña?" />
          </children>

@@ -178,7 +178,7 @@ public class UIPassRecoveryController extends GenericController {
      * @param oldValue old value of the element that has called to the method
      * @param newValue new value of the element that has called to the method
      */
-    //--TOFIX
+    
     public void onFocusChanged(ObservableValue observable,
             Boolean oldValue,
             Boolean newValue) {

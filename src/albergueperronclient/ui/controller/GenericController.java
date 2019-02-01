@@ -8,7 +8,6 @@ package albergueperronclient.ui.controller;
 import albergueperronclient.logic.IFTP;
 import albergueperronclient.logic.ILogin;
 import albergueperronclient.logic.IRecovery;
-import albergueperronclient.logic.IRegister;
 import albergueperronclient.logic.UsersManager;
 import albergueperronclient.modelObjects.UserBean;
 import java.util.logging.Logger;
@@ -34,7 +33,7 @@ public class GenericController {
     protected UsersManager usersManager;
     protected ILogin loginManager;
     protected IFTP ftpManager;
-    protected IRegister registerManager;
+  
     protected IRecovery recoveryManager;
     private UserBean user;
     /**
@@ -64,13 +63,6 @@ public class GenericController {
         this.ftpManager = ftpManager;
     }
 
-    public IRegister getRegisterManager() {
-        return registerManager;
-    }
-
-    public void setRegisterManager(IRegister registerManager) {
-        this.registerManager = registerManager;
-    }
     
     
     

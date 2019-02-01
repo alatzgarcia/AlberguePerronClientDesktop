@@ -3,14 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package albergueperronclient.logic;
+package albergueperronclient.modelObjects;
 
 /**
  *
  * @author 2dam
  */
-public class UserManagerFactory {
-    public static UsersManager createUserManager(){
-        return new UserManagerImplementation();
-    }
+class Stay {
+    
 }

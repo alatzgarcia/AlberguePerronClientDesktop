@@ -5,6 +5,8 @@
  */
 package albergueperronclient.logic;
 
+import albergueperronclient.exceptions.BusinessLogicException;
+import albergueperronclient.modelObjects.Privilege;
 import albergueperronclient.modelObjects.UserBean;
 import java.util.Collection;
 import javafx.collections.FXCollections;
@@ -15,5 +17,15 @@ import javafx.collections.FXCollections;
  */
 public interface UsersManager {
     
-    public Collection<UserBean> getAllUsers();
+    public UserBean getUser(String id);
+    
+    public Collection<UserBean> getAllUsers() throws BusinessLogicException;
+    
+    public void createUser(UserBean user) throws BusinessLogicException;
+    
+    public void updateUser(UserBean user) throws BusinessLogicException;
+    
+    public void deleteUser(String id) throws BusinessLogicException;
+    
+    public Collection<UserBean> findUsersByPrivilege(Privilege privilege) throws BusinessLogicException;
 }

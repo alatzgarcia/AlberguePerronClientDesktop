@@ -5,15 +5,12 @@
  */
 package albergueperronclient.logic;
 
-import albergueperronclient.modelObjects.UserBean;
-import java.util.Collection;
-
 /**
  *
- * @author 2dam
+ * @author ikerm
  */
-public interface IRegister {
-    public void register(UserBean user);
-    public void generateKey();
-    
+public class PetManagerFactory {
+    public static PetsManager createPetManager(){
+        return new PetsManagerImplementation();
+    }
 }

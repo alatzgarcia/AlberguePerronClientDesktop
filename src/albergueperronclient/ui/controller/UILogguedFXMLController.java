@@ -186,7 +186,7 @@ public class UILogguedFXMLController extends GenericController {
 
             //UsersManager usersManager = UserManagerFactory.createUserManager();
             //Get controller from the loader
-            UIStayController stayController = loader.getController();
+            UIStayFXMLController stayController = loader.getController();
 
             //Initialize the primary stage of the application
             //stayController.initStage(root);

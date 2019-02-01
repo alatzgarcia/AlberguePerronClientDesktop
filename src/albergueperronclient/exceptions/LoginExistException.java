@@ -3,14 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package albergueperronclient.logic;
+package albergueperronclient.exceptions;
 
 /**
  *
- * @author Nerea Jimenez
+ * @author ikerm
  */
-public class IRegisterFactory {
-    public static IRegister getRegisterManager(){
-        return new IRegisterImplementation();
+public class LoginExistException extends BusinessLogicException{
+    
+    public LoginExistException(String msg){
+        super(msg);
     }
 }

@@ -9,8 +9,8 @@ package albergueperronclient.logic;
  *
  * @author 2dam
  */
-public class UserManagerFactory {
-    public static UsersManager createUserManager(){
-        return new UserManagerImplementation();
+public class StayManagerFactory {
+    public static StaysManager createStayManager(){
+        return new StayManagerImplementation();
     }
 }

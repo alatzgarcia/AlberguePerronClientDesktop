@@ -6,26 +6,48 @@
 package albergueperronclient.modelObjects;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author Diego
  */
+@XmlRootElement(name="stay")
 public class StayBean implements Serializable {
 
-    private Integer id;
-    private UserBean guest;
-    private Room room;
-    private Date date;
+    private SimpleIntegerProperty id;
+    private SimpleObjectProperty<UserBean> guest;
+    private SimpleObjectProperty<RoomBean> room;
+    private SimpleObjectProperty<Date> date;
+
+    public StayBean() {
+        this.id=new SimpleIntegerProperty();
+        this.guest=new SimpleObjectProperty<UserBean>();
+        this.room=new SimpleObjectProperty<RoomBean>();
+        this.date=new SimpleObjectProperty<Date>();
+    }
+
+    public StayBean(Integer id, UserBean guest, RoomBean room, Date date) {
+        this.id = new SimpleIntegerProperty(id);
+        this.guest = new SimpleObjectProperty (guest);
+        this.room = new SimpleObjectProperty (room);
+        this.date = new SimpleObjectProperty (date);
+    }
+    
+    
     
     public Integer getId() {
-        return id;
+        return this.id.get();
     }
 
     public void setId(Integer id) {
-        this.id = id;
+        this.id.set(id);
     }
 
     /**
@@ -33,7 +55,7 @@ public class StayBean implements Serializable {
      * @return The guest value.
      */
     public UserBean getGuest() {
-        return guest;
+        return this.guest.get();
     }
 
     /**
@@ -41,36 +63,37 @@ public class StayBean implements Serializable {
      * @param guest The guest value.
      */
     public void setGuest(UserBean guest) {
-        this.guest = guest;
+        this.guest.set(guest);
     }
 
     /**
      * Gets room value for stay.
      * @return The room value.
      */
-    public Room getRoom() {
-        return room;
+    @XmlElement(name="room")
+    public RoomBean getRoom() {
+        return this.room.get();
     }
 
     /**
      * @param room the room to set
      */
-    public void setRoom(Room room) {
-        this.room = room;
+    public void setRoom(RoomBean room) {
+        this.room.set(room);
     }
 
     /**
      * @return the date
      */
     public Date getDate() {
-        return date;
+        return this.date.get();
     }
 
     /**
      * @param date the date to set
      */
     public void setDate(Date date) {
-        this.date = date;
+        this.date.set(date);
     }
     
     @Override
@@ -95,6 +118,6 @@ public class StayBean implements Serializable {
 
     @Override
     public String toString() {
-        return "alberguePerronServer.entity.Stay[ id=" + getId() + " ]";
+        return getId().toString();
     }
 }
