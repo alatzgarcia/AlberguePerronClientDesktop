@@ -7,7 +7,7 @@ package albergueperronclient.exceptions;
 
 /**
  *
- * @author 2dam
+ * @author Alatz
  */
 public class BusinessLogicException extends Exception {
     public BusinessLogicException(String message){

@@ -18,7 +18,7 @@ import javafx.collections.ObservableList;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- *
+ * IncidentBean class for the AlberguePerronClient application
  * @author Alatz
  */
 @XmlRootElement(name="incident")
@@ -32,6 +32,9 @@ public class IncidentBean implements Serializable {
     private SimpleObjectProperty<RoomBean> room;
     private SimpleObjectProperty<Date> date;
 
+    /**
+     * Constructor for the class
+     */
     public IncidentBean(){
         this.id = new SimpleIntegerProperty();
         this.incidentType = new SimpleStringProperty();

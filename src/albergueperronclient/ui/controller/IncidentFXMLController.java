@@ -123,9 +123,21 @@ public class IncidentFXMLController extends GenericController {
     @FXML
     private DatePicker incidentDate;
     
+    /**
+     * Logic manager for incidents
+     */
     private IncidentManager incidentManager;
+    /**
+     * Logic manager for rooms
+     */
     private RoomManager roomManager;
+    /**
+     * Logic manager for users
+     */
     private UsersManager userManager;
+    /**
+     * Incident selected in the table
+     */
     private IncidentBean selectedIncident;
     
     /**

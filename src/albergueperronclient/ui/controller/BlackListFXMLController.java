@@ -97,12 +97,21 @@ public class BlackListFXMLController extends GenericController {
     @FXML
     private ComboBox cbUsers;
     
+    /**
+     * Logic manager for the blacklist
+     */
     private BlackListManager blackListManager;
+    /**
+     * Logic manager for users
+     */
     private UsersManager userManager;
+    /**
+     * User selected in the table
+     */
     private UserBeanMongo selectedUser;
     
     /**
-     * Sets the logic manager for the room view
+     * Sets the logic manager for the blacklist view
      * @param blackListManager logic manager
     */
     public void setLogicManager(BlackListManager blackListManager, UsersManager userManager){
@@ -111,7 +120,7 @@ public class BlackListFXMLController extends GenericController {
     }
     
     /**
-     * InitStage method for the Room view
+     * InitStage method for the blacklist view
      * @param root 
      */
     public void initStage(Parent root){
@@ -174,7 +183,7 @@ public class BlackListFXMLController extends GenericController {
     }
     
     /**
-     * OnShowing handler for the Room view
+     * OnShowing handler for the blacklist view
      * @param event 
      */
     public void handleWindowShowing(WindowEvent event){
@@ -323,7 +332,7 @@ public class BlackListFXMLController extends GenericController {
     }
     
     /**
-     * Updates the selected room
+     * Updates the selected user on the blacklist
      * @param event 
      */
     public void updateUserOnBlackList(ActionEvent event){
@@ -368,6 +377,12 @@ public class BlackListFXMLController extends GenericController {
         }
     }
     
+    /**
+     * Fills the fields id and fullname with the information from the user selected in the combobox
+     * @param value
+     * @param oldValue
+     * @param newValue 
+     */
     public void fillFields(ObservableValue value, Object oldValue, Object newValue){
         if(newValue != null){
             UserBean user = (UserBean) newValue;
@@ -377,13 +392,10 @@ public class BlackListFXMLController extends GenericController {
     }
     
     /**
-     * Checks if the needed data to create/update a room is inserted
+     * Checks if the needed data to insert/update a user is correctly inserted
      * @return 
      */
     public Boolean checkForData(){
-        //--TOFIX --> When clicking the save changes or insert buttons,
-        //check all fields are correctly filled before allowing the logic
-        //manager operations to happen
         Boolean formHasCorrectData = true;
         if(txtReason.getText().trim().length()==0){
             formHasCorrectData = false;

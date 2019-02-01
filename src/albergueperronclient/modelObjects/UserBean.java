@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- *
+ * UserBean class
  * @author Alatz
  */
 @XmlRootElement(name="user")
