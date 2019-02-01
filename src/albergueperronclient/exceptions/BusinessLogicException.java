@@ -7,7 +7,7 @@ package albergueperronclient.exceptions;
 
 /**
  * Exception associated to an error produced in the business logic tier.
- * @author javi
+ * @author diego
  */
 public class BusinessLogicException extends Exception {
     public BusinessLogicException(String msg){
