@@ -24,21 +24,21 @@ public interface PetsManager {
      */
     public Collection<PetBean> getAllPets() throws BusinessLogicException;
     /**
-     * This method updates data for an existing UserBean data for user. 
+     * This method updates data for an existing PetBean data for pet. 
      * @param pet The PetBean object to be updated.
      * @param id
      * @throws BusinessLogicException If there is any error while processing.
      */
     public void updatePet(PetBean pet, Integer id)throws BusinessLogicException;
     /**
-     * This method deletes data for an existing user. 
+     * This method deletes data for an existing pets. 
      * @param pet The PetBean object to be deleted.
      * @throws BusinessLogicException If there is any error while processing.
      */
     public void deletePet(Integer pet) throws BusinessLogicException;
 
     /**
-     * This method checks if a user's login already exists, throwing an Exception 
+     * This method checks if a pet's login already exists, throwing an Exception 
      * if that's the case.
      * @param id
      * @throws BusinessLogicException

@@ -104,8 +104,6 @@ public class UIPetFXMLController extends GenericController {
     private MenuItem menuLogOut;
     @FXML
     private MenuItem menuExit;
-    @FXML
-    private Button btnReport;
     
     private ObservableList<PetBean> petData;
     private ObservableList<UserBean> usersData;
@@ -133,7 +131,6 @@ public class UIPetFXMLController extends GenericController {
             stage.setOnShowing(this::handleWindowShowing);
             
             //btn actions
-            btnReport.setOnAction(this::generateReport);
             btnModify.setOnAction(this::updatePet);
             btnNew.setOnAction(this::newPet);
             btnInsert.setOnAction(this::saveNewPet);
@@ -176,7 +173,14 @@ public class UIPetFXMLController extends GenericController {
             e.printStackTrace(); 
         }
     }
-    
+    /**
+     * Focus a row of the table and set the parameter visible in the 
+     * TextFields and in the ComboBox, but disabled.
+     * Set the buttons(Insert,SaveChanges,New,Cancel and Report) enabled
+     * @param observable
+     * @param oldValue
+     * @param newValue 
+     */
     public void handlePetsTableFocus(ObservableValue observable, Object oldValue
         , Object newValue ){
         
@@ -188,7 +192,6 @@ public class UIPetFXMLController extends GenericController {
         btnInsert.setVisible(false);
         btnNew.setDisable(false);
         btnCancel.setDisable(false);
-        btnReport.setDisable(false);
         if(newValue!=null){
             PetBean pet=(PetBean)newValue;
             cbUsers.getSelectionModel().select(tablePet.getSelectionModel().getSelectedItem().getOwner());
@@ -197,16 +200,18 @@ public class UIPetFXMLController extends GenericController {
             txtRaza.setText(pet.getRace());
             txtName.setText(pet.getName());
             txtDescription.setText(pet.getDescription());
-            
-            //btnDelete.setDisable(false);
             btnNew.setDisable(true);
-            //btnModify.setDisable(false);
         }
         tablePet.refresh();
     }
     
+    /**
+     * Set the buttons(Cancel,Delete,New,Return,SaveChanges,Insert,Modify)
+     * enabled when the windows starts and set the promptText in the textFields 
+     * and in the ComboBox
+     * @param event 
+     */
     public void handleWindowShowing(WindowEvent event){
-       //Terminado
        btnCancel.setDisable(true);
        btnDelete.setDisable(true);
        btnNew.setDisable(false);
@@ -223,9 +228,15 @@ public class UIPetFXMLController extends GenericController {
        txtRaza.setPromptText("Introduce la raza de tu mascota");
     }
     
+    /**
+     * Changes the focus of the row in the table, puting in the TextField and in 
+     * the ComboBox the data of the selected row.
+     * @param observable
+     * @param oldValue
+     * @param newValue 
+     */
     public void handlePetsTableSelectionChanged (ObservableValue observable, 
-        Object oldValue, Object newValue){
-        
+        Object oldValue, Object newValue){  
         fieldChange(visible);
         fieldChange(disable);
         btnSaveChanges.setDisable(true);
@@ -246,14 +257,16 @@ public class UIPetFXMLController extends GenericController {
             btnModify.setDisable(false);
             btnDelete.setDisable(false);
             btnSaveChanges.setDisable(false);
-           /* tablePet.getItems()
-                    .add(new PetBean(MAX_LENGTH, columnDni.getText(), 
-                            columnSpecie.getText(), columnRaza.getText(),
-                            "colour", "description", columnName.getText()));   
-            tablePet.refresh();*/
         }
     } 
     
+    /**
+     * Create a new Pet
+     * Enable the textField to write a new pet.
+     * Put the buttons(Insert,Modify,Cancel) enabled
+     * BtnNew now is disabled
+     * @param event 
+     */
   public void newPet(ActionEvent event){
         //Set the btns
         btnInsert.setVisible(true);
@@ -268,6 +281,10 @@ public class UIPetFXMLController extends GenericController {
         cbUsers.setDisable(false);
     }
     
+  /**
+   * Saves the new pet sending the information to the database
+   * @param event 
+   */
     public void saveNewPet(ActionEvent event){
         try{
             if(checkFields()){
@@ -302,7 +319,13 @@ public class UIPetFXMLController extends GenericController {
             LOGGER.info("The create failed "+e.getMessage());
         }
     }
-     
+    
+    /**
+     * Shows an alert asking if you want to modify the pet, if you click yes
+     * the buttons "SaveChanges" is going to be enabled and the TextField are going
+     * to be enabled.
+     * @param event 
+     */
     public void updatePet(ActionEvent event){
         try{
             btnCancel.setDisable(false);
@@ -335,6 +358,10 @@ public class UIPetFXMLController extends GenericController {
         }
     }
     
+    /**
+     * Saves the update pet sending the information to the database
+     * @param event 
+     */
     public void saveUpdatePets(ActionEvent event){
         try{
             if(checkFields()){
@@ -367,6 +394,10 @@ public class UIPetFXMLController extends GenericController {
         }
     }
     
+    /**
+     * Control of the Fields of the view
+     * @return pet
+     */
     public PetBean getPetFromFields(){
         pet=new PetBean();
         //sets the attributes with the fields
@@ -383,15 +414,17 @@ public class UIPetFXMLController extends GenericController {
         return pet;
     }
     
+    /**
+     * Delete the  pet 
+     * @param event 
+     */
     public void deletePet(ActionEvent event){
          try{
-             PetBean petSelected =
-                     ((PetBean)tablePet.getSelectionModel().getSelectedItem());
-             Alert alert=new Alert(Alert.AlertType.CONFIRMATION,
+            Alert alert=new Alert(Alert.AlertType.CONFIRMATION,
                              "¿Borrar la fila seleccionada?\n"
                              + "Esta operacion no se puede deshacer.",
                              ButtonType.OK, ButtonType.CANCEL);
-             Optional<ButtonType> result = alert.showAndWait();
+            Optional<ButtonType> result = alert.showAndWait();
              //if OK to delete pet
             if(result.isPresent() && result.get() == ButtonType.OK){
                  petsManager.deletePet(tablePet.getSelectionModel().getSelectedItem().getId());
@@ -401,7 +434,7 @@ public class UIPetFXMLController extends GenericController {
                 tablePet.refresh();
                 fieldChange(enable);
                 fieldChange(visible);      
-             }else{
+            }else{
                 alert.close();
             }
         }catch(Exception e){
@@ -409,6 +442,10 @@ public class UIPetFXMLController extends GenericController {
         } 
     }
     
+    /**
+     * Cancel the action of the window
+     * @param event 
+     */
     public void cancelPet (ActionEvent event){
          try{
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION.CONFIRMATION);
@@ -426,8 +463,6 @@ public class UIPetFXMLController extends GenericController {
                 btnSaveChanges.setDisable(true);
                 btnInsert.setDisable(true);
                 btnInsert.setVisible(false);
-                /*btnSaveChanges.setVisible(false);
-                btnInsert.setVisible(false);*/
                 tablePet.getSelectionModel().clearSelection();
             }else if(result.get()==ButtonType.CANCEL){
                 alert.close();
@@ -439,6 +474,7 @@ public class UIPetFXMLController extends GenericController {
      
     /**
      * Checks that the fields are with data
+     * @return 
      */
     public boolean checkFields(){
         Boolean correctData =true;
@@ -449,12 +485,14 @@ public class UIPetFXMLController extends GenericController {
         }
         return correctData;
     }
-    
+    /**
+     * Controls the changes of the  fields of the view
+     * @param change 
+     */
     public void fieldChange(int change){
         switch(change){
             case 1:
                 //sets visibles all the fields of the window
-                //cbUsers.setVisible(true);
                 txtColour.setVisible(true);
                 txtDescription.setVisible(true);
                 txtEspecie.setVisible(true);
@@ -463,7 +501,6 @@ public class UIPetFXMLController extends GenericController {
                 break;
             case 2:
                 //sets invisible all the fiels of the window
-                //cbUsers.setVisible(false);
                 txtColour.setVisible(false);
                 txtDescription.setVisible(false);
                 txtEspecie.setVisible(false);
@@ -472,7 +509,6 @@ public class UIPetFXMLController extends GenericController {
                 break;
             case 3:
                 //Enables the fields
-                //cbUsers.setDisable(true);
                 txtColour.setEditable(true);
                 txtDescription.setEditable(true);
                 txtEspecie.setEditable(true);
@@ -481,7 +517,6 @@ public class UIPetFXMLController extends GenericController {
                 break;
             case 4:
                 //Disables the field
-                //cbUsers.setDisable(false);
                 txtColour.setEditable(false);
                 txtDescription.setEditable(false);
                 txtEspecie.setEditable(false);
@@ -498,7 +533,10 @@ public class UIPetFXMLController extends GenericController {
                 break;
         }
     }
-    
+    /**
+     * Go to RoomView
+     * @param event 
+     */
     public void goToRoomView(ActionEvent event){
         /*try{
             FXMLLoader loader = new FXMLLoader(getClass()
@@ -521,7 +559,11 @@ public class UIPetFXMLController extends GenericController {
         }*/
     }
     
-     public void goToBlackListView(ActionEvent event){
+    /**
+     * Go to BlackListView
+     * @param event 
+     */
+    public void goToBlackListView(ActionEvent event){
         /*try{
             FXMLLoader loader = new FXMLLoader(getClass()
                     .getResource("/signupsigninuidesktop/ui/fxml/UIBlackListFXMLController.fxml"));
@@ -543,6 +585,10 @@ public class UIPetFXMLController extends GenericController {
         }*/
     }
      
+    /**
+     * Go to StayView
+     * @param event 
+     */
     public void goToStayView(ActionEvent event){
         /*try{
             FXMLLoader loader = new FXMLLoader(getClass()
@@ -565,7 +611,11 @@ public class UIPetFXMLController extends GenericController {
         }*/
     }
     
-     public void goToIncidentsView(ActionEvent event){
+    /**
+     * Go to the IncidentsViews
+     * @param event 
+     */
+    public void goToIncidentsView(ActionEvent event){
         /*try{
             FXMLLoader loader = new FXMLLoader(getClass()
                     .getResource("/signupsigninuidesktop/ui/fxml/UIIncidentsFXMLController.fxml"));
@@ -586,7 +636,11 @@ public class UIPetFXMLController extends GenericController {
             showErrorAlert("Error al redirigir a la vista de las incidencias.");
         }*/
     }
-     
+    
+    /**
+     * Go to GuestView
+     * @param event 
+     */
     public void goToGuestView(ActionEvent event){
         /*try{
             FXMLLoader loader = new FXMLLoader(getClass()
@@ -609,15 +663,27 @@ public class UIPetFXMLController extends GenericController {
         }*/
     }
     
+    /**
+     * Exit from the app
+     * @param event 
+     */
     public void exit(ActionEvent event){
         Platform.exit();
     }
     
+    /**
+     * Return to previous view
+     * @param event 
+     */
     public void returnToPrevious(ActionEvent event){
         stage.close();
         previousStage.show();
     }
     
+    /**
+     * Go to Logged view
+     * @param event 
+     */
     public void toLogged (ActionEvent event){
         try{
             Alert alert = new Alert(AlertType.CONFIRMATION);
@@ -633,33 +699,4 @@ public class UIPetFXMLController extends GenericController {
            e.printStackTrace();
         }
     }
-    
-    public void generateReport(ActionEvent event){
-        try {
-            JasperReport petReport=
-                JasperCompileManager.compileReport(getClass()
-                    .getResourceAsStream("/albergueperronclient/report/PetReport.jrxml"));
-            //Data for the report: a collection of UserBean passed as a JRDataSource .360
-            //implementation 
-            JRBeanCollectionDataSource dataItems=
-                    new JRBeanCollectionDataSource((Collection<PetBean>)this.tablePet.getItems());
-            //Map of parameter to be passed to the report
-            Map<String,Object> parameters=new HashMap<>();
-            //Fill report with data
-            JasperPrint jasperPrint = JasperFillManager.fillReport(petReport,parameters,dataItems);
-            //Create and show the report window. The second parameter false value makes 
-            //report window not to close app.
-            JasperViewer jasperViewer = new JasperViewer(jasperPrint,false);
-            jasperViewer.setVisible(true);
-           // jasperViewer.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-        } catch (JRException ex) {
-            //If there is an error show message and
-            //log it.
-            showErrorAlert("Error al imprimir:\n"+
-                            ex.getMessage());
-            LOGGER.log(Level.SEVERE,
-                        "UI GestionUsuariosController: Error printing report: {0}",
-                        ex.getMessage());
-        }
-    } 
 }

@@ -23,14 +23,18 @@ public class PetsManagerImplementation implements PetsManager{
     private PetRESTClient webClient;
     private static final Logger LOGGER=Logger.getLogger("PetsManagerImplementation.class");
      /**
-     * Create a UsersManagerImplementation object. It constructs a web client for 
+     * Create a PetsManagerImplementation object. It constructs a web client for 
      * accessing a RESTful service that provides business logic in an application
      * server.
      */
     public PetsManagerImplementation(){
         webClient=new PetRESTClient();
     }
-    
+    /**
+     * This method returns a Collection of {@link PetBean}, containing all pets data.
+     * @return
+     * @throws BusinessLogicException 
+     */
     @Override
     public Collection<PetBean> getAllPets() throws BusinessLogicException {
        Collection<PetBean> pets = null;
@@ -46,7 +50,12 @@ public class PetsManagerImplementation implements PetsManager{
         }
         return pets;
     }
-
+    /**
+     * This method updates data for an existing PetBean data for pets. 
+     * @param pet
+     * @param id
+     * @throws BusinessLogicException 
+     */
     @Override
     public void updatePet(PetBean pet, Integer id) throws BusinessLogicException {
          try{
@@ -59,7 +68,11 @@ public class PetsManagerImplementation implements PetsManager{
             throw new BusinessLogicException("Error updating user:\n"+ex.getMessage());
         }
     }
-
+    /**
+     * This method deletes data for an existing pets. 
+     * @param id
+     * @throws BusinessLogicException 
+     */
     @Override
     public void deletePet(Integer id) throws BusinessLogicException {
         try{
@@ -85,7 +98,11 @@ public class PetsManagerImplementation implements PetsManager{
             throw new BusinessLogicException("Error finding user:\n"+ex.getMessage());
         }
     }  
-
+    /**
+    * This method adds a new created PetBean.
+    * @param pet
+    * @throws BusinessLogicException 
+    */
     @Override
     public void createPet(PetBean pet) throws BusinessLogicException {
         try{
