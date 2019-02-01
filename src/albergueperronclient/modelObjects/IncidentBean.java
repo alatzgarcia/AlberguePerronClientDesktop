@@ -191,7 +191,7 @@ public class IncidentBean implements Serializable {
         UserBean employee = null;
         List<UserBean> users = this.getImplicateds();
         for(UserBean u: users){
-            if(u.getPrivilege().equals(Privilege.EMPLOYEE)){
+            if(u.getPrivilege().equals(Privilege.ADMIN)){
                 employee = u;
             }
         }

@@ -12,21 +12,39 @@ import javafx.stage.Stage;
 import albergueperronclient.modelObjects.UserBean;
 
 /**
- *
+ * GenericController class for AlberguePerronClient application
  * @author Alatz
  */
 public class GenericController {
-    //Meter aqui maxLength y MinLength para los diferentes campos
+    /**
+     * Logger for the class
+     */
     protected static final Logger LOGGER = 
             Logger.getLogger("albergueperronclient.ui.controller");
+    /**
+     * Min. length for the user's password and login
+     */
     protected final int userPasswordMinLength = 8;
+    /**
+     * Max. length for the user's password and login
+     */
     protected final int userPasswordMaxLength = 30;
+    /**
+     * Min. length for the user's fullname
+     */
     protected final int fullNameMinLength = 5;
+    /**
+     * Max. length for the user's fullname
+     */
     protected final int fullNameMaxLength = 50;
-    
+    /**
+     * Current stage
+     */
     protected Stage stage;
+    /**
+     * The user of the application
+     */
     protected UserBean user;
-    protected Stage previousStage;
     
     /**
      * Method to show error alerts in the application
@@ -58,14 +76,5 @@ public class GenericController {
      */
     public void setUser(UserBean dbUser){
         this.user = dbUser;
-    }
-    
-    /**
-     * Sets the stage of the previous window to give the option
-     * to show it again later
-     * @param stage 
-     */
-    public void setPreviousStage(Stage stage){
-        this.previousStage = stage;
     }
 }

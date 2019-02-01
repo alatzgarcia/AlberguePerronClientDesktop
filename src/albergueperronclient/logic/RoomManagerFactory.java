@@ -6,12 +6,16 @@
 package albergueperronclient.logic;
 
 /**
- *
+ * RoomManagerFactory class for the AlberguePerronClient application
  * @author Alatz
  */
 public class RoomManagerFactory {
+    /**
+     * Returns the logic controller of type RoomManagerImplementation
+     * as a RoomManager
+     * @return the logic controller object
+     */
     public static RoomManager getRoomManager(){
         return new RoomManagerImplementation();
-        //return new ILogicTestDataImplementation(); //Imp class with test data
     }
 }

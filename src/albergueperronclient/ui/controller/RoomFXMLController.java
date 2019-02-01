@@ -5,6 +5,7 @@
  */
 package albergueperronclient.ui.controller;
 
+import albergueperronclient.exceptions.ReadException;
 import albergueperronclient.exceptions.UpdateException;
 import albergueperronclient.logic.IncidentManager;
 import albergueperronclient.logic.IncidentManagerFactory;
@@ -146,8 +147,12 @@ public class RoomFXMLController extends GenericController {
             txtTotal.textProperty().addListener(this::onTextChanged);
         
             stage.show();
+        } catch(ReadException re){
+            LOGGER.severe(re.getMessage());
+            showErrorAlert("Error al cargar los datos de las habitaciones.");
         } catch(Exception ex){
-            
+            LOGGER.severe(ex.getMessage());
+            showErrorAlert("Error. No se ha podido completar la operación.");
         }
     }
     
@@ -197,14 +202,23 @@ public class RoomFXMLController extends GenericController {
                 btnModify.setDisable(false);
                 tableRoom.setDisable(false);
                 tableRoom.refresh();
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Actualización de habitación");
+                        alert.setContentText("Se ha actualizado correctamente"
+                                + " la habitación.");        
+                        alert.showAndWait();
             }
             else{
-                //--TOFIX --> Mostrar un aviso al usuario para advertirle de que se requieren todos los datos para poder actualizar
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setTitle("Actualización de habitación");
+                        alert.setContentText("Se requieren todos los datos "
+                                + "para poder actualizar la habitación.");        
+                        alert.showAndWait();
             }
         }catch(UpdateException ue){
-            //--TOFIX --> Exception handling
+            LOGGER.severe(ue.getMessage());
         }catch(Exception ex){
-            //--TOFIX --> Exception handling
+            LOGGER.severe(ex.getMessage());
         }
     }
     

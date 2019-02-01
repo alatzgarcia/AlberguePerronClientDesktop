@@ -58,6 +58,7 @@ import net.sf.jasperreports.view.JasperViewer;
 import java.util.Date;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import javafx.stage.Stage;
 
 /**
  * Controller class for the Incident view of the application
@@ -163,10 +164,22 @@ public class IncidentFXMLController extends GenericController {
      */
      public void initStage(Parent root) throws ReadException {
         try {
+            /* Code to open this window as the first one with the primaryStage
+            * set in the app class
             Scene scene = new Scene(root);
             stage.setScene(scene);
             stage.setTitle("Incidents");
             stage.setResizable(false);
+            stage.setOnShowing(this::handleWindowShowing);*/
+            
+            //Create scene
+            Scene scene = new Scene(root);
+            stage = new Stage();
+            //Associate scene to stage
+            stage.setScene(scene);
+            stage.setTitle("Incidents");
+            stage.setResizable(false);
+            //set window's events handlers
             stage.setOnShowing(this::handleWindowShowing);
             
             txtIncidentType.textProperty().addListener(this::onTextChanged);
@@ -182,10 +195,8 @@ public class IncidentFXMLController extends GenericController {
                     FXCollections.observableArrayList(roomManager.findAllRooms());
             cbRoom.setItems(rooms);
             ObservableList<UserBean> employees =
-                    FXCollections.observableArrayList(userManager.findUsersByPrivilege(Privilege.EMPLOYEE));
+                    FXCollections.observableArrayList(userManager.findUsersByPrivilege(Privilege.ADMIN));
             cbEmployee.setItems(employees);
-            //--TOFIX --> Arreglar            
-            //employees.add(userManager.findUsersByPrivilege(Privilege.ADMIN));
             ObservableList<UserBean> guests =
                     FXCollections.observableArrayList(userManager.findUsersByPrivilege(Privilege.USER));
             cbGuests.setItems(guests);
@@ -212,10 +223,12 @@ public class IncidentFXMLController extends GenericController {
             menuExit.setOnAction(this::exit);
             
             stage.show();
+        } catch(ReadException re){
+            LOGGER.severe(re.getMessage());
+            showErrorAlert("Error al cargar los datos desde el servidor.");
         } catch (Exception ex){
-            //--TOFIX
-        //} catch (BusinessLogicException ex) {
-            Logger.getLogger(IncidentFXMLController.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.severe(ex.getMessage());
+            showErrorAlert("Error. No se ha podido completar la operación.");
         }
     }
     
@@ -245,16 +258,6 @@ public class IncidentFXMLController extends GenericController {
         cbRoom.getSelectionModel().selectFirst();
         menuIncidents.setDisable(true);
         incidentDate.setDisable(true);
-        
-        
-        //--TOFIX
-        /*btnLogin.setDisable(true);
-        btnLogin.setMnemonicParsing(true);
-        btnLogin.setText("_Iniciar Sesión");
-        btnExit.setMnemonicParsing(true);
-        btnExit.setText("_Salir");
-        txtUsername.requestFocus();*/
-        //Settear promptText
     }
     
     /**
@@ -306,7 +309,6 @@ public class IncidentFXMLController extends GenericController {
                 newIncident.setIncidentType(txtIncidentType.getText());
                 newIncident.setRoom((RoomBean)cbRoom.getSelectionModel().getSelectedItem());
                 Date date = Date.from(incidentDate.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());
-                //java.sql.Date date = java.sql.Date.valueOf(incidentDate.getValue());
                 newIncident.setDate(date);
                 incidentManager.createIncident(newIncident);
             
@@ -320,7 +322,6 @@ public class IncidentFXMLController extends GenericController {
                 txtIncidentType.setDisable(true);
                 cbEmployee.getSelectionModel().clearSelection();
                 cbEmployee.setDisable(true);
-                //lstImplicateds.setItems(null);
                 lstImplicateds.setDisable(true);
                 cbRoom.getSelectionModel().selectFirst();
                 cbRoom.setDisable(true);
@@ -328,19 +329,30 @@ public class IncidentFXMLController extends GenericController {
                 btnListRemove.setDisable(true);
                 cbGuests.setDisable(true);
                 incidentDate.getEditor().clear();
-                //incidentDate.setValue(null);
                 incidentDate.setDisable(true);
             
                 tableIncidents.getItems().add(newIncident);
                 tableIncidents.setDisable(false); 
                 tableIncidents.refresh();
+                
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Creación de incidencia");
+                        alert.setContentText("Se ha creado la incidencia"
+                                + "con éxito.");        
+                        alert.showAndWait();
             } else{
-                //--TOFIX --> Advertir al usuario de que se requieren todos los datos introducidos para poder crear un nuevo incidente
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setTitle("Creación de incidencia");
+                        alert.setContentText("Se requieren todos los datos "
+                                + "para poder crear la incidencia.");        
+                        alert.showAndWait();
             }
         }catch(CreateException ce){
-            //--TOFIX --> Exception handling
+            LOGGER.severe(ce.getMessage());
+            showErrorAlert("Error al crear el incidente.");
         }catch(Exception ex){
-            //--TOFIX --> Exception handling
+            LOGGER.severe(ex.getMessage());
+            showErrorAlert("Error. No se ha podido completar la operación.");
         }
     }
     
@@ -357,7 +369,6 @@ public class IncidentFXMLController extends GenericController {
             lstImplicateds.getItems().clear();
             txtDescription.setText("");
             txtIncidentType.setText("");
-            //incidentDate.setValue(null);
             incidentDate.getEditor().clear();
         } else{
             cbEmployee.getSelectionModel().select(selectedIncident.getEmployee());
@@ -366,7 +377,6 @@ public class IncidentFXMLController extends GenericController {
             lstImplicateds.setItems(FXCollections.observableArrayList(selectedIncident.getGuests()));
             txtDescription.setText(selectedIncident.getDescription());
             txtIncidentType.setText(selectedIncident.getIncidentType());
-            //--TOFIX --> Revisar
             LocalDate localdate = selectedIncident.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             incidentDate.setValue(localdate);
             btnDelete.setDisable(true);
@@ -455,14 +465,26 @@ public class IncidentFXMLController extends GenericController {
             
                 tableIncidents.refresh();
                 tableIncidents.setDisable(false);
+                
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Actualización de incidencia");
+                        alert.setContentText("Se ha actualizado la incidencia"
+                                + "con éxito.");        
+                        alert.showAndWait();
             }
             else{
-                //--TOFIX --> Mostrar un aviso al usuario para advertirle de que se requieren todos los datos para poder actualizar
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setTitle("Actualización de incidencia");
+                        alert.setContentText("Se requieren todos los datos "
+                                + "para poder actualizar la incidencia.");        
+                        alert.showAndWait();
             }
         }catch(UpdateException ue){
-            //--TOFIX --> Exception handling
+            LOGGER.severe(ue.getMessage());
+            showErrorAlert("Error al actualizar la incidencia.");
         }catch(Exception ex){
-            //--TOFIX --> Exception handling
+            LOGGER.severe(ex.getMessage());
+            showErrorAlert("Error. No se ha podido completar la operación.");
         }
     }
     
@@ -475,10 +497,17 @@ public class IncidentFXMLController extends GenericController {
             incidentManager.deleteIncident(selectedIncident.getId());
             tableIncidents.getItems().remove(selectedIncident);
             tableIncidents.refresh();
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Eliminación de incidencia");
+                        alert.setContentText("Se ha eliminado la incidencia "
+                                + "con éxito.");        
+                        alert.showAndWait();
         }catch(DeleteException de){
-            //--TOFIX --> Exception handling
+            LOGGER.severe(de.getMessage());
+            showErrorAlert("Error al eliminar la incidencia.");
         }catch(Exception ex){
-            //--TOFIX --> Exception handling
+            LOGGER.severe(ex.getMessage());
+            showErrorAlert("Error. No se ha podido completar la operación.");
         }
     }
     
@@ -552,11 +581,6 @@ public class IncidentFXMLController extends GenericController {
         //-- TOFIX
         Platform.exit();
     }
-    
-    /*public void returnToPrevious(ActionEvent event){
-        stage.close();
-        previousStage.show();
-    }*/
     
     /**
      * Logs out, sending the user to the login view

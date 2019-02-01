@@ -9,7 +9,7 @@ import java.io.Serializable;
 import javafx.beans.property.SimpleStringProperty;
 
 /**
- *
+ * UserBeanMongo class for AlberguePerronClient application
  * @author Alatz
  */
 public class UserBeanMongo implements Serializable {
@@ -106,6 +106,11 @@ public class UserBeanMongo implements Serializable {
         this.reason.set(reason);
     }
     
+    /**
+     * Compares two objects to see if they are the same object
+     * @param object object to compare with
+     * @return 
+     */
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set

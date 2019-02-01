@@ -7,6 +7,7 @@ package albergueperronclient.ui.controller;
 
 import albergueperronclient.exceptions.CreateException;
 import albergueperronclient.exceptions.DeleteException;
+import albergueperronclient.exceptions.ReadException;
 import albergueperronclient.exceptions.UpdateException;
 import albergueperronclient.logic.BlackListManager;
 import albergueperronclient.logic.RoomManagerFactory;
@@ -127,7 +128,7 @@ public class BlackListFXMLController extends GenericController {
         try{
             //Create scene
             Scene scene = new Scene(root);
-            //stage = new Stage();
+            stage = new Stage();
             //Associate scene to stage
             stage.setScene(scene);
             stage.setTitle("BlackList");
@@ -176,9 +177,12 @@ public class BlackListFXMLController extends GenericController {
             cbUsers.valueProperty().addListener(this::fillFields);
             
             stage.show();
+        } catch(ReadException re){
+            LOGGER.severe(re.getMessage());
+            showErrorAlert("Error al cargar los datos de la lista negra.");
         } catch(Exception ex){
-            ex.getMessage();
-            String message = ex.getMessage();
+            LOGGER.severe(ex.getMessage());
+            showErrorAlert("Error. No se ha podido completar la operación.");
         }
     }
     
@@ -210,8 +214,6 @@ public class BlackListFXMLController extends GenericController {
         btnInsert.setVisible(true);
         btnCancel.setDisable(false);
         btnNew.setDisable(true);
-        //--TOFIX --> Pensar como meter el resto de datos
-        //Puedo cargar todos los usuarios y mostrarlos en una combobox
         txtReason.setDisable(false);
         
         btnSaveChanges.setDisable(true);
@@ -266,24 +268,36 @@ public class BlackListFXMLController extends GenericController {
                         lblCbUsers.setVisible(false);
                         tableBlackList.getItems().add(newUser);
                         tableBlackList.setDisable(false); 
-                        tableBlackList.refresh();                    
+                        tableBlackList.refresh();
+                        
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Inserción de usuario");
+                        alert.setContentText("Se ha añadido el usuario"
+                                + "a la lista negra con éxito.");        
+                        alert.showAndWait();
                     } else{
-                        //--TOFIX --> Advertir al usuario de que el usuario elegido ya se encuentra en la tabla
                         Alert alert = new Alert(Alert.AlertType.WARNING);
                         alert.setTitle("Inserción de usuario");
-                        alert.setContentText("Aviso. El usuario seleccionado "
+                        alert.setContentText("El usuario seleccionado "
                                 + "ya se encuentra en la lista negra. No es "
                                 + "posible añadir los datos.");        
                         alert.showAndWait();
                     }
                 }
             } else{
-                //--TOFIX --> Advertir al usuario de que se requieren todos los datos introducidos para poder crear un nuevo incidente
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setTitle("Inserción de usuario");
+                        alert.setContentText("Se requieren todos los datos "
+                                + "para poder añadir un usuario a la lista "
+                                + "negra.");        
+                        alert.showAndWait();
             }
         }catch(CreateException ce){
-            //--TOFIX --> Exception handling
+            LOGGER.severe(ce.getMessage());
+            showErrorAlert("Error al añadir el usuario a la lista negra.");
         }catch(Exception ex){
-            //--TOFIX --> Exception handling
+            LOGGER.severe(ex.getMessage());
+            showErrorAlert("Error. No se ha podido completar la operación.");
         }
     }
     
@@ -294,7 +308,7 @@ public class BlackListFXMLController extends GenericController {
     public void disposeBlackListForm(ActionEvent event){
         if(btnInsert.isVisible()){
             txtReason.setText("");
-            btnInsert.setDisable(true);
+                btnInsert.setDisable(true);
             btnInsert.setVisible(false);
             
             lblCbUsers.setVisible(false);
@@ -313,7 +327,7 @@ public class BlackListFXMLController extends GenericController {
         btnNew.setDisable(false);
         txtReason.setDisable(true);
         tableBlackList.setDisable(false);
-   }
+    }
     
     /**
      * Enables the view fields for the update of the selected user of the blacklist
@@ -350,14 +364,27 @@ public class BlackListFXMLController extends GenericController {
                 btnNew.setDisable(false);
                 tableBlackList.setDisable(false);
                 tableBlackList.refresh();
+                
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Actualización de usuario");
+                        alert.setContentText("Se ha actualizado correctamente"
+                                + "el usuario en la lista negra.");        
+                        alert.showAndWait();
             }
             else{
-                //--TOFIX --> Mostrar un aviso al usuario para advertirle de que se requieren todos los datos para poder actualizar
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setTitle("Actualización de usuario");
+                        alert.setContentText("Se requieren todos los datos "
+                                + "para poder actualizar un usuario en la lista "
+                                + "negra.");        
+                        alert.showAndWait();
             }
         }catch(UpdateException ue){
-            //--TOFIX --> Exception handling
+            LOGGER.severe(ue.getMessage());
+            showErrorAlert("Error al actualizar los datos del usuario.");
         }catch(Exception ex){
-            //--TOFIX --> Exception handling
+            LOGGER.severe(ex.getMessage());
+            showErrorAlert("Error. No se ha podido completar la operación.");
         }
     }
 
@@ -370,10 +397,18 @@ public class BlackListFXMLController extends GenericController {
             blackListManager.deleteUserFromBlackList(selectedUser.getId());
             tableBlackList.getItems().remove(selectedUser);
             tableBlackList.refresh();
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Eliminación de usuario");
+                        alert.setContentText("Se ha eliminado correctamente el "
+                                + "usuario de la lista "
+                                + "negra.");        
+                        alert.showAndWait();
         }catch(DeleteException de){
-            //--TOFIX --> Exception handling
+            LOGGER.severe(de.getMessage());
+            showErrorAlert("Error al eliminar el usuario de la lista negra.");
         }catch(Exception ex){
-            //--TOFIX --> Exception handling
+            LOGGER.severe(ex.getMessage());
+            showErrorAlert("Error. No se ha podido completar la operación.");
         }
     }
     

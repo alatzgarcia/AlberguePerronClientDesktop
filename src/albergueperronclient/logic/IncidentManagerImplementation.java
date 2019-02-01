@@ -17,18 +17,33 @@ import java.util.logging.Logger;
 import javax.ws.rs.core.GenericType;
 
 /**
- *
+ * IncidentManagerImplementation class for the AlberguePerronClient application
  * @author Alatz
  */
 public class IncidentManagerImplementation implements IncidentManager {
+    /**
+     * Web REST client
+     */
     private IncidentRESTClient webClient;
+    /**
+     * Logger for the class
+     */
     private static final Logger LOGGER= Logger.
             getLogger("albergueperronclient.logic.IncidentManagerImplementation");
     
+    /**
+     * Constructor for the class that initializes the rest client
+     */
     public IncidentManagerImplementation(){
         webClient = new IncidentRESTClient();
     }
     
+    /**
+     * Method to get an incident by its id
+     * @param id the id of the incident to find
+     * @return the incident object
+     * @throws ReadException 
+     */
     @Override
     public IncidentBean findIncidentById(Integer id) throws ReadException {
         IncidentBean incident = null;
@@ -41,12 +56,16 @@ public class IncidentManagerImplementation implements IncidentManager {
             LOGGER.log(Level.SEVERE,
                     "IncidentManager: Exception finding incident, {0}",
                     ex.getMessage());
-            //--TOFIX            
-            //throw new BusinessLogicException("Error finding all users:\n"+ex.getMessage());
+            throw new ReadException(ex.getMessage());
         }
         return incident;
     }
-
+    
+    /**
+     * Method to get all incidents
+     * @return a list with the incidents
+     * @throws ReadException 
+     */
     @Override
     public List<IncidentBean> findAllIncidents() throws ReadException {
         List<IncidentBean> incidents = null;
@@ -58,11 +77,16 @@ public class IncidentManagerImplementation implements IncidentManager {
             LOGGER.log(Level.SEVERE,
                     "IncidentManager: Exception finding all users, {0}",
                     ex.getMessage());
-            //-- TOFIX --> Throwear excepción
+            throw new ReadException(ex.getMessage());
         }
         return incidents;
     }
 
+    /**
+     * Method to create an incident
+     * @param incident the incident object
+     * @throws CreateException 
+     */
     @Override
     public void createIncident(IncidentBean incident) throws CreateException {
         try{
@@ -75,10 +99,15 @@ public class IncidentManagerImplementation implements IncidentManager {
             LOGGER.log(Level.SEVERE,
                     "IncidentManager: Exception creating incident, {0}",
                     ex.getMessage());
-            //-- TOFIX --> Throwear excepción
+            throw new CreateException(ex.getMessage());
         }
     }
 
+    /**
+     * Method to update an incident
+     * @param incident the incident object
+     * @throws UpdateException 
+     */
     @Override
     public void updateIncident(IncidentBean incident) throws UpdateException {
          try{
@@ -89,10 +118,15 @@ public class IncidentManagerImplementation implements IncidentManager {
             LOGGER.log(Level.SEVERE,
                     "IncidentManager: Exception updating incident, {0}",
                     ex.getMessage());
-            //-- TOFIX --> Throwear excepción
+            throw new UpdateException(ex.getMessage());
         }
     }
 
+    /**
+     * Method to delete an incident by its id
+     * @param id the id of the incident to delete
+     * @throws DeleteException 
+     */
     @Override
     public void deleteIncident(Integer id) throws DeleteException {
        try{
@@ -103,7 +137,7 @@ public class IncidentManagerImplementation implements IncidentManager {
             LOGGER.log(Level.SEVERE,
                     "IncidentManager: Exception deleting incident, {0}",
                     ex.getMessage());
-            //-- TOFIX --> Throwear excepción
+            throw new DeleteException(ex.getMessage());
         }
     }
     
