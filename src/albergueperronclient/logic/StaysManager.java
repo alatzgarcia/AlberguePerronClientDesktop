@@ -20,7 +20,7 @@ public interface StaysManager {
     
     public void createStay(StayBean stay) throws BusinessLogicException;
     
-    public void updateStay(StayBean stay, String id) throws BusinessLogicException;
+    public void updateStay(StayBean stay) throws BusinessLogicException;
     
     public void deleteStay(String id) throws BusinessLogicException;
 }

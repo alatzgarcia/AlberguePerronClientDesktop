@@ -67,9 +67,9 @@ public class UserManagerImplementation implements UsersManager{
     }
 
     @Override
-    public void updateUser(UserBean user, String id) throws BusinessLogicException {
+    public void updateUser(UserBean user) throws BusinessLogicException {
        try{
-           webClient.edit(user, id);
+           webClient.edit(user);
        }catch(Exception e){
            LOGGER.log(Level.SEVERE,
                     "UsersManager: Exception updating all users, ",

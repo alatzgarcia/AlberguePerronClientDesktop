@@ -68,9 +68,9 @@ public class StayManagerImplementation implements StaysManager{
     }
 
     @Override
-    public void updateStay(StayBean stay, String id) throws BusinessLogicException {
+    public void updateStay(StayBean stay) throws BusinessLogicException {
         try{
-           webClient.edit(stay, id);
+           webClient.edit(stay);
         }catch(Exception e){
            LOGGER.log(Level.SEVERE,
                     "StaysImplementation: Exception updating all stays, ",

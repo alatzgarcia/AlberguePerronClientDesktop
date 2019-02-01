@@ -8,7 +8,6 @@ package albergueperronclient.ui.controller;
 import albergueperronclient.exceptions.BusinessLogicException;
 import albergueperronclient.modelObjects.Privilege;
 import albergueperronclient.modelObjects.UserBean;
-import albergueperronclient.passwordGen.PasswordGenerator;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -49,18 +48,11 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.xml.bind.DatatypeConverter;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.view.JasperViewer;
 
 /**
  * FXML Controller class
  *
- * @author 2dam
+ * @author Diego
  */
 public class UIGuestFXMLController extends GenericController{
     //FXML auto-generated
@@ -120,7 +112,9 @@ public class UIGuestFXMLController extends GenericController{
     private int enable=3;
     private int disable=4;
     private int clean=5;
-    
+    /**
+     * Initializes the controller class.
+     */
     public void initStage(Parent root){
         Scene scene = new Scene(root);
         Stage stage=new Stage();
@@ -146,7 +140,8 @@ public class UIGuestFXMLController extends GenericController{
         btnSaveChanges.setOnAction(this::saveUpdateGuest);
         btnModifyGuest.setOnAction(this::updateGuest);
         btnDeleteGuest.setOnAction(this::deleteUser);
-        btnReport.setOnAction(this::generateReport);
+        //REPORT
+        //btnReport.setOnAction(this::generateReport);
         
         
         //Sets the columns the attributes to use
@@ -171,6 +166,11 @@ public class UIGuestFXMLController extends GenericController{
        
     }
     
+    /**
+     * Sets the buttons and fields that will be visible, disable or editable at
+     * the start of the window
+     * @param event WindowEvent: The listener of the window
+     */
     public void handleWindowShowing(WindowEvent event){
         btnCancel.setDisable(true);
         btnDeleteGuest.setDisable(true);
@@ -183,6 +183,12 @@ public class UIGuestFXMLController extends GenericController{
         fieldChange(invisible); 
     }
     
+    /**
+     * Controls the buttons and the fields when the focus of the table changes
+     * @param observable ObservableValue:
+     * @param oldValue Object: The old value of the object modified
+     * @param newValue Object: The new value of the object modified
+     */
     public void handleUserTableFocus(ObservableValue observable, Object oldValue, Object newValue){
         fieldChange(visible);
         fieldChange(disable);
@@ -207,12 +213,19 @@ public class UIGuestFXMLController extends GenericController{
         }
     }
     
-    
+    /**
+     * Returns to the last window
+     * @param event ActionEvent The listenr of the button
+     */
     public void returnWindow(ActionEvent event){
         LOGGER.info("Entra en el return");
         stage.close();
     }
     
+    /**
+     * Enables the buttons, comboboxes and DatePicker for the update.
+     * @param event ActionEvent: The listener of the button
+     */
     public void updateGuest(ActionEvent event){
         //Enable the buttons needed to modify a guest
         btnCancel.setDisable(false);
@@ -231,6 +244,10 @@ public class UIGuestFXMLController extends GenericController{
         txtDni.setDisable(true);
     }
     
+    /**
+     * Enables the buttons, comboboxes and DatePicker for the new stay.
+     * @param event ActionEvent: The listener of the button
+     */
     public void newGuest(ActionEvent event){
         // Enable the buttons needed to create a new guest
         btnCancel.setDisable(false);
@@ -246,6 +263,11 @@ public class UIGuestFXMLController extends GenericController{
         fieldChange(clean);
         
     }
+    
+    /**
+     * Method that controls the fields will be inserted
+     * @param change int: The valor of wanted modification of the fields
+     */
     public void fieldChange(int change){
         switch(change){
             case 1:
@@ -302,6 +324,10 @@ public class UIGuestFXMLController extends GenericController{
         }
     }
     
+    /**
+     * Creates a Guest with the inserted data
+     * @param event ActionEvent: The listener of the button
+     */
     private void saveNewGuest(ActionEvent event){
         try {
             usersManager.createUser(getUserFromFieldsCreate());
@@ -323,13 +349,17 @@ public class UIGuestFXMLController extends GenericController{
             LOGGER.info("The create failed " + e.getMessage());
         }
     }
-
+    
+    /**
+     * Updates a Guest with the inserted data
+     * @param event ActionEvent: The listener of the button
+     */
    private void saveUpdateGuest(ActionEvent event){
        LOGGER.info("SE HACE EL BOTON DE UPDATE");
        LOGGER.info("Entrando en save update guest");
        //Updates the user
        try {
-           usersManager.updateUser(getUserFromFieldsUpdate(), tableGuest.getSelectionModel().getSelectedItem().getId());
+           usersManager.updateUser(getUserFromFieldsUpdate());
            tableGuest.getItems().remove(tableGuest.getSelectionModel().getSelectedItem());
            tableGuest.getItems().add(user);
            tableGuest.refresh();
@@ -348,6 +378,10 @@ public class UIGuestFXMLController extends GenericController{
        }     
     }
     
+   /**
+     * The method that cancels the creating or updating data insert
+     * @param event ActionEvent: The listener of the button
+     */
     public void cancel(ActionEvent event){
         try{
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION.CONFIRMATION);
@@ -364,6 +398,9 @@ public class UIGuestFXMLController extends GenericController{
         }
     }
     
+    /**
+     * This method return all the buttons to the initial status
+     */
     public void finishOperation(){
         fieldChange(invisible);
         fieldChange(clean);
@@ -378,6 +415,11 @@ public class UIGuestFXMLController extends GenericController{
         tableGuest.setDisable(false);
     }
     
+    /**
+      * Gets all the from the fields and it put them into a UserBean Object for 
+      * the update operation
+      * @return user
+      */
     private UserBean getUserFromFieldsUpdate() {
         user= new UserBean();
         
@@ -398,6 +440,11 @@ public class UIGuestFXMLController extends GenericController{
         return user;
     }
     
+    /**
+      * Gets all the from the fields and it put them into a UserBean Object 
+      * for the create operation
+      * @return user
+      */
     private UserBean getUserFromFieldsCreate(){
         user= new UserBean();
         
@@ -419,6 +466,10 @@ public class UIGuestFXMLController extends GenericController{
         return user;
     }
     
+    /**
+     * Deletes the selected entire guest
+     * @param event 
+     */
     private void deleteUser(ActionEvent event){
         try{
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION.CONFIRMATION);
@@ -439,6 +490,12 @@ public class UIGuestFXMLController extends GenericController{
         }   
     }
     
+    /**
+     * A listener that checks the fields everytime one of them is modified
+     * @param observable ObservableValue The listener of the fields
+     * @param oldValue String The old value of the field
+     * @param newValue String The new value of the field
+     */
     public void onTextChanged(ObservableValue observable,
             String oldValue,
             String newValue){
@@ -470,51 +527,8 @@ public class UIGuestFXMLController extends GenericController{
             }
         }
     }
-    
-     public byte[] encrypt(String pass){
-            FileInputStream fis;
-            byte[] encodedMessage = null;
-		try {
-                    fis = new FileInputStream("public.key");
-                    byte[] publicKey = new byte[fis.available()];
-                    fis.read(publicKey);
-			
-                    X509EncodedKeySpec pubKeySpec = new X509EncodedKeySpec(publicKey);
-                    KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-			 
-                    PublicKey pubKey = keyFactory.generatePublic(pubKeySpec);
-                    
-                    Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-                    cipher.init(Cipher.ENCRYPT_MODE, pubKey);
-                    encodedMessage = cipher.doFinal(pass.getBytes());
-			
-                    //ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("encoded"));
-                    //oos.writeObject(encodedMessage);
-			
-                    LOGGER.info("Message encrypted");
-	
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		} catch (InvalidKeySpecException e) {
-			e.printStackTrace();
-		} catch (NoSuchPaddingException e) {
-			e.printStackTrace();
-		} catch (IllegalBlockSizeException e) {
-			e.printStackTrace();
-		} catch (BadPaddingException e) {
-			e.printStackTrace();
-		} catch (InvalidKeyException ex) {
-                        ex.printStackTrace();
-                }
-        
-            return encodedMessage;
-    }
      
-     public void generateReport(ActionEvent event){
+     /*public void generateReport(ActionEvent event){
          try {
              JasperReport report=
                 JasperCompileManager.compileReport(getClass()
@@ -541,6 +555,6 @@ public class UIGuestFXMLController extends GenericController{
                         "UI GestionUsuariosController: Error printing report: {0}",
                         ex.getMessage());
         }
-    }
+    }*/
      
 }

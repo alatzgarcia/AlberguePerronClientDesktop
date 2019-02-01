@@ -23,7 +23,7 @@ public interface UsersManager {
     
     public void createUser(UserBean user) throws BusinessLogicException;
     
-    public void updateUser(UserBean user, String id) throws BusinessLogicException;
+    public void updateUser(UserBean user) throws BusinessLogicException;
     
     public void deleteUser(String id) throws BusinessLogicException;
     
