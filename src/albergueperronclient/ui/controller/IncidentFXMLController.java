@@ -398,7 +398,6 @@ public class IncidentFXMLController extends GenericController {
         cbGuests.setDisable(false);
         btnInsert.setDisable(true);
         btnInsert.setVisible(false);
-        selectedIncident.getDescription();
         tableIncidents.setDisable(true);
         incidentDate.setDisable(false);
         incidentDate.getEditor().setDisable(true);
@@ -613,8 +612,6 @@ public class IncidentFXMLController extends GenericController {
             guestController.setPreviousStage(stage);
             //Initialize the primary stage of the application
             guestController.initStage(root);
-            //--TOFIX --> Decidir si esconder el stage o cerrarlo
-            stage.hide();
             stage.close();
         }catch(Exception e){
             LOGGER.severe(e.getMessage());
@@ -639,8 +636,6 @@ public class IncidentFXMLController extends GenericController {
             petController.setPreviousStage(stage);
             //Initialize the primary stage of the application
             petController.initStage(root);
-            //--TOFIX --> Decidir si esconder el stage o cerrarlo
-            stage.hide();
             stage.close();
         }catch(Exception e){
             LOGGER.severe(e.getMessage());
@@ -665,8 +660,6 @@ public class IncidentFXMLController extends GenericController {
             stayController.setPreviousStage(stage);
             //Initialize the primary stage of the application
             stayController.initStage(root);
-            //--TOFIX --> Decidir si esconder el stage o cerrarlo
-            stage.hide();
             stage.close();
         }catch(Exception e){
             LOGGER.severe(e.getMessage());
@@ -691,8 +684,6 @@ public class IncidentFXMLController extends GenericController {
             blackListController.setPreviousStage(stage);
             //Initialize the primary stage of the application
             blackListController.initStage(root);
-            //--TOFIX --> Decidir si esconder el stage o cerrarlo
-            stage.hide();
             stage.close();
         }catch(Exception e){
             LOGGER.severe(e.getMessage());
@@ -718,7 +709,6 @@ public class IncidentFXMLController extends GenericController {
             //Initialize the primary stage of the application
             roomController.initStage(root);
             //--TOFIX --> Decidir si esconder el stage o cerrarlo
-            stage.hide();
             stage.close();
         }catch(Exception e){
             LOGGER.severe(e.getMessage());
@@ -752,7 +742,6 @@ public class IncidentFXMLController extends GenericController {
             }
             btnModify.setDisable(false);
             btnDelete.setDisable(false);
-            //incidentDate.setValue(selectedIncident.getDate());
         }else{
         //If there is not a row selected, clean window fields 
         //and disable create, modify and delete buttons
@@ -765,7 +754,6 @@ public class IncidentFXMLController extends GenericController {
             lstImplicateds.getSelectionModel().clearSelection();
             lstImplicateds.getItems().clear();
             incidentDate.getEditor().clear();
-            //incidentDate.setValue(null);
             btnModify.setDisable(true);
             btnDelete.setDisable(true);
         }

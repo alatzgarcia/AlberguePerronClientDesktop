@@ -5,17 +5,16 @@
  */
 package albergueperronclient.ui.controller;
 
+import albergueperronclient.exceptions.CreateException;
+import albergueperronclient.exceptions.DeleteException;
 import albergueperronclient.exceptions.UpdateException;
-import albergueperronclient.logic.IncidentManager;
-import albergueperronclient.logic.IncidentManagerFactory;
-import albergueperronclient.logic.RoomManager;
+import albergueperronclient.logic.BlackListManager;
 import albergueperronclient.logic.RoomManagerFactory;
 import albergueperronclient.logic.UsersManager;
-import albergueperronclient.logic.UsersManagerFactory;
-import albergueperronclient.modelObjects.Privilege;
 import albergueperronclient.modelObjects.RoomBean;
-import albergueperronclient.modelObjects.UserBean;
 import albergueperronclient.modelObjects.Status;
+import albergueperronclient.modelObjects.UserBeanMongo;
+import albergueperronclient.modelObjects.UserBean;
 import static albergueperronclient.ui.controller.GenericController.LOGGER;
 import java.util.Optional;
 import javafx.application.Platform;
@@ -34,41 +33,17 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 /**
- * Controller class for the Room view
+ * Controller class for the BlackList view
  * @author Alatz
  */
-public class RoomFXMLController extends GenericController {
-    @FXML
-    private Text lblRoomNum;
-    @FXML
-    private Text lblAvailableSpace;
-    @FXML
-    private TableColumn columnRoomNum;
-    @FXML
-    private TableColumn columnTotal;
-    @FXML
-    private TableColumn columnFree;
-    @FXML
-    private TableColumn columnStatus;
-    @FXML
-    private TextField txtTotal;
-    @FXML
-    private ComboBox cbStatus;
-    @FXML
-    private Button btnReturn;
-    @FXML
-    private Button btnModify;
-    @FXML
-    private Button btnSaveChanges;
-    @FXML
-    private Button btnCancel;
+public class BlackListFXMLController extends GenericController {
     @FXML
     private MenuItem menuGuest;
     @FXML
@@ -80,23 +55,59 @@ public class RoomFXMLController extends GenericController {
     @FXML
     private MenuItem menuBlackList;
     @FXML
-    private MenuItem menuRoom;
-    @FXML
     private MenuItem menuLogOut;
     @FXML
     private MenuItem menuExit;
     @FXML
-    private TableView tableRoom;
+    private MenuItem menuRoom;
+    @FXML
+    private Text lblId;
+    @FXML
+    private Text lblFullname;
+    @FXML
+    private TextArea txtReason;
+    @FXML
+    private Button btnReturn;
+    @FXML
+    private Button btnModify;
+    @FXML
+    private Button btnNew;
+    @FXML
+    private Button btnInsert;
+    @FXML
+    private Button btnSaveChanges;
+    @FXML
+    private Button btnCancel;
+    @FXML
+    private Button btnDelete;
+    @FXML
+    private TableView tableBlackList;
+    @FXML
+    private TableColumn columnId;
+    @FXML
+    private TableColumn columnName;
+    @FXML
+    private TableColumn columnSurname1;
+    @FXML
+    private TableColumn columnSurname2;
+    @FXML
+    private TableColumn columnReason;
+    @FXML
+    private Text lblCbUsers;
+    @FXML
+    private ComboBox cbUsers;
     
-    private RoomManager roomManager;
-    private RoomBean selectedRoom;
+    private BlackListManager blackListManager;
+    private UsersManager userManager;
+    private UserBeanMongo selectedUser;
     
     /**
      * Sets the logic manager for the room view
-     * @param roomManager logic manager
+     * @param blackListManager logic manager
     */
-    public void setLogicManager(RoomManager roomManager){
-        this.roomManager = roomManager;
+    public void setLogicManager(BlackListManager blackListManager, UsersManager userManager){
+        this.blackListManager = blackListManager;
+        this.userManager = userManager;
     }
     
     /**
@@ -107,47 +118,58 @@ public class RoomFXMLController extends GenericController {
         try{
             //Create scene
             Scene scene = new Scene(root);
-            stage = new Stage();
+            //stage = new Stage();
             //Associate scene to stage
             stage.setScene(scene);
-            stage.setTitle("Room");
+            stage.setTitle("BlackList");
             stage.setResizable(false);
             //set window's events handlers
             stage.setOnShowing(this::handleWindowShowing);
         
-            ObservableList<RoomBean> rooms =
-                    FXCollections.observableArrayList(roomManager.findAllRooms());
+            ObservableList<UserBeanMongo> users =
+                    FXCollections.observableArrayList(blackListManager.findAllUsersFromBlackList());
         
-            columnRoomNum.setCellValueFactory(
-                    new PropertyValueFactory<>("roomNum"));
-            columnTotal.setCellValueFactory(
-                    new PropertyValueFactory<>("totalSpace"));
-            columnFree.setCellValueFactory(
-                    new PropertyValueFactory<>("availableSpace"));
-            columnStatus.setCellValueFactory(
-                    new PropertyValueFactory<>("status"));
+            columnId.setCellValueFactory(
+                    new PropertyValueFactory<>("id"));
+            columnName.setCellValueFactory(
+                    new PropertyValueFactory<>("name"));
+            columnSurname1.setCellValueFactory(
+                    new PropertyValueFactory<>("surname1"));
+            columnSurname2.setCellValueFactory(
+                    new PropertyValueFactory<>("surname2"));
+            columnReason.setCellValueFactory(
+                    new PropertyValueFactory<>("reason"));
             
-            tableRoom.setItems(rooms);
+            tableBlackList.setItems(users);
             
-            cbStatus.setItems(FXCollections.observableArrayList(Status.values()));
+            ObservableList<UserBean> usersForCb =
+                    FXCollections.observableArrayList(userManager.getAllUsers());
+            
+            cbUsers.setItems(usersForCb);
             
             menuGuest.setOnAction(this::goToGuestsView);
             menuPet.setOnAction(this::goToPetsView);
             menuStay.setOnAction(this::goToStaysView);
-            menuBlackList.setOnAction(this::goToBlackListView);
             menuLogOut.setOnAction(this::logOut);
             menuExit.setOnAction(this::exit);
+            menuRoom.setOnAction(this::goToRoomView);
+            menuIncidents.setOnAction(this::goToIncidentView);
             btnReturn.setOnAction(this::returnToMenu);
-            btnModify.setOnAction(this::enableUpdateForm);
-            btnSaveChanges.setOnAction(this::updateRoom);
-            btnCancel.setOnAction(this::disposeUpdateForm);
-            tableRoom.getSelectionModel().selectedItemProperty().
+            btnNew.setOnAction(this::enableNewInsertForm);
+            btnInsert.setOnAction(this::addUserToBlackList);
+            btnModify.setOnAction(this::enableUpdateBlackListForm);
+            btnSaveChanges.setOnAction(this::updateUserOnBlackList);
+            btnCancel.setOnAction(this::disposeBlackListForm);
+            btnDelete.setOnAction(this::deleteUserFromBlackList);
+            tableBlackList.getSelectionModel().selectedItemProperty().
                     addListener(this::onTableSelectionChanged);
-            txtTotal.textProperty().addListener(this::onTextChanged);
-        
+            txtReason.textProperty().addListener(this::onTextChanged);
+            cbUsers.valueProperty().addListener(this::fillFields);
+            
             stage.show();
         } catch(Exception ex){
-            
+            ex.getMessage();
+            String message = ex.getMessage();
         }
     }
     
@@ -159,44 +181,166 @@ public class RoomFXMLController extends GenericController {
         btnModify.setDisable(true);
         btnCancel.setDisable(true);
         btnSaveChanges.setDisable(true);
+        btnSaveChanges.setVisible(false);
+        btnNew.setDisable(false);
+        btnInsert.setDisable(true);
+        btnInsert.setVisible(false);
+        lblCbUsers.setVisible(false);
+        cbUsers.setDisable(true);
+        cbUsers.setVisible(false);
         
-        txtTotal.setDisable(true);
-        cbStatus.setDisable(true);
-        menuRoom.setDisable(true);
+        txtReason.setDisable(true);
+        menuBlackList.setDisable(true);
     }
     
     /**
-     * Enables the view fields for room update of the selected room
+     * Enables the view fields for blackList user insertion
      * @param event 
      */
-    public void enableUpdateForm(ActionEvent event){
-        txtTotal.setDisable(false);
+    public void enableNewInsertForm(ActionEvent event){
+        btnInsert.setVisible(true);
         btnCancel.setDisable(false);
-        btnSaveChanges.setDisable(false);
-        cbStatus.setDisable(false);
+        btnNew.setDisable(true);
+        //--TOFIX --> Pensar como meter el resto de datos
+        //Puedo cargar todos los usuarios y mostrarlos en una combobox
+        txtReason.setDisable(false);
+        
+        btnSaveChanges.setDisable(true);
+        btnSaveChanges.setVisible(false);
+        txtReason.setText("");
+        cbUsers.getSelectionModel().clearSelection();
+        tableBlackList.getSelectionModel().clearSelection();
+        tableBlackList.setDisable(true);
+        
         btnModify.setDisable(true);
-        tableRoom.setDisable(true);
+        btnDelete.setDisable(true);
+        
+        cbUsers.setVisible(true);
+        cbUsers.setDisable(false);
+        lblCbUsers.setVisible(true);
+    }
+    
+    /**
+     * Adds a user to the blacklist
+     * @param event 
+     */
+    public void addUserToBlackList(ActionEvent event){
+        try{
+            if(checkForData()){                
+                if(cbUsers.getSelectionModel().getSelectedItem() instanceof UserBean){
+                    Boolean alreadyOnTable = false;
+                    UserBean selectedUser = (UserBean) cbUsers.getSelectionModel().getSelectedItem();
+                    for(int i = 0; i < tableBlackList.getItems().size(); i++){
+                        UserBeanMongo ubm = (UserBeanMongo) tableBlackList.getItems().get(i);
+                        if(selectedUser.getId().equalsIgnoreCase(ubm.getId())){
+                            alreadyOnTable = true;
+                            break;
+                        }
+                    }
+                    if(!alreadyOnTable){
+                        String id = lblId.getText();
+                        UserBean user = (UserBean)cbUsers.getSelectionModel().getSelectedItem();
+                        String reason = txtReason.getText();
+                
+                        UserBeanMongo newUser = new UserBeanMongo(id, user.getName(), user.getSurname1(), user.getSurname2(), reason);
+                        blackListManager.addUserToBlackList(newUser);
+                
+                        btnCancel.setDisable(true);
+                        btnInsert.setDisable(true);
+                        btnInsert.setVisible(false);
+                        btnNew.setDisable(false);
+                        txtReason.setText("");
+                
+                        cbUsers.getSelectionModel().clearSelection();
+                        cbUsers.setDisable(true);
+                        cbUsers.setVisible(false);
+                        lblCbUsers.setVisible(false);
+                        tableBlackList.getItems().add(newUser);
+                        tableBlackList.setDisable(false); 
+                        tableBlackList.refresh();                    
+                    } else{
+                        //--TOFIX --> Advertir al usuario de que el usuario elegido ya se encuentra en la tabla
+                        Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setTitle("Inserción de usuario");
+                        alert.setContentText("Aviso. El usuario seleccionado "
+                                + "ya se encuentra en la lista negra. No es "
+                                + "posible añadir los datos.");        
+                        alert.showAndWait();
+                    }
+                }
+            } else{
+                //--TOFIX --> Advertir al usuario de que se requieren todos los datos introducidos para poder crear un nuevo incidente
+            }
+        }catch(CreateException ce){
+            //--TOFIX --> Exception handling
+        }catch(Exception ex){
+            //--TOFIX --> Exception handling
+        }
+    }
+    
+    /**
+     * Disables the view fields for blacklist user insertion/update
+     * @param event 
+     */
+    public void disposeBlackListForm(ActionEvent event){
+        if(btnInsert.isVisible()){
+            txtReason.setText("");
+            btnInsert.setDisable(true);
+            btnInsert.setVisible(false);
+            
+            lblCbUsers.setVisible(false);
+            cbUsers.getSelectionModel().clearSelection();
+            cbUsers.setDisable(true);
+            cbUsers.setVisible(false);
+        } else {
+            txtReason.setText(selectedUser.getReason());
+            btnDelete.setDisable(true);
+            btnSaveChanges.setDisable(true);
+            btnSaveChanges.setVisible(false);
+            btnModify.setDisable(false);
+            btnDelete.setDisable(false);
+        }
+        btnCancel.setDisable(true);
+        btnNew.setDisable(false);
+        txtReason.setDisable(true);
+        tableBlackList.setDisable(false);
+   }
+    
+    /**
+     * Enables the view fields for the update of the selected user of the blacklist
+     * @param event 
+     */
+    public void enableUpdateBlackListForm(ActionEvent event){
+        btnSaveChanges.setDisable(false);
+        btnSaveChanges.setVisible(true);
+        btnCancel.setDisable(false);
+        btnNew.setDisable(true);
+        btnDelete.setDisable(true);
+        txtReason.setDisable(false);
+        btnInsert.setDisable(true);
+        btnInsert.setVisible(false);
+        tableBlackList.setDisable(true);
     }
     
     /**
      * Updates the selected room
      * @param event 
      */
-    public void updateRoom(ActionEvent event){
+    public void updateUserOnBlackList(ActionEvent event){
         try{
             if(checkForData()){
-                RoomBean roomToModify = selectedRoom;
-                roomToModify.setTotalSpace(Integer.parseInt(txtTotal.getText()));
-                roomToModify.setStatus((Status)cbStatus.getSelectionModel().getSelectedItem());
-                roomManager.updateRoom(roomToModify);
+                UserBeanMongo userToModify = selectedUser;
+                userToModify.setReason(txtReason.getText());
+                blackListManager.updateUserOnBlackList(userToModify);
         
-                txtTotal.setDisable(true);
+                txtReason.setDisable(true);
                 btnCancel.setDisable(true);
                 btnSaveChanges.setDisable(true);
-                cbStatus.setDisable(true);
                 btnModify.setDisable(false);
-                tableRoom.setDisable(false);
-                tableRoom.refresh();
+                btnDelete.setDisable(false);
+                btnNew.setDisable(false);
+                tableBlackList.setDisable(false);
+                tableBlackList.refresh();
             }
             else{
                 //--TOFIX --> Mostrar un aviso al usuario para advertirle de que se requieren todos los datos para poder actualizar
@@ -205,6 +349,30 @@ public class RoomFXMLController extends GenericController {
             //--TOFIX --> Exception handling
         }catch(Exception ex){
             //--TOFIX --> Exception handling
+        }
+    }
+
+    /**
+     * Deletes the selected user from the black list
+     * @param event
+    */
+    public void deleteUserFromBlackList(ActionEvent event){
+        try{
+            blackListManager.deleteUserFromBlackList(selectedUser.getId());
+            tableBlackList.getItems().remove(selectedUser);
+            tableBlackList.refresh();
+        }catch(DeleteException de){
+            //--TOFIX --> Exception handling
+        }catch(Exception ex){
+            //--TOFIX --> Exception handling
+        }
+    }
+    
+    public void fillFields(ObservableValue value, Object oldValue, Object newValue){
+        if(newValue != null){
+            UserBean user = (UserBean) newValue;
+            lblFullname.setText(user.getName() + " " + user.getSurname1() + " " + user.getSurname2());
+            lblId.setText(user.getId().toString());
         }
     }
     
@@ -217,23 +385,15 @@ public class RoomFXMLController extends GenericController {
         //check all fields are correctly filled before allowing the logic
         //manager operations to happen
         Boolean formHasCorrectData = true;
-        if(txtTotal.getText().trim().length()==0){
+        if(txtReason.getText().trim().length()==0){
             formHasCorrectData = false;
         }
+        if(btnInsert.isVisible()){
+            if(!(cbUsers.getSelectionModel().getSelectedItem() instanceof UserBean)){
+                formHasCorrectData = false;
+            }
+        }
         return formHasCorrectData;
-    }
-    
-    /**
-     * Disables the view fields for the room update
-     * @param event 
-     */
-    public void disposeUpdateForm(ActionEvent event){
-        txtTotal.setDisable(true);
-        btnCancel.setDisable(true);
-        btnSaveChanges.setDisable(true);
-        cbStatus.setDisable(true);
-        btnModify.setDisable(false);
-        tableRoom.setDisable(false);
     }
     
     /**
@@ -390,28 +550,28 @@ public class RoomFXMLController extends GenericController {
     }
     
     /**
-     * Opens the blacklist view
+     * Opens the room view
      * @param event 
      */
-    public void goToBlackListView(ActionEvent event){
+    public void goToRoomView(ActionEvent event){
         /*try{
             FXMLLoader loader = new FXMLLoader(getClass()
-                    .getResource("/albergueperronclient/ui/fxml/UIBlackList.fxml"));
+                    .getResource("/albergueperronclient/ui/fxml/Room.fxml"));
             Parent root = loader.load();
             //Get controller from the loader
-            UIBlackListFXMLController blackListController = loader.getController();
+            RoomFXMLController roomController = loader.getController();
         
-            blackListController.setLogicManager(BlackListManagerFactory.getBlackListManager());
+            roomController.setLogicManager(RoomManagerFactory.getRoomManager());
             //Send the current stage for coming back later
-            blackListController.setPreviousStage(stage);
+            //roomController.setPreviousStage(stage);
             //Initialize the primary stage of the application
-            blackListController.initStage(root);
+            roomController.initStage(root);
             //--TOFIX --> Decidir si esconder el stage o cerrarlo
             stage.hide();
             stage.close();
         }catch(Exception e){
             LOGGER.severe(e.getMessage());
-            showErrorAlert("Error al redirigir a la vista de la lista negra.");
+            showErrorAlert("Error al redirigir a la vista de habitaciones.");
         }*/
     }
     
@@ -458,20 +618,22 @@ public class RoomFXMLController extends GenericController {
              Object oldValue,
              Object newValue){
         if(newValue!=null){            
-            selectedRoom = (RoomBean)newValue;
-            txtTotal.setText(selectedRoom.getTotalSpace().toString());
-            cbStatus.getSelectionModel().select(selectedRoom.getStatus());
-            lblAvailableSpace.setText(selectedRoom.getAvailableSpace().toString());
+            selectedUser = (UserBeanMongo)newValue;
+            txtReason.setText(selectedUser.getReason().toString());
+            lblFullname.setText(selectedUser.getName() + " " + selectedUser.getSurname1() + " " + selectedUser.getSurname2());
+            lblId.setText(selectedUser.getId().toString());
             
             btnModify.setDisable(false);
+            btnDelete.setDisable(false);
         }else{
         //If there is not a row selected, clean window fields 
         //and disable create, modify and delete buttons
-            lblRoomNum.setText("");
-            txtTotal.setText("");
-            lblAvailableSpace.setText("");
-            cbStatus.getSelectionModel().clearSelection();
+            txtReason.setText("");
+            lblFullname.setText("");
+            lblId.setText("");
+            
             btnModify.setDisable(true);
+            btnDelete.setDisable(true);
         }
     }
     
@@ -485,15 +647,19 @@ public class RoomFXMLController extends GenericController {
     public void onTextChanged(ObservableValue observable,
              String oldValue,
              String newValue){
-        if (!newValue.matches("\\d*")) {
-            txtTotal.setText(newValue.replaceAll("[^\\d]", ""));
-        }
-        if(!(newValue.equalsIgnoreCase(selectedRoom.getTotalSpace().toString())) || oldValue.length() == 3){
-        //if(!oldValue.equals("")){
-            if(txtTotal.getText().trim().isEmpty() || txtTotal.getText().trim().length() > 2 || txtTotal.getText().trim().equals("0") || txtTotal.getText().trim().equals("00")){
+        if(txtReason.getText().trim().isEmpty() || txtReason.getText().trim().length() > 200){
+            if(btnSaveChanges.isVisible()){
                 btnSaveChanges.setDisable(true);
-            }else{
+            }
+            else if(btnInsert.isVisible()){
+                btnInsert.setDisable(true);
+            }
+        }else{
+            if(btnSaveChanges.isVisible() && !(newValue.equalsIgnoreCase(selectedUser.getReason()))){
                 btnSaveChanges.setDisable(false);
+            }
+            else if(btnInsert.isVisible()){
+                btnInsert.setDisable(false);
             }
         }
     }

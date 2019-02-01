@@ -50,22 +50,7 @@ public class UserBean implements Serializable {
         this.pets = new ArrayList<Pet>();
         this.stays = new ArrayList<Stay>();
     }
-    
-    
-
-    public UserBean(String id, String name, String surname1, String surname2, Privilege privilege, 
-            String login, String email, String password, Object lastPasswordChange) {
-        this.id = new SimpleStringProperty(id);
-        this.name = new SimpleStringProperty(name);
-        this.surname1 =  new SimpleStringProperty(surname1);
-        this.surname2 =  new SimpleStringProperty(surname2);
-        this.privilege =  new SimpleObjectProperty(privilege);
-        this.login =  new SimpleStringProperty(login);
-        this.email =  new SimpleStringProperty(email);
-        this.password =  new SimpleStringProperty(password);
-        this.lastPasswordChange =  new SimpleObjectProperty(lastPasswordChange);
-    }
-    
+   
     /**
      * Gets id value for user.
      * @return The id value.

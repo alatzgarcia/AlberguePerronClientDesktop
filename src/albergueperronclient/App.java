@@ -5,12 +5,15 @@
  */
 package albergueperronclient;
 
+import albergueperronclient.logic.BlackListManager;
+import albergueperronclient.logic.BlackListManagerFactory;
 import albergueperronclient.logic.IncidentManager;
 import albergueperronclient.logic.IncidentManagerFactory;
 import albergueperronclient.logic.RoomManager;
 import albergueperronclient.logic.RoomManagerFactory;
 import albergueperronclient.logic.UsersManager;
 import albergueperronclient.logic.UsersManagerFactory;
+import albergueperronclient.ui.controller.BlackListFXMLController;
 import albergueperronclient.ui.controller.IncidentFXMLController;
 import albergueperronclient.ui.controller.RoomFXMLController;
 import java.util.logging.Logger;
@@ -35,7 +38,7 @@ public class App extends Application {
     public void start(Stage primaryStage) throws Exception {
         try{
             //Get the logic manager object for the initial stage
-            IncidentManager incidentManager = IncidentManagerFactory.getIncidentManager();
+            /*IncidentManager incidentManager = IncidentManagerFactory.getIncidentManager();
             RoomManager roomManager = RoomManagerFactory.getRoomManager();
             UsersManager userManager = UsersManagerFactory.getUsersManager();
             
@@ -52,6 +55,7 @@ public class App extends Application {
             incidentController.setStage(primaryStage);
             //Initialize the primary stage of the application
             incidentController.initStage(root);
+            */
             
             //Load the fxml file
             /*FXMLLoader loader = new FXMLLoader(getClass()
@@ -65,6 +69,21 @@ public class App extends Application {
             roomController.setStage(primaryStage);
             //Initialize the primary stage of the application
             roomController.initStage(root);*/
+            
+            BlackListManager blackListManager = BlackListManagerFactory.getBlackListManager();
+            UsersManager userManager = UsersManagerFactory.getUsersManager();
+            //Load the fxml file
+            FXMLLoader loader = new FXMLLoader(getClass()
+                    .getResource("/albergueperronclient/ui/fxml/BlackList.fxml"));
+            Parent root = loader.load();
+            //Get controller from the loader
+            BlackListFXMLController blackListController = loader.getController();
+            
+            blackListController.setLogicManager(blackListManager, userManager);
+            //Set a reference for Stage in the UILogin view controller
+            blackListController.setStage(primaryStage);
+            //Initialize the primary stage of the application
+            blackListController.initStage(root);
         }catch(Exception e){
             LOGGER.info(e.getMessage());
         }  
