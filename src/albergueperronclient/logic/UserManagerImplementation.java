@@ -23,11 +23,19 @@ import javax.ws.rs.core.GenericType;
 public class UserManagerImplementation implements UsersManager{
     private UserREST webClient;
     private static final Logger LOGGER=Logger.getLogger("UserManagerImplementation.class");
-
+    
+    /**
+     * The empty constructor that creates a new UserREST
+     */
     public UserManagerImplementation(){
         webClient=new UserREST();
     }
     
+    /**
+     * Gets the User by an id 
+     * @param id
+     * @return 
+     */
     @Override
     public UserBean getUser(String id) {
         UserBean user=new UserBean();
@@ -38,7 +46,12 @@ public class UserManagerImplementation implements UsersManager{
         }
         return user;
     }
-
+    
+    /**
+     * Gets all the Users
+     * @return
+     * @throws BusinessLogicException 
+     */
     @Override
     public Collection<UserBean> getAllUsers() throws BusinessLogicException {
         Collection<UserBean> users =null;
@@ -53,7 +66,12 @@ public class UserManagerImplementation implements UsersManager{
         }
         return users;
     }
-
+    
+    /**
+     * Creates an User
+     * @param user
+     * @throws BusinessLogicException 
+     */
     @Override
     public void createUser(UserBean user) throws BusinessLogicException {
         try{
@@ -65,7 +83,12 @@ public class UserManagerImplementation implements UsersManager{
             throw new BusinessLogicException("Error creating all users: \n"+e.getMessage());
         }
     }
-
+    
+    /**
+     * Updates an User
+     * @param user
+     * @throws BusinessLogicException 
+     */
     @Override
     public void updateUser(UserBean user) throws BusinessLogicException {
        try{
@@ -77,7 +100,12 @@ public class UserManagerImplementation implements UsersManager{
            throw new BusinessLogicException("Error updating all users: \n"+e.getMessage() );
        }
     }
-
+    
+    /**
+     * Deletes an user by Id(DNI) 
+     * @param id
+     * @throws BusinessLogicException 
+     */
     @Override
     public void deleteUser(String id) throws BusinessLogicException {
         try{
@@ -89,7 +117,13 @@ public class UserManagerImplementation implements UsersManager{
            throw new BusinessLogicException("Error deleting user: \n"+e.getMessage() );
         }
     }
-
+    
+    /**
+     * Finds an User by the privilege of the one
+     * @param privilege
+     * @return
+     * @throws BusinessLogicException 
+     */
     @Override
     public Collection<UserBean> findUsersByPrivilege(Privilege privilege) throws BusinessLogicException {
         Collection<UserBean> users =null;

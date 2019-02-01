@@ -24,11 +24,19 @@ import javax.ws.rs.core.GenericType;
 public class StayManagerImplementation implements StaysManager{
     private StayREST webClient;
     private static final Logger LOGGER=Logger.getLogger("StayManagerImplementation.class");
-
+    
+    /**
+     * The empty constructor of the implementation that creates the StayREST
+     */
     public StayManagerImplementation(){
         webClient=new StayREST();
     }
     
+    /**
+     * Gets The Stay seraching by Id
+     * @param id
+     * @return 
+     */
     @Override
     public StayBean getStay(String id) {
         StayBean stay=new StayBean();
@@ -39,7 +47,12 @@ public class StayManagerImplementation implements StaysManager{
         }
         return stay;
     }
-
+    
+    /**
+     * Gets all the existent Stays 
+     * @return
+     * @throws BusinessLogicException 
+     */
     @Override
     public Collection<StayBean> getAllStays() throws BusinessLogicException {
         Collection<StayBean> stays =null;
@@ -54,7 +67,12 @@ public class StayManagerImplementation implements StaysManager{
         }
         return stays;    
     }
-
+    
+    /**
+     * Creates a Stay
+     * @param stay
+     * @throws BusinessLogicException 
+     */
     @Override
     public void createStay(StayBean stay) throws BusinessLogicException {
         try{
@@ -66,7 +84,12 @@ public class StayManagerImplementation implements StaysManager{
             throw new BusinessLogicException("Error creating all stays: \n"+e.getMessage());
         }
     }
-
+    
+    /**
+     * Updates a Stay
+     * @param stay
+     * @throws BusinessLogicException 
+     */
     @Override
     public void updateStay(StayBean stay) throws BusinessLogicException {
         try{
@@ -78,7 +101,12 @@ public class StayManagerImplementation implements StaysManager{
            throw new BusinessLogicException("Error updating all stays: \n"+e.getMessage() );
        }
     }
-
+    
+    /**
+     * Deletes a Stay by an Id
+     * @param id
+     * @throws BusinessLogicException 
+     */
     @Override
     public void deleteStay(String id) throws BusinessLogicException {
         try{

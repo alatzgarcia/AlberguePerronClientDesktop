@@ -10,6 +10,10 @@ package albergueperronclient.logic;
  * @author 2dam
  */
 public class StayManagerFactory {
+    /**
+     * The mthod that creates the StayManagerImplementation
+     * @return StaysManager
+     */
     public static StaysManager createStayManager(){
         return new StayManagerImplementation();
     }

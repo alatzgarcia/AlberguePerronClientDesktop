@@ -10,6 +10,10 @@ package albergueperronclient.logic;
  * @author 2dam
  */
 public class UserManagerFactory {
+    /**
+     * The method that creates the UserManagerImplementation
+     * @return UsersManager
+     */
     public static UsersManager createUserManager(){
         return new UserManagerImplementation();
     }
