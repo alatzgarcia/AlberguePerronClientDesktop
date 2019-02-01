@@ -47,7 +47,7 @@ public class App extends Application {
      */
     @Override
     public void start(Stage primaryStage) {
-        try{
+        /*try{
             //Get the logic manager object for the initial stage
             //UsersManager userManager = UserManagerFactory.createUserManager();
             StaysManager stayManager=StayManagerFactory.createStayManager();
@@ -66,9 +66,9 @@ public class App extends Application {
             stayController.initStage(root);
         }catch(IOException e){
             LOGGER.severe(e.getMessage());
-        }
+        }*/
         
-        /*try{
+        try{
             //Get the logic manager object for the initial stage
             //UsersManager userManager = UserManagerFactory.createUserManager();
             UsersManager userManager=UserManagerFactory.createUserManager();
@@ -88,7 +88,7 @@ public class App extends Application {
             userController.initStage(root);
         }catch(Exception e){
             LOGGER.severe(e.getMessage());
-        }*/
+        }
     }
 }
 

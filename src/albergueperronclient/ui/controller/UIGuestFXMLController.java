@@ -37,7 +37,10 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.fxml.FXMLLoader;
@@ -46,6 +49,13 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.xml.bind.DatatypeConverter;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
 
 /**
  * FXML Controller class
@@ -86,6 +96,8 @@ public class UIGuestFXMLController extends GenericController{
     private Button btnInsertGuest;
     @FXML
     private Button btnReturn;
+    @FXML
+    private Button btnReport;
     @FXML
     private MenuItem menuGuest;
     @FXML
@@ -134,6 +146,7 @@ public class UIGuestFXMLController extends GenericController{
         btnSaveChanges.setOnAction(this::saveUpdateGuest);
         btnModifyGuest.setOnAction(this::updateGuest);
         btnDeleteGuest.setOnAction(this::deleteUser);
+        btnReport.setOnAction(this::generateReport);
         
         
         //Sets the columns the attributes to use
@@ -500,4 +513,34 @@ public class UIGuestFXMLController extends GenericController{
         
             return encodedMessage;
     }
+     
+     public void generateReport(ActionEvent event){
+         try {
+             JasperReport report=
+                JasperCompileManager.compileReport(getClass()
+                    .getResourceAsStream("/albergueperronclient/jasper/report1.jrxml"));
+            //Data for the report: a collection of UserBean passed as a JRDataSource 
+            //implementation 
+             JRBeanCollectionDataSource dataItems=
+                    new JRBeanCollectionDataSource((Collection<UserBean>)this.tableGuest.getItems());
+            //Map of parameter to be passed to the report
+             Map<String,Object> parameters=new HashMap<>();
+            //Fill report with data
+             JasperPrint jasperPrint = JasperFillManager.fillReport(report,parameters,dataItems);
+            //Create and show the report window. The second parameter false value makes 
+            //report window not to close app.
+            JasperViewer jasperViewer = new JasperViewer(jasperPrint,false);
+            jasperViewer.setVisible(true);
+           // jasperViewer.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+        } catch (JRException ex) {
+            //If there is an error show message and
+            //log it.
+            showErrorAlert("Error al imprimir:\n"+
+                            ex.getMessage());
+            LOGGER.log(Level.SEVERE,
+                        "UI GestionUsuariosController: Error printing report: {0}",
+                        ex.getMessage());
+        }
+    }
+     
 }
