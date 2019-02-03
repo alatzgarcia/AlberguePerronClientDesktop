@@ -14,7 +14,7 @@ import albergueperronclient.modelObjects.UserBean;
  */
 public interface ILogin {
    
-    public UserBean login(UserBean userBean)throws BusinessLogicException;
+    public UserBean login(String login, String password)throws BusinessLogicException;
 
     
 }

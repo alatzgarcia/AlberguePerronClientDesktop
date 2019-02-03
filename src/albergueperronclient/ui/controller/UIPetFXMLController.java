@@ -123,7 +123,7 @@ public class UIPetFXMLController extends GenericController {
     public void initStage(Parent root) throws BusinessLogicException{ 
         try{
             Scene scene = new Scene(root);
-            Stage stage=new Stage();
+            stage=new Stage();
             stage.setScene(scene);
             stage.setTitle("Pet");
             stage.setResizable(false);

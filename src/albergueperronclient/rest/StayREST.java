@@ -5,6 +5,7 @@
  */
 package albergueperronclient.rest;
 
+import java.util.ResourceBundle;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
@@ -20,13 +21,15 @@ import javax.ws.rs.core.GenericType;
  *        client.close();
  * </pre>
  *
- * @author 2dam
+ * @author diego
  */
 public class StayREST {
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/alberguePerronServer/webresources";
+    private static final String BASE_URI = 
+            ResourceBundle.getBundle("albergueperronclient.config.parameters")
+                          .getString("RESTful.baseURI");
     
     /**
      * The empty constructor of Stay

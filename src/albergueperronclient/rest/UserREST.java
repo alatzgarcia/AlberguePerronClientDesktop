@@ -31,31 +31,67 @@ public class UserREST {
     private static final String BASE_URI = ResourceBundle.getBundle("albergueperronclient.config.parameters")
                     .getString("RESTful.baseURI");
 
+    /**
+     * The empty constructor of the UserREST
+     */
     public UserREST() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
         webTarget = client.target(BASE_URI).path("users");
     }
 
+    /**
+     * The method for the user finding
+     * @param <T>
+     * @param responseType
+     * @param id
+     * @return
+     * @throws ClientErrorException 
+     */
     public <T> T find(Class<T> responseType, String id) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
+    /**
+     * The method for user creating 
+     * @param requestEntity
+     * @throws ClientErrorException 
+     */
     public void create(Object requestEntity) throws ClientErrorException {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
     }
 
+     /**
+     * The method for user editing
+     * @param requestEntity
+     * @throws ClientErrorException 
+     */
     public void edit(Object requestEntity) throws ClientErrorException {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
     }
 
+    /**
+     * Method for the login of the user in the app
+     * @param <T>
+     * @param responseType
+     * @param login The login
+     * @param password Theword pass
+     * @return
+     * @throws ClientErrorException 
+     */
     public <T> T login(Class<T> responseType, String login, String password) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("log/{0}/{1}", new Object[]{login, password}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
+    
+    /**
+     * The method used to remove an user by id
+     * @param id
+     * @throws ClientErrorException 
+     */
     public void remove(String id) throws ClientErrorException {
         webTarget.path(java.text.MessageFormat.format("{0}", new Object[]{id})).request().delete();
     }
@@ -72,18 +108,43 @@ public class UserREST {
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
     
+    /**
+     * Method that finds an user by its email
+     * @param <T>
+     * @param responseType
+     * @param email The email
+     * @return
+     * @throws ClientErrorException 
+     */
+    
     public <T> T findUserByEmail(Class<T> responseType, String email) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("email/{0}", new Object[]{email}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
-    
+    /**
+     * Method for the recovery of the users password
+     * @param <T>
+     * @param responseType
+     * @param email The email
+     * @return
+     * @throws ClientErrorException 
+     */
     public <T> T passRecovery(Class<T> responseType, String email) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("recoveryEmail/{0}", new Object[]{email}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
     
+    /**
+     * Methos for the change of the users password
+     * @param <T>
+     * @param responseType
+     * @param login The login
+     * @param password The password
+     * @return
+     * @throws ClientErrorException 
+     */
     public <T> T changePassword(Class<T> responseType, String login, String password) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("changepass/{0}/{1}", new Object[]{login, password}));

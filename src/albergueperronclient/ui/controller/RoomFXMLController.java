@@ -5,18 +5,20 @@
  */
 package albergueperronclient.ui.controller;
 
+import albergueperronclient.exceptions.ReadException;
 import albergueperronclient.exceptions.UpdateException;
+import albergueperronclient.logic.ILogin;
+import albergueperronclient.logic.ILoginFactory;
 import albergueperronclient.logic.IncidentManager;
 import albergueperronclient.logic.IncidentManagerFactory;
 import albergueperronclient.logic.RoomManager;
 import albergueperronclient.logic.RoomManagerFactory;
 import albergueperronclient.logic.UsersManager;
-
+import albergueperronclient.logic.UserManagerFactory;
 import albergueperronclient.modelObjects.Privilege;
 import albergueperronclient.modelObjects.RoomBean;
-import albergueperronclient.modelObjects.Status;
 import albergueperronclient.modelObjects.UserBean;
-
+import albergueperronclient.modelObjects.Status;
 import static albergueperronclient.ui.controller.GenericController.LOGGER;
 import java.util.Optional;
 import javafx.application.Platform;
@@ -147,8 +149,12 @@ public class RoomFXMLController extends GenericController {
             txtTotal.textProperty().addListener(this::onTextChanged);
         
             stage.show();
+        } catch(ReadException re){
+            LOGGER.severe(re.getMessage());
+            showErrorAlert("Error al cargar los datos de las habitaciones.");
         } catch(Exception ex){
-            
+            LOGGER.severe(ex.getMessage());
+            showErrorAlert("Error. No se ha podido completar la operación.");
         }
     }
     
@@ -198,14 +204,23 @@ public class RoomFXMLController extends GenericController {
                 btnModify.setDisable(false);
                 tableRoom.setDisable(false);
                 tableRoom.refresh();
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Actualización de habitación");
+                        alert.setContentText("Se ha actualizado correctamente"
+                                + " la habitación.");        
+                        alert.showAndWait();
             }
             else{
-                //--TOFIX --> Mostrar un aviso al usuario para advertirle de que se requieren todos los datos para poder actualizar
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setTitle("Actualización de habitación");
+                        alert.setContentText("Se requieren todos los datos "
+                                + "para poder actualizar la habitación.");        
+                        alert.showAndWait();
             }
         }catch(UpdateException ue){
-            //--TOFIX --> Exception handling
+            LOGGER.severe(ue.getMessage());
         }catch(Exception ex){
-            //--TOFIX --> Exception handling
+            LOGGER.severe(ex.getMessage());
         }
     }
     
@@ -275,26 +290,27 @@ public class RoomFXMLController extends GenericController {
             Optional<ButtonType> result = alert.showAndWait();
             if(result.get()== ButtonType.OK){
                 stage.close();
-                //--TOFIX --> Abrir la ventana de login
-                /*try{
+                try {
+                    //Get the logic manager object for the initial stage
+                    ILogin loginManager = ILoginFactory.getLoginManager();
+
+                    //Load the fxml file
                     FXMLLoader loader = new FXMLLoader(getClass()
                             .getResource("/albergueperronclient/ui/fxml/UILogin.fxml"));
                     Parent root = loader.load();
                     //Get controller from the loader
-                    UILoginFXMLController menuController = loader.getController();
-        
-                    menuController.setLogicManager(UILoginManagerFactory.getLoginManager());
-                    //Send the current stage for coming back later
-                    //roomController.setPreviousStage(stage);
+                    UILoginFXMLController loginController = loader.getController();
+                    /*Set a reference in the controller for the UILogin view for the logic manager object           
+                     */
+                    loginController.setLoginManager(loginManager);
+                    //Set a reference for Stage in the UILogin view controller
+                    loginController.setStage(stage);
                     //Initialize the primary stage of the application
-                    menuController.initStage(root);
-                    //--TOFIX --> Decidir si esconder el stage o cerrarlo
-                    stage.hide();
-                    stage.close();
-                }catch(Exception e){
+                    loginController.initStage(root);
+
+                } catch (Exception e) {
                     LOGGER.severe(e.getMessage());
-                    showErrorAlert("Error al redirigir al menú.");
-                }*/
+                }
             }else{
                 LOGGER.info("Logout cancelled.");
             } 
@@ -432,10 +448,8 @@ public class RoomFXMLController extends GenericController {
             Parent root = loader.load();
             //Get controller from the loader
             IncidentFXMLController incidentController = loader.getController();
-
             incidentController.setLogicManager(incidentManager, roomManager,
                     userManager);
-
             //Send the current stage for coming back later
             incidentController.setPreviousStage(stage);
             //Initialize the primary stage of the application

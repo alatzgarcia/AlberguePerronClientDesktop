@@ -122,11 +122,10 @@ public class UILoginFXMLController extends GenericController {
     public void login(ActionEvent event) {
 
         try {
-            //Sends a user to the logic controller with the entered parameters
-            UserBean user = new UserBean(txtUsername.getText(),
-                    pfPassword.getText());
+            //Sends the entered parameters to the logic controller
+          
 
-            user = loginManager.login(user);
+            //user = loginManager.login(txtUsername.getText(),pfPassword.getText());
 
             //if the user exists and it is an admin the loggued view opens
             if (user != null && user.getPrivilege() == Privilege.ADMIN) {
@@ -157,22 +156,23 @@ public class UILoginFXMLController extends GenericController {
                 } catch (IOException ex) {
                     LOGGER.severe(ex.getMessage());
                 }
-            } else if (user == null) {
-                throw new IncorrectLoginException();
-            } else if (user != null||user.getPrivilege() != Privilege.ADMIN) {
+          } else if (user == null) {
+               throw new IncorrectLoginException();
+           } else if (user != null||user.getPrivilege() != Privilege.ADMIN) {
                 showErrorAlert("Tiene que ser administrador para acceder");
             }
 
-        } catch (IncorrectLoginException ile) {
+        /**} catch (IncorrectLoginException ile) {
             LOGGER.severe("Error. Incorrect login. Detailed error "
                     + ile.getMessage());
             txtUsername.setStyle("-fx-border-color: red");
             pfPassword.setStyle("-fx-border-color: red");
             lblUsernameError.setText("Error. El usuario o la contraseña "
-                    + "introducidos no son correctos.");
+                    + "introducidos no son correctos.");**/
 
         } catch (Exception e) {
-            LOGGER.severe(e.getMessage());
+            //LOGGER.severe(e.getMessage());
+            e.printStackTrace();
             showErrorAlert("Se ha producido un error en el inicio de sesión.");
         }
     }

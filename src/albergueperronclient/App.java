@@ -5,8 +5,6 @@
  */
 package albergueperronclient;
 
-
-
 import albergueperronclient.logic.ILogin;
 import albergueperronclient.logic.ILoginFactory;
 
@@ -24,7 +22,7 @@ import javafx.stage.Stage;
  */
 
 /**
- * Application class for the SignUpSignIn application
+ * Application class for the AlberguePerron application
  * @author Alatz
  */
 public class App extends Application {

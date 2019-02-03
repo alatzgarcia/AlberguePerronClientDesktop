@@ -17,18 +17,33 @@ import java.util.logging.Logger;
 import javax.ws.rs.core.GenericType;
 
 /**
- *
+ * RoomManagerImplementation class for the AlberguePerronClient application
  * @author Alatz
  */
 public class RoomManagerImplementation implements RoomManager {
+    /**
+     * Web REST client
+     */
     private RoomRESTClient webClient;
+    /**
+     * Logger for the class
+     */
     private static final Logger LOGGER= Logger.
             getLogger("albergueperronclient.logic.RoomManagerImplementation");
     
+    /**
+     * Constructor for the class that initializes the REST client
+     */
     public RoomManagerImplementation(){
         webClient = new RoomRESTClient();
     }
     
+    /**
+     * Method to get a room by its id
+     * @param roomNum the room id
+     * @return the room object
+     * @throws ReadException 
+     */
     @Override
     public RoomBean findRoomById(Integer roomNum) throws ReadException {
         RoomBean room = null;
@@ -41,12 +56,16 @@ public class RoomManagerImplementation implements RoomManager {
             LOGGER.log(Level.SEVERE,
                     "RoomManager: Exception finding room, {0}",
                     ex.getMessage());
-            //--TOFIX            
-            //throw new BusinessLogicException("Error finding all users:\n"+ex.getMessage());
+            throw new ReadException(ex.getMessage());
         }
         return room;
     }
 
+    /**
+     * Method to find all rooms
+     * @return a list with the rooms
+     * @throws ReadException 
+     */
     @Override
     public List<RoomBean> findAllRooms() throws ReadException {
         List<RoomBean> rooms = null;
@@ -59,11 +78,16 @@ public class RoomManagerImplementation implements RoomManager {
             LOGGER.log(Level.SEVERE,
                     "RoomManager: Exception finding all rooms, {0}",
                     ex.getMessage());
-            //-- TOFIX --> Throwear excepción
+            throw new ReadException(ex.getMessage());
         }
         return rooms;
     }
 
+    /**
+     * Method to find all rooms with available space
+     * @return the room object
+     * @throws ReadException 
+     */
     @Override
     public List<RoomBean> findRoomsWithAvailableSpace() throws ReadException {
         List<RoomBean> rooms = null;
@@ -75,11 +99,16 @@ public class RoomManagerImplementation implements RoomManager {
             LOGGER.log(Level.SEVERE,
                     "IncidentManager: Exception updating incident, {0}",
                     ex.getMessage());
-            //-- TOFIX --> Throwear excepción
+            throw new ReadException(ex.getMessage());
         }
         return rooms;
     }
 
+    /**
+     * Method to create a room
+     * @param room the room object
+     * @throws CreateException 
+     */
     @Override
     public void createRoom(RoomBean room) throws CreateException {
         try{
@@ -91,10 +120,15 @@ public class RoomManagerImplementation implements RoomManager {
             LOGGER.log(Level.SEVERE,
                     "RoomManager: Exception creating room, {0}",
                     ex.getMessage());
-            //-- TOFIX --> Throwear excepción
+            throw new CreateException(ex.getMessage());
         }
     }
 
+    /**
+     * Method to update a room
+     * @param room the room object
+     * @throws UpdateException 
+     */
     @Override
     public void updateRoom(RoomBean room) throws UpdateException {
         try{
@@ -105,10 +139,15 @@ public class RoomManagerImplementation implements RoomManager {
             LOGGER.log(Level.SEVERE,
                     "RoomManager: Exception updating room, {0}",
                     ex.getMessage());
-            //-- TOFIX --> Throwear excepción
+            throw new UpdateException(ex.getMessage());
         }
     }
 
+    /**
+     * Method to delete a room by its id
+     * @param roomNum the room id
+     * @throws DeleteException 
+     */
     @Override
     public void deleteRoom(Integer roomNum) throws DeleteException {
         try{
@@ -119,7 +158,7 @@ public class RoomManagerImplementation implements RoomManager {
             LOGGER.log(Level.SEVERE,
                     "RoomManager: Exception deleting room, {0}",
                     ex.getMessage());
-            //-- TOFIX --> Throwear excepción
+            throw new DeleteException(ex.getMessage());
         }
     }
     

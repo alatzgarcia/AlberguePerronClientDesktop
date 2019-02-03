@@ -6,12 +6,16 @@
 package albergueperronclient.logic;
 
 /**
- *
+ * IncidentManagerFactory class for the AlberguePerronClient application
  * @author Alatz
  */
 public class IncidentManagerFactory {
+    /**
+     * Returns the logic controller of type IncidentManagerImplementation
+     * as a IncidentManager
+     * @return the logic controller object
+     */
     public static IncidentManager getIncidentManager(){
         return new IncidentManagerImplementation();
-        //return new ILogicTestDataImplementation(); //Imp class with test data
     }
 }

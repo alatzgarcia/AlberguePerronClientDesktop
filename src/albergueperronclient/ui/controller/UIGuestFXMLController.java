@@ -6,8 +6,16 @@
 package albergueperronclient.ui.controller;
 
 import albergueperronclient.exceptions.BusinessLogicException;
+import albergueperronclient.logic.BlackListManagerFactory;
+import albergueperronclient.logic.ILogin;
+import albergueperronclient.logic.ILoginFactory;
+import albergueperronclient.logic.PetManagerFactory;
+import albergueperronclient.logic.RoomManagerFactory;
+import albergueperronclient.logic.StayManagerFactory;
+import albergueperronclient.logic.UserManagerFactory;
 import albergueperronclient.modelObjects.Privilege;
 import albergueperronclient.modelObjects.UserBean;
+import static albergueperronclient.ui.controller.GenericController.LOGGER;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -42,6 +50,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -97,6 +106,8 @@ public class UIGuestFXMLController extends GenericController{
     @FXML
     private MenuItem menuIncidences;
     @FXML
+    private MenuItem menuStay;
+    @FXML
     private MenuItem menuRoom;
     @FXML
     private MenuItem menuBlackList;
@@ -117,7 +128,7 @@ public class UIGuestFXMLController extends GenericController{
      */
     public void initStage(Parent root){
         Scene scene = new Scene(root);
-        Stage stage=new Stage();
+        stage=new Stage();
         stage.setScene(scene);
         stage.setTitle("Huespedes");
         stage.setResizable(false);
@@ -142,6 +153,15 @@ public class UIGuestFXMLController extends GenericController{
         btnDeleteGuest.setOnAction(this::deleteUser);
         //REPORT
         //btnReport.setOnAction(this::generateReport);
+        
+        
+            menuGuest.setOnAction(this::goToGuestsView);
+            menuPet.setOnAction(this::goToPetsView);
+            menuStay.setOnAction(this::goToStaysView);
+            menuBlackList.setOnAction(this::goToBlackListView);
+            menuRoom.setOnAction(this::goToRoomView);
+            menuLogOut.setOnAction(this::logOut);
+            menuExit.setOnAction(this::exit);
         
         
         //Sets the columns the attributes to use
@@ -468,7 +488,7 @@ public class UIGuestFXMLController extends GenericController{
     
     /**
      * Deletes the selected entire guest
-     * @param event 
+     * @param event ActionEvent: The listener of the button
      */
     private void deleteUser(ActionEvent event){
         try{
@@ -527,6 +547,211 @@ public class UIGuestFXMLController extends GenericController{
             }
         }
     }
+    
+    /**
+     * Returns to the menu view
+     * @param event 
+     */
+    public void returnToMenu(ActionEvent event){
+        try{
+            FXMLLoader loader = new FXMLLoader(getClass()
+                    .getResource("/albergueperronclient/ui/fxml/UILogged.fxml"));
+            Parent root = loader.load();
+            //Get controller from the loader
+            UILogguedFXMLController menuController = loader.getController();
+        
+            //menuController.setLogicManager(UILogguedManagerFactory.getLoggedManager());
+            //Send the current stage for coming back later
+            //roomController.setPreviousStage(stage);
+            //Initialize the primary stage of the application
+            menuController.initStage(root);
+            //--TOFIX --> Decidir si esconder el stage o cerrarlo
+            stage.hide();
+            stage.close();
+        }catch(Exception e){
+            LOGGER.severe(e.getMessage());
+            showErrorAlert("Error al redirigir al menú.");
+        }
+        //-- TOFIX
+        Platform.exit();
+    }
+    
+    /*public void returnToPrevious(ActionEvent event){
+        stage.close();
+        previousStage.show();
+    }*/
+    
+    /**
+     * Logs out, sending the user to the login view
+     * @param event 
+     */
+    public void logOut(ActionEvent event){
+        try{
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION.CONFIRMATION);
+            alert.setTitle("Cerrar Sesión");
+            alert.setContentText("¿Desea cerrar sesion?");        
+            Optional<ButtonType> result = alert.showAndWait();
+            if(result.get()== ButtonType.OK){
+               stage.close();
+                try {
+                    //Get the logic manager object for the initial stage
+                    ILogin loginManager = ILoginFactory.getLoginManager();
+
+                    //Load the fxml file
+                    FXMLLoader loader = new FXMLLoader(getClass()
+                            .getResource("/albergueperronclient/ui/fxml/UILogin.fxml"));
+                    Parent root = loader.load();
+                    //Get controller from the loader
+                    UILoginFXMLController loginController = loader.getController();
+                    /*Set a reference in the controller for the UILogin view for the logic manager object           
+                     */
+                    loginController.setLoginManager(loginManager);
+                    //Set a reference for Stage in the UILogin view controller
+                    loginController.setStage(stage);
+                    //Initialize the primary stage of the application
+                    loginController.initStage(root);
+
+                } catch (Exception e) {
+                    LOGGER.severe(e.getMessage());
+                }
+            }else{
+                LOGGER.info("Logout cancelled.");
+            } 
+        }catch(Exception ex){
+            LOGGER.severe(ex.getMessage());
+        }
+    }
+    
+    /**
+    * Exit from the application
+     * @param event
+    */
+    public void exit(ActionEvent event){
+        Platform.exit();
+    }
+    
+    /**
+     * Opens the guest view
+     * @param event 
+     */
+    public void goToGuestsView(ActionEvent event){
+        //calls the logicManager register functio
+        try{
+            FXMLLoader loader = new FXMLLoader(getClass()
+                    .getResource("/albergueperronclient/ui/fxml/UIGuest.fxml"));
+            Parent root = loader.load();
+            //Get controller from the loader
+            UIGuestFXMLController guestController = loader.getController();
+        
+            guestController.setUsersManager(UserManagerFactory.createUserManager());
+            //Send the current stage for coming back later
+            guestController.setPreviousStage(stage);
+            //Initialize the primary stage of the application
+            guestController.initStage(root);
+            stage.close();
+        }catch(Exception e){
+            LOGGER.severe(e.getMessage());
+            showErrorAlert("Error al redirigir a la vista de huéspedes.");
+        }
+    }
+    
+    /**
+     * Opens the pet view
+     * @param event 
+     */
+    public void goToPetsView(ActionEvent event){
+         try{
+            FXMLLoader loader = new FXMLLoader(getClass()
+                    .getResource("/albergueperronclient/ui/fxml/UIPet.fxml"));
+            Parent root = loader.load();
+            //Get controller from the loader
+            UIPetFXMLController petController = loader.getController();
+        
+            petController.setPetsManager(PetManagerFactory.createPetManager());
+            //Send the current stage for coming back later
+            petController.setPreviousStage(stage);
+            //Initialize the primary stage of the application
+            petController.initStage(root);
+            stage.close();
+        }catch(Exception e){
+            LOGGER.severe(e.getMessage());
+            showErrorAlert("Error al redirigir a la vista de mascotas.");
+        }
+    }
+    
+    /**
+     * Opens the stay view
+     * @param event 
+     */    
+    public void goToStaysView(ActionEvent event){
+        try{
+            FXMLLoader loader = new FXMLLoader(getClass()
+                    .getResource("/albergueperronclient/ui/fxml/UIStay.fxml"));
+            Parent root = loader.load();
+            //Get controller from the loader
+            UIStayFXMLController stayController = loader.getController();
+        
+            stayController.setStaysManager(StayManagerFactory.createStayManager());
+            stayController.setPreviousStage(stage);
+            //Initialize the primary stage of the application
+            stayController.initStage(root);
+            stage.close();
+        }catch(Exception e){
+            LOGGER.severe(e.getMessage());
+            showErrorAlert("Error al redirigir a la vista de estancias.");
+        }
+    }
+    
+    /**
+     * Opens the blacklist view
+     * @param event 
+     */
+    public void goToBlackListView(ActionEvent event){
+        try{
+            FXMLLoader loader = new FXMLLoader(getClass()
+                    .getResource("/albergueperronclient/ui/fxml/UIBlackList.fxml"));
+            Parent root = loader.load();
+            //Get controller from the loader
+            BlackListFXMLController blackListController = loader.getController();
+        
+            blackListController.setLogicManager(
+                    BlackListManagerFactory.getBlackListManager(),UserManagerFactory.createUserManager());
+            //Send the current stage for coming back later
+            blackListController.setPreviousStage(stage);
+            //Initialize the primary stage of the application
+            blackListController.initStage(root);
+            stage.close();
+        }catch(Exception e){
+            LOGGER.severe(e.getMessage());
+            showErrorAlert("Error al redirigir a la vista de la lista negra.");
+        }
+    }
+    
+    /**
+     * Opens the room view
+     * @param event 
+     */
+    public void goToRoomView(ActionEvent event){
+        try{
+            FXMLLoader loader = new FXMLLoader(getClass()
+                    .getResource("/albergueperronclient/ui/fxml/Room.fxml"));
+            Parent root = loader.load();
+            //Get controller from the loader
+            RoomFXMLController roomController = loader.getController();
+        
+            roomController.setLogicManager(RoomManagerFactory.getRoomManager());
+            //Send the current stage for coming back later
+            //roomController.setPreviousStage(stage);
+            //Initialize the primary stage of the application
+            roomController.initStage(root);
+            //--TOFIX --> Decidir si esconder el stage o cerrarlo
+            stage.close();
+        }catch(Exception e){
+            LOGGER.severe(e.getMessage());
+            showErrorAlert("Error al redirigir a la vista de habitaciones.");
+        }
+    }
+
      
      /*public void generateReport(ActionEvent event){
          try {

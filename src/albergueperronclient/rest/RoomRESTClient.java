@@ -29,41 +29,84 @@ public class RoomRESTClient {
     private Client client;
     private static final String BASE_URI = "http://localhost:8080/albergueperronserver/webresources";
 
+    /**
+     * Constructor for the class
+     */
     public RoomRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
         webTarget = client.target(BASE_URI).path("room");
     }
 
+    /**
+     * Connects with the web server application to update a room
+     * @param requestEntity
+     * @throws ClientErrorException 
+     */
     public void edit(Object requestEntity) throws ClientErrorException {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
     }
 
+    /**
+     * Connects with the web server application to find a room by its id
+     * @param <T>
+     * @param responseType
+     * @param id
+     * @return
+     * @throws ClientErrorException 
+     */
     public <T> T find(Class<T> responseType, String id) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("{0}", new Object[]{id}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
+    /**
+     * Connects with the web server application to create a room
+     * @param requestEntity
+     * @throws ClientErrorException 
+     */
     public void create(Object requestEntity) throws ClientErrorException {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
     }
 
+    /**
+     * Connects with the web server application to find rooms with available space
+     * @param <T>
+     * @param responseType
+     * @return
+     * @throws ClientErrorException 
+     */
     public <T> T findRoomsWithAvailableSpace(GenericType<T> responseType) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path("availableRooms");
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
+    /**
+     * Connects with the web server application to find all rooms
+     * @param <T>
+     * @param responseType
+     * @return
+     * @throws ClientErrorException 
+     */
     public <T> T findAll(GenericType<T> responseType) throws ClientErrorException {
         WebTarget resource = webTarget;
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
+    /**
+     * Connects with the web server application to delete a room by its id
+     * @param id
+     * @throws ClientErrorException 
+     */
     public void remove(String id) throws ClientErrorException {
         webTarget.path(java.text.MessageFormat.format("{0}", 
                 new Object[]{id})).request().delete();
     }
 
+    /**
+     * Closes the client
+     */
     public void close() {
         client.close();
     }

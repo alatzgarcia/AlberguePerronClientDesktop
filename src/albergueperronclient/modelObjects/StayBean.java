@@ -26,6 +26,9 @@ public class StayBean implements Serializable {
     private SimpleObjectProperty<RoomBean> room;
     private SimpleObjectProperty<Date> date;
 
+    /**
+     * Empty constructor for the stay
+     */
     public StayBean() {
         this.id=new SimpleIntegerProperty();
         this.guest=new SimpleObjectProperty<UserBean>();
@@ -33,6 +36,13 @@ public class StayBean implements Serializable {
         this.date=new SimpleObjectProperty<Date>();
     }
 
+    /**
+     * Full constructor for the stay
+     * @param id Integer
+     * @param guest UserBean
+     * @param room RoomBean
+     * @param date Date
+     */
     public StayBean(Integer id, UserBean guest, RoomBean room, Date date) {
         this.id = new SimpleIntegerProperty(id);
         this.guest = new SimpleObjectProperty (guest);
@@ -41,11 +51,18 @@ public class StayBean implements Serializable {
     }
     
     
-    
+    /**
+     * Gets id value for stay
+     * @return The id vlaue
+     */
     public Integer getId() {
         return this.id.get();
     }
-
+    
+    /**
+     * Sets the id for stay
+     * @param id Integer
+     */
     public void setId(Integer id) {
         this.id.set(id);
     }
@@ -76,6 +93,7 @@ public class StayBean implements Serializable {
     }
 
     /**
+     * Sets the room
      * @param room the room to set
      */
     public void setRoom(RoomBean room) {
@@ -83,6 +101,7 @@ public class StayBean implements Serializable {
     }
 
     /**
+     * Gets the date
      * @return the date
      */
     public Date getDate() {
@@ -90,6 +109,7 @@ public class StayBean implements Serializable {
     }
 
     /**
+     * Sets the date
      * @param date the date to set
      */
     public void setDate(Date date) {
@@ -102,7 +122,12 @@ public class StayBean implements Serializable {
         hash += (getId() != null ? getId().hashCode() : 0);
         return hash;
     }
-
+    
+    /**
+     * The method that compares the id of the stays
+     * @param object Object Stay that will be converted
+     * @return boolean
+     */
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
@@ -115,7 +140,11 @@ public class StayBean implements Serializable {
         }
         return true;
     }
-
+    
+    /**
+     * The String that will be returned when the Stay is called 
+     * @return 
+     */
     @Override
     public String toString() {
         return getId().toString();

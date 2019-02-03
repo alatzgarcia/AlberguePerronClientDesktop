@@ -17,6 +17,7 @@
                   <MenuItem fx:id="menuIncidences" mnemonicParsing="false" text="Incidencias" />
                   <MenuItem fx:id="menuStay" mnemonicParsing="false" text="Estancias" />
                   <MenuItem fx:id="menuBlackList" mnemonicParsing="false" text="Lista Negra" />
+                  <MenuItem fx:id="menuFTP" mnemonicParsing="false" text="FTP" />
             </items>
           </Menu>
             <Menu disable="true" mnemonicParsing="false">
@@ -35,10 +36,9 @@
       <Button fx:id="btnGuest" layoutX="130.0" layoutY="211.0" mnemonicParsing="false" prefHeight="116.0" prefWidth="207.0" text="Huéspedes" />
       <Button fx:id="btnPet" layoutX="409.0" layoutY="212.0" mnemonicParsing="false" prefHeight="116.0" prefWidth="207.0" text="Mascotas" />
       <Button fx:id="btnIncidences" layoutX="679.0" layoutY="212.0" mnemonicParsing="false" prefHeight="116.0" prefWidth="207.0" text="Incidencias" />
-      <Button fx:id="btnEmployees" disable="true" layoutX="950.0" layoutY="212.0" mnemonicParsing="false" prefHeight="116.0" prefWidth="207.0" text="Empleados" />
+      <Button fx:id="btnBlackList" layoutX="950.0" layoutY="212.0" mnemonicParsing="false" prefHeight="116.0" prefWidth="207.0" text="Lista Negra" />
       <Button fx:id="btnStay" layoutX="126.0" layoutY="423.0" mnemonicParsing="false" prefHeight="116.0" prefWidth="207.0" text="Estancias" />
       <Button fx:id="btnRoom" layoutX="405.0" layoutY="424.0" mnemonicParsing="false" prefHeight="116.0" prefWidth="207.0" text="Habitaciones" />
       <Button fx:id="btnFTP" layoutX="675.0" layoutY="424.0" mnemonicParsing="false" prefHeight="116.0" prefWidth="207.0" text="FTP" />
-      <Button fx:id="btnIncidenceType" disable="true" layoutX="950.0" layoutY="423.0" mnemonicParsing="false" prefHeight="116.0" prefWidth="207.0" text="Tipos de Incidencia" />
    </children>
 </AnchorPane>

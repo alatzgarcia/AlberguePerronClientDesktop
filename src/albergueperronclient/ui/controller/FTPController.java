@@ -25,6 +25,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.MenuItem;
@@ -117,7 +118,7 @@ public class FTPController extends GenericController {
         //Create a scene associated to the node graph root.
         Scene scene = new Scene(root);
         //Associate scene to primaryStage(Window)
-        Stage stage = new Stage();
+        stage = new Stage();
         stage.setScene(scene);
         //Set window properties
         stage.setTitle("FTP");
@@ -423,6 +424,24 @@ public class FTPController extends GenericController {
 
         ftpManager.disconnect();
         stage.hide();
+        try {
+             
+
+                    //Load the fxml file
+                    FXMLLoader loader = new FXMLLoader(getClass()
+                            .getResource("/albergueperronclient/ui/fxml/UILoggedAdmin.fxml"));
+                    Parent root = loader.load();
+                    //Get controller from the loader
+                    UILogguedFXMLController logguedController = loader.getController();
+                    
+                    //Set a reference for Stage in the UILogin view controller
+                    logguedController.setStage(stage);
+                    //Initialize the primary stage of the application
+                    logguedController.initStage(root);
+
+                } catch (Exception e) {
+                    LOGGER.severe(e.getMessage());
+                }
 
     }
 
@@ -500,7 +519,7 @@ public class FTPController extends GenericController {
 
     public void logOut(ActionEvent event) {
         try {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            Alert alert = new Alert(AlertType.CONFIRMATION);
             alert.setTitle("Cerrar Sesión");
             alert.setContentText("¿Desea cerrar sesion?");
             Optional<ButtonType> result = alert.showAndWait();

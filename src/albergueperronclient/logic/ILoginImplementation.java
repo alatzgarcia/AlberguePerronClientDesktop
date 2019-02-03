@@ -39,20 +39,22 @@ public class ILoginImplementation implements ILogin {
     /**
      * Method for the login of the user
      *
-     * @param userBean the user
+     * @param login
+     * @param password
      * @return the user
+     * @throws albergueperronclient.exceptions.BusinessLogicException
      */
     @Override
-    public UserBean login(UserBean userBean) throws BusinessLogicException{
+    public UserBean login(String login, String password) throws BusinessLogicException{
 
         //the password is encrypted before it is passed on to the server
-        String encryptedPass = Encryptation.encrypt(userBean.getPassword());
+        String encryptedPass = Encryptation.encrypt(password);
 
-        userBean.setPassword(encryptedPass);
+        //userBean.setPassword(encryptedPass);
         UserBean user = null;
         try {
 
-            user = webClient.login(UserBean.class, userBean.getLogin(), encryptedPass);
+            user = webClient.login(UserBean.class, login, encryptedPass);
 
         } catch (ClientErrorException e) {
             LOGGER.log(Level.SEVERE,

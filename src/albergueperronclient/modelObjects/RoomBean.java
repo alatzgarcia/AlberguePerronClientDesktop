@@ -27,8 +27,11 @@ public class RoomBean implements Serializable {
     private SimpleIntegerProperty availableSpace;
     private SimpleObjectProperty<Status> status;
     private SimpleListProperty<IncidentBean> incidents;
-    private SimpleListProperty<Stay> stays;
+    private SimpleListProperty<StayBean> stays;
     
+    /**
+     * Constructor with no parameters for the RoomBean class
+     */
     public RoomBean(){
         this.roomNum = new SimpleIntegerProperty();
         this.totalSpace = new SimpleIntegerProperty();
@@ -36,6 +39,13 @@ public class RoomBean implements Serializable {
         this.status = new SimpleObjectProperty<Status>();
     }
     
+    /**
+     * Constructor with parameters for the RoomBean class
+     * @param roomNum
+     * @param totalSpace
+     * @param availableSpace 
+     * @param status 
+     */
     public RoomBean(SimpleIntegerProperty roomNum, SimpleIntegerProperty totalSpace, SimpleIntegerProperty availableSpace, SimpleObjectProperty status) {
         this.roomNum = roomNum;
         this.totalSpace = totalSpace;
@@ -120,7 +130,7 @@ public class RoomBean implements Serializable {
      * @return the stays
      */
     @XmlTransient
-    public SimpleListProperty<Stay> getStays() {
+    public SimpleListProperty<StayBean> getStays() {
         //--TOFIX
         return this.stays;
     }
@@ -128,10 +138,14 @@ public class RoomBean implements Serializable {
     /**
      * @param stays the stays to set
      */
-    public void setStays(SimpleListProperty<Stay> stays) {
+    public void setStays(SimpleListProperty<StayBean> stays) {
         this.stays.set(stays);
     }
     
+    /**
+     * Hash code method
+     * @return 
+     */
     @Override
     public int hashCode() {
         int hash = 0;
@@ -139,6 +153,11 @@ public class RoomBean implements Serializable {
         return hash;
     }
 
+    /**
+     * Compares two objects to see if they are the same object
+     * @param object
+     * @return 
+     */
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
@@ -153,6 +172,10 @@ public class RoomBean implements Serializable {
         return true;
     }
 
+    /**
+     * Gets a string representing a room object
+     * @return the string
+     */
     @Override
     public String toString() {
         return getRoomNum().toString();

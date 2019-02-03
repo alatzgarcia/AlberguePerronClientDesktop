@@ -6,7 +6,7 @@
 package albergueperronclient.modelObjects;
 
 /**
- *
+ * Custom File class for the Ftp client
  * @author Nerea Jimenez
  */
 public class MyFile {
