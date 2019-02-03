@@ -125,7 +125,7 @@ public class UILoginFXMLController extends GenericController {
             //Sends the entered parameters to the logic controller
           
 
-            //user = loginManager.login(txtUsername.getText(),pfPassword.getText());
+            user = loginManager.login(txtUsername.getText(),pfPassword.getText());
 
             //if the user exists and it is an admin the loggued view opens
             if (user != null && user.getPrivilege() == Privilege.ADMIN) {
