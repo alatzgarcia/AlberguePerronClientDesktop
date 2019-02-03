@@ -18,6 +18,7 @@
                   <MenuItem fx:id="menuStay" mnemonicParsing="false" text="Estancias" />
                   <MenuItem fx:id="menuBlackList" mnemonicParsing="false" text="Lista Negra" />
                   <MenuItem fx:id="menuFTP" mnemonicParsing="false" text="FTP" />
+                  <MenuItem fx:id="menuRoom" mnemonicParsing="false" text="Habitaciones" />
             </items>
           </Menu>
             <Menu disable="true" mnemonicParsing="false">

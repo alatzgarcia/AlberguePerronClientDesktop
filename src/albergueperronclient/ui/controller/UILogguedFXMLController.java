@@ -62,34 +62,34 @@ public class UILogguedFXMLController extends GenericController {
      */
     @FXML
     private Button btnPet;
-    
-     /**
+
+    /**
      * Button to open the view with all the incidences
      */
     @FXML
     private Button btnIncidences;
-    
-     /**
+
+    /**
      * Button to open the view with all the stays
      */
     @FXML
     private Button btnStay;
-     /**
+    /**
      * Button to open the view with all the rooms
      */
     @FXML
     private Button btnRoom;
-     /**
+    /**
      * Button to open the FTP client
      */
     @FXML
     private Button btnFTP;
-     /**
+    /**
      * Button to open the blackList
      */
     @FXML
     private Button btnBlackList;
-    
+
     @FXML
     private MenuItem menuGuest;
     @FXML
@@ -106,6 +106,8 @@ public class UILogguedFXMLController extends GenericController {
     private MenuItem menuExit;
     @FXML
     private MenuItem menuFTP;
+    @FXML
+    private MenuItem menuRoom;
 
     /**
      * InitStage method for the UILogged view
@@ -128,21 +130,24 @@ public class UILogguedFXMLController extends GenericController {
         btnRoom.setOnAction(this::openRoomsView);
         btnFTP.setOnAction(this::openFTPView);
         btnBlackList.setOnAction(this::openBlackListView);
+        menuIncidences.setOnAction(this::openIncidentsView);
         menuGuest.setOnAction(this::openGuestsView);
         menuPet.setOnAction(this::openPetsView);
         menuStay.setOnAction(this::openStaysView);
         menuBlackList.setOnAction(this::openBlackListView);
         menuLogOut.setOnAction(this::logOut);
+        menuRoom.setOnAction(this::openRoomsView);
         menuExit.setOnAction(this::exit);
+        menuFTP.setOnAction(this::openFTPView);
 
         stage.show();
     }
 
-     
     /**
-     * Initializes window state. It implements behavior for WINDOW_SHOWING type 
+     * Initializes window state. It implements behavior for WINDOW_SHOWING type
      * event.
-     * @param event  The window event 
+     *
+     * @param event The window event
      */
     public void handleWindowShowing(WindowEvent event) {
         btnGuest.setDisable(false);
@@ -166,6 +171,10 @@ public class UILogguedFXMLController extends GenericController {
 
     }
 
+    /**
+     * Method that opens Pets View
+     * @param event event that has caused the call to the function
+     */
     public void openPetsView(ActionEvent event) {
 
         FXMLLoader loader = new FXMLLoader(getClass()
@@ -183,12 +192,15 @@ public class UILogguedFXMLController extends GenericController {
             petController.initStage(root);
             stage.hide();
         } catch (IOException ex) {
-            Logger.getLogger(UILogguedFXMLController.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.severe(ex.getMessage());
         } catch (BusinessLogicException ex) {
-            Logger.getLogger(UILogguedFXMLController.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.severe(ex.getMessage());
         }
     }
-    
+    /**
+     * Method that opens Guests View
+     * @param event event that has caused the call to the function
+     */
     public void openGuestsView(ActionEvent event) {
 
         FXMLLoader loader = new FXMLLoader(getClass()
@@ -209,13 +221,17 @@ public class UILogguedFXMLController extends GenericController {
         }
     }
 
+    /**
+     * Method that opens Rooms View
+     * @param event event that has caused the call to the function
+     */
     public void openRoomsView(ActionEvent event) {
 
         FXMLLoader loader = new FXMLLoader(getClass()
                 .getResource("/albergueperronclient/ui/fxml/UIRoom.fxml"));
 
         try {
-            
+
             Parent root = loader.load();
 
             RoomManager roomManager = RoomManagerFactory.getRoomManager();
@@ -227,10 +243,14 @@ public class UILogguedFXMLController extends GenericController {
             stage.hide();
 
         } catch (IOException ex) {
-            Logger.getLogger(UILogguedFXMLController.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.severe(ex.getMessage());
         }
     }
 
+    /**
+     * Method that opens Stays View
+     * @param event event that has caused the call to the function
+     */
     public void openStaysView(ActionEvent event) {
 
         FXMLLoader loader = new FXMLLoader(getClass()
@@ -248,10 +268,14 @@ public class UILogguedFXMLController extends GenericController {
             stayController.initStage(root);
             stage.hide();
         } catch (IOException ex) {
-            Logger.getLogger(UILogguedFXMLController.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.severe(ex.getMessage());
         }
     }
 
+    /**
+     * Method that opens FTP CLient
+     * @param event event that has caused the call to the function
+     */
     public void openFTPView(ActionEvent event) {
 
         FXMLLoader loader = new FXMLLoader(getClass()
@@ -268,18 +292,22 @@ public class UILogguedFXMLController extends GenericController {
 
             //Initialize the primary stage of the application
             ftpController.initStage(root);
-            
+
             stage.hide();
         } catch (IOException ex) {
-            Logger.getLogger(UILogguedFXMLController.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.severe(ex.getMessage());
         }
     }
-    
+
+    /**
+     * Method that opens Incidents View
+     * @param event event that has caused the call to the function
+     */
     public void openIncidentsView(ActionEvent event) {
 
         FXMLLoader loader = new FXMLLoader(getClass()
                 .getResource("/albergueperronclient/ui/fxml/UIncident.fxml"));
-       try {
+        try {
             Parent root = loader.load();
 
             IncidentManager incidentManager = IncidentManagerFactory.getIncidentManager();
@@ -288,48 +316,56 @@ public class UILogguedFXMLController extends GenericController {
             //Get controller from the loader
             IncidentFXMLController incidentController = loader.getController();
             incidentController.setLogicManager(incidentManager, roomManager, userManager);
-            
+
             //Initialize the primary stage of the application
             incidentController.initStage(root);
-            
+
             stage.hide();
         } catch (IOException ex) {
-            Logger.getLogger(UILogguedFXMLController.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.severe(ex.getMessage());
         } catch (ReadException ex) {
-            Logger.getLogger(UILogguedFXMLController.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.severe(ex.getMessage());
         }
     }
-    
+
+    /**
+     * Method that opens BlackList View
+     * @param event event that has caused the call to the function
+     */
     public void openBlackListView(ActionEvent event) {
 
         FXMLLoader loader = new FXMLLoader(getClass()
                 .getResource("/albergueperronclient/ui/fxml/UIBlackList.fxml"));
-       try {
+        try {
             Parent root = loader.load();
 
             BlackListManager blackListManager = BlackListManagerFactory.getBlackListManager();
             UsersManager usersManager = UserManagerFactory.createUserManager();
             //Get controller from the loader
             BlackListFXMLController blackListController = loader.getController();
-            blackListController.setLogicManager(blackListManager,usersManager);
-            
+            blackListController.setLogicManager(blackListManager, usersManager);
+
             //Initialize the primary stage of the application
             blackListController.initStage(root);
-            
+
             stage.hide();
         } catch (IOException ex) {
-            Logger.getLogger(UILogguedFXMLController.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.severe(ex.getMessage());
         }
     }
-    
-    public void logOut(ActionEvent event){
-        try{
+
+    /**
+     * Method that manages the log out of the user
+     * @param event event that has caused the call to the function
+     */
+    public void logOut(ActionEvent event) {
+        try {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Cerrar Sesión");
-            alert.setContentText("¿Desea cerrar sesion?");        
+            alert.setContentText("¿Desea cerrar sesion?");
             Optional<ButtonType> result = alert.showAndWait();
-            if(result.get()== ButtonType.OK){
-               stage.close();
+            if (result.get() == ButtonType.OK) {
+                stage.close();
                 try {
                     //Get the logic manager object for the initial stage
                     ILogin loginManager = ILoginFactory.getLoginManager();
@@ -350,14 +386,14 @@ public class UILogguedFXMLController extends GenericController {
 
                 } catch (Exception e) {
                     LOGGER.severe(e.getMessage());
-                } 
-            }else{
+                }
+            } else {
                 LOGGER.info("Logout cancelled.");
-            } 
-        }catch(Exception ex){
+            }
+        } catch (Exception ex) {
             LOGGER.severe(ex.getMessage());
         }
-}
+    }
 
     /**
      * Method to exit the application
