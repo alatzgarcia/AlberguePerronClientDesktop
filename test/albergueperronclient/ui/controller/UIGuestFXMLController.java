@@ -8,6 +8,7 @@ package albergueperronclient.ui.controller;
 import javafx.scene.Node;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import org.junit.FixMethodOrder;
@@ -208,7 +209,77 @@ public class UIGuestFXMLController extends ApplicationTest{
 
     @Test
     public void test005_createNewUser(){
-       clickOn("#btnNewGuest");
-       
+        TableView table=lookup("#tableGuest").queryTableView();
+        int rowCount=table.getItems().size();
+        test003_checkFieldsEnable();
+        clickOn("#btnInsertGuest");
+        assertEquals(rowCount+1,table.getItems().size());
+    }
+    
+    @Test
+    public void test006_deleteUser(){
+        TableView table=lookup("#tableGuest").queryTableView();
+        int rowCount=table.getItems().size();
+        assertNotEquals("Table has no data: Cannot test.",
+                        rowCount,0);
+        Node row=lookup(".table-row-cell").nth(0).query();
+        assertNotNull("Row is null: table has not that row. ",row);
+        clickOn(row);
+        verifyThat("#btnDelete", isEnabled());
+        clickOn("#btnDelete");
+        verifyThat("¿Desea borrar el usuario?",isVisible());    
+        clickOn("OK");
+        assertEquals(rowCount-1,table.getItems().size());
+    }
+    
+    @Test
+    public void test007_updateUser(){
+        TableView table=lookup("#tableGuest").queryTableView();
+        int rowCount=table.getItems().size();
+        assertNotEquals("Table has no data: Cannot test.",
+                        rowCount,0);
+        Node row=lookup(".table-row-cell").nth(0).query();
+        clickOn(row);
+        verifyThat("#btnModifyGuest", isEnabled());
+        clickOn("#btnModifyGuest");
+        clickOn("#txtname");
+        write("alcaparra");
+        clickOn("#txtFirstSurname");
+        write(validString);
+        clickOn("#txtSecondSurname");
+        write(validString);
+        clickOn("#txtDni");
+        write(validString);
+        clickOn("#txtLogin");
+        write(validString);
+        clickOn("#txtEmail");
+        write(validEmail);
+        clickOn("#btnSaveChanges");
+        
+        
+        verifyThat("Se modificó el usuario ",isVisible());    
+        clickOn("OK");
+        verifyThat("alcaparra", isVisible());
+    }
+    
+    @Test
+    public void test008_cancelCheck(){
+        clickOn("#btnNewGuest");
+        clickOn("#btnCancel");
+        verifyThat("#tableGuest", isDisabled());
+        verifyThat("#tableGuest", isVisible());
+        verifyThat("#textName", isInvisible());
+        verifyThat("#txtFirstSurname", isInvisible());
+        verifyThat("#txtSecondSurname", isInvisible());
+        verifyThat("#txtDni", isInvisible());
+        verifyThat("#txtLogin", isInvisible());
+        verifyThat("#txtEmail", isInvisible());
+        verifyThat("#btnCancel", isDisabled());
+        verifyThat("#btnSaveChanges", isInvisible());
+        verifyThat("#btnDeleteGuest", isDisabled());
+        verifyThat("#btnModifyGuest", isDisabled());
+        verifyThat("#btnInsertGuest", isInvisible());
+        verifyThat("#btnReturn", isEnabled());
+        verifyThat("#btnNewGuest", isEnabled());
     }
 }
