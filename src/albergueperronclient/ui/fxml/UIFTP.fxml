@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="albergueperronclient.ui.controller.FTPController">
+   <children>
+      <MenuBar layoutY="1.0" prefHeight="26.0" prefWidth="600.0">
+         <menus>
+            <Menu mnemonicParsing="false" text="Navegación">
+               <items>
+                  <MenuItem fx:id="menuGuests" mnemonicParsing="false" text="Huéspedes" />
+                  <MenuItem fx:id="menuPets" mnemonicParsing="false" text="Mascotas" />
+                  <MenuItem fx:id="menuIncidence" mnemonicParsing="false" text="Incidencias" />
+                  <MenuItem fx:id="menuStay" mnemonicParsing="false" text="Estancias" />
+                  <MenuItem fx:id="menuBlackList" mnemonicParsing="false" text="Lista Negra" />
+               </items>
+            </Menu>
+            <Menu disable="true" mnemonicParsing="false">
+               <graphic>
+                  <AnchorPane prefHeight="19.0" prefWidth="398.0" />
+               </graphic>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Cerrar">
+               <items>
+                  <MenuItem fx:id="menuLogOut" mnemonicParsing="false" text="Cerrar Sesión" />
+                  <MenuItem fx:id="menuExit" mnemonicParsing="false" text="Salir de la aplicación" />
+               </items>
+            </Menu>
+         </menus>
+      </MenuBar>
+      <Button fx:id="btnBack" layoutX="448.0" layoutY="342.0" mnemonicParsing="false" prefHeight="37.0" prefWidth="122.0" style="-fx-background-color: #42A5F5;" text="Volver" />
+      <Button fx:id="btnDeleteD" layoutX="448.0" layoutY="263.0" mnemonicParsing="false" prefHeight="37.0" prefWidth="122.0" style="-fx-background-color: #42A5F5;" text="Borrar directorio" />
+      <Button fx:id="btnDownload" disable="true" layoutX="448.0" layoutY="47.0" mnemonicParsing="false" prefHeight="37.0" prefWidth="122.0" style="-fx-background-color: #42A5F5;" text="Descargar" />
+      <Button fx:id="btnUpload" layoutX="448.0" layoutY="94.0" mnemonicParsing="false" prefHeight="37.0" prefWidth="122.0" style="-fx-background-color: #42A5F5;" text="Subir" />
+      <Button fx:id="btnCrear" layoutX="448.0" layoutY="215.0" mnemonicParsing="false" prefHeight="37.0" prefWidth="122.0" style="-fx-background-color: #42A5F5;" text="Crear directorio" />
+      <TreeView fx:id="treeFile" layoutX="36.0" layoutY="94.0" prefHeight="273.0" prefWidth="360.0" />
+      <Separator layoutX="424.0" layoutY="44.0" orientation="VERTICAL" prefHeight="333.0" prefWidth="7.0" />
+      <Button fx:id="btnSearch" layoutX="350.0" layoutY="44.0" mnemonicParsing="false" text="Buscar" />
+      <Button fx:id="btnDeleteF" disable="true" layoutX="448.0" layoutY="143.0" mnemonicParsing="false" prefHeight="37.0" prefWidth="122.0" style="-fx-background-color: #42A5F5;" text="Borrar fichero" />
+      <Text fx:id="txtFile" layoutX="63.0" layoutY="62.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Eliga archivo o fichero --&gt;" wrappingWidth="236.2177734375">
+         <font>
+            <Font name="System Italic" size="14.0" />
+         </font>
+      </Text>
+   </children>
+</AnchorPane>
