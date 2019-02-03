@@ -8,6 +8,7 @@ package albergueperronclient.rest;
 
 import albergueperronclient.modelObjects.IncidentBean;
 import java.util.List;
+import java.util.ResourceBundle;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
@@ -30,7 +31,8 @@ public class IncidentRESTClient {
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/albergueperronserver/webresources";
+    private static final String BASE_URI = ResourceBundle.getBundle("albergueperronclient.config.parameters")
+                    .getString("RESTful.baseURI");
 
     /**
      * Constructor for the class

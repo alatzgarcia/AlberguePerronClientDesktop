@@ -56,7 +56,7 @@ public class ILoginImplementation implements ILogin {
 
             user = webClient.login(UserBean.class, login, encryptedPass);
 
-        } catch (ClientErrorException e) {
+        } catch (Exception e) {
             LOGGER.log(Level.SEVERE,
                     "User: Exception finding user, {0}",
                     e.getMessage());

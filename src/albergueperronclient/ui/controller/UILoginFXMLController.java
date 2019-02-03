@@ -5,6 +5,7 @@
  */
 package albergueperronclient.ui.controller;
 
+import albergueperronclient.exceptions.BusinessLogicException;
 import albergueperronclient.exceptions.IncorrectLoginException;
 import albergueperronclient.logic.IRecovery;
 import albergueperronclient.logic.IRecoveryFactory;
@@ -29,6 +30,8 @@ import javafx.stage.WindowEvent;
 import albergueperronclient.modelObjects.UserBean;
 import static albergueperronclient.ui.controller.GenericController.LOGGER;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Controller class for UILogin.fxml
@@ -156,24 +159,15 @@ public class UILoginFXMLController extends GenericController {
                 } catch (IOException ex) {
                     LOGGER.severe(ex.getMessage());
                 }
-          } else if (user == null) {
-               throw new IncorrectLoginException();
+          
            } else if (user != null||user.getPrivilege() != Privilege.ADMIN) {
                 showErrorAlert("Tiene que ser administrador para acceder");
             }
 
-        /**} catch (IncorrectLoginException ile) {
-            LOGGER.severe("Error. Incorrect login. Detailed error "
-                    + ile.getMessage());
-            txtUsername.setStyle("-fx-border-color: red");
-            pfPassword.setStyle("-fx-border-color: red");
-            lblUsernameError.setText("Error. El usuario o la contraseña "
-                    + "introducidos no son correctos.");**/
-
-        } catch (Exception e) {
-            //LOGGER.severe(e.getMessage());
-            e.printStackTrace();
-            showErrorAlert("Se ha producido un error en el inicio de sesión.");
+        
+        }   catch (BusinessLogicException ble) {
+            LOGGER.severe(ble.getMessage());
+            lblUsernameError.setText("Error en el inicio de sesión");
         }
     }
 

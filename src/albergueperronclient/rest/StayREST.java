@@ -27,9 +27,8 @@ public class StayREST {
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = 
-            ResourceBundle.getBundle("albergueperronclient.config.parameters")
-                          .getString("RESTful.baseURI");
+    private static final String BASE_URI = ResourceBundle.getBundle
+        ("albergueperronclient.config.parameters").getString("RESTful.baseURI");
     
     /**
      * The empty constructor of Stay
