@@ -9,11 +9,15 @@ import albergueperronclient.exceptions.CreateException;
 import albergueperronclient.exceptions.DeleteException;
 import albergueperronclient.exceptions.ReadException;
 import albergueperronclient.exceptions.UpdateException;
+import albergueperronclient.logic.BlackListManagerFactory;
 import albergueperronclient.logic.ILogin;
 import albergueperronclient.logic.ILoginFactory;
 import albergueperronclient.logic.IncidentManager;
+import albergueperronclient.logic.PetManagerFactory;
 import albergueperronclient.logic.RoomManager;
 import albergueperronclient.logic.RoomManagerFactory;
+import albergueperronclient.logic.StayManagerFactory;
+import albergueperronclient.logic.UserManagerFactory;
 import albergueperronclient.logic.UsersManager;
 import albergueperronclient.modelObjects.IncidentBean;
 import albergueperronclient.modelObjects.Privilege;
@@ -561,14 +565,14 @@ public class IncidentFXMLController extends GenericController {
      * @param event 
      */
     public void returnToMenu(ActionEvent event){
-        /*try{
+        try{
             FXMLLoader loader = new FXMLLoader(getClass()
-                    .getResource("/albergueperronclient/ui/fxml/UILogged.fxml"));
+                    .getResource("/albergueperronclient/ui/fxml/UILoggedAdmin.fxml"));
             Parent root = loader.load();
             //Get controller from the loader
-            UILoggedFXMLController menuController = loader.getController();
+            UILogguedFXMLController menuController = loader.getController();
         
-            menuController.setLogicManager(UILoggedManagerFactory.getLoggedManager());
+            //menuController.setLogicManager(UILoggedManagerFactory.getLoggedManager());
             //Send the current stage for coming back later
             //roomController.setPreviousStage(stage);
             //Initialize the primary stage of the application
@@ -579,9 +583,7 @@ public class IncidentFXMLController extends GenericController {
         }catch(Exception e){
             LOGGER.severe(e.getMessage());
             showErrorAlert("Error al redirigir al menú.");
-        }*/
-        //-- TOFIX
-        Platform.exit();
+        }
     }
     
     /**
@@ -639,14 +641,14 @@ public class IncidentFXMLController extends GenericController {
      */
     public void goToGuestsView(ActionEvent event){
         //calls the logicManager register functio
-        /*try{
+        try{
             FXMLLoader loader = new FXMLLoader(getClass()
                     .getResource("/albergueperronclient/ui/fxml/UIGuest.fxml"));
             Parent root = loader.load();
             //Get controller from the loader
             UIGuestFXMLController guestController = loader.getController();
         
-            guestController.setLogicManager(GuestManagerFactory.getGuestManager());
+            guestController.setUsersManager(UserManagerFactory.createUserManager());
             //Send the current stage for coming back later
             guestController.setPreviousStage(stage);
             //Initialize the primary stage of the application
@@ -655,7 +657,7 @@ public class IncidentFXMLController extends GenericController {
         }catch(Exception e){
             LOGGER.severe(e.getMessage());
             showErrorAlert("Error al redirigir a la vista de huéspedes.");
-        }*/
+        }
     }
     
     /**
@@ -663,14 +665,14 @@ public class IncidentFXMLController extends GenericController {
      * @param event 
      */
     public void goToPetsView(ActionEvent event){
-         /*try{
+         try{
             FXMLLoader loader = new FXMLLoader(getClass()
                     .getResource("/albergueperronclient/ui/fxml/UIPet.fxml"));
             Parent root = loader.load();
             //Get controller from the loader
             UIPetFXMLController petController = loader.getController();
         
-            petController.setLogicManager(PetManagerFactory.getPetManager());
+            petController.setPetsManager(PetManagerFactory.createPetManager());
             //Send the current stage for coming back later
             petController.setPreviousStage(stage);
             //Initialize the primary stage of the application
@@ -679,7 +681,7 @@ public class IncidentFXMLController extends GenericController {
         }catch(Exception e){
             LOGGER.severe(e.getMessage());
             showErrorAlert("Error al redirigir a la vista de mascotas.");
-        }*/
+        }
     }
     
     /**
@@ -687,14 +689,14 @@ public class IncidentFXMLController extends GenericController {
      * @param event 
      */    
     public void goToStaysView(ActionEvent event){
-        /*try{
+        try{
             FXMLLoader loader = new FXMLLoader(getClass()
                     .getResource("/albergueperronclient/ui/fxml/UIStay.fxml"));
             Parent root = loader.load();
             //Get controller from the loader
             UIStayFXMLController stayController = loader.getController();
         
-            stayController.setLogicManager(StayManagerFactory.getStayManager());
+            stayController.setStaysManager(StayManagerFactory.createStayManager());
             //Send the current stage for coming back later
             stayController.setPreviousStage(stage);
             //Initialize the primary stage of the application
@@ -703,7 +705,7 @@ public class IncidentFXMLController extends GenericController {
         }catch(Exception e){
             LOGGER.severe(e.getMessage());
             showErrorAlert("Error al redirigir a la vista de estancias.");
-        }*/
+        }
     }
     
     /**
@@ -711,14 +713,14 @@ public class IncidentFXMLController extends GenericController {
      * @param event 
      */
     public void goToBlackListView(ActionEvent event){
-        /*try{
+        try{
             FXMLLoader loader = new FXMLLoader(getClass()
                     .getResource("/albergueperronclient/ui/fxml/UIBlackList.fxml"));
             Parent root = loader.load();
             //Get controller from the loader
-            UIBlackListFXMLController blackListController = loader.getController();
+            BlackListFXMLController blackListController = loader.getController();
         
-            blackListController.setLogicManager(BlackListManagerFactory.getBlackListManager());
+            blackListController.setLogicManager(BlackListManagerFactory.getBlackListManager(), UserManagerFactory.createUserManager());
             //Send the current stage for coming back later
             blackListController.setPreviousStage(stage);
             //Initialize the primary stage of the application
@@ -727,7 +729,7 @@ public class IncidentFXMLController extends GenericController {
         }catch(Exception e){
             LOGGER.severe(e.getMessage());
             showErrorAlert("Error al redirigir a la vista de la lista negra.");
-        }*/
+        }
     }
     
     /**

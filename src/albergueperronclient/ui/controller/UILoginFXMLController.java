@@ -197,6 +197,7 @@ public class UILoginFXMLController extends GenericController {
             stage.hide();
         } catch (IOException e) {
             LOGGER.severe(e.getMessage());
+            e.printStackTrace();
             showErrorAlert("Error al redirigir");
         }
     }

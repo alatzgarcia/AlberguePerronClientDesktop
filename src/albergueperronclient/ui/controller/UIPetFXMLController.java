@@ -105,8 +105,8 @@ public class UIPetFXMLController extends GenericController {
     @FXML
     private MenuItem menuExit;
     
-    private ObservableList<PetBean> petData;
-    private ObservableList<UserBean> usersData;
+    private ObservableList<PetBean> petData=FXCollections.observableArrayList();
+    private ObservableList<UserBean> usersData=FXCollections.observableArrayList();
     private PetBean pet;
     private Integer petId;
     private UserBean owner;
