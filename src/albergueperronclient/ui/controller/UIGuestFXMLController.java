@@ -9,10 +9,14 @@ import albergueperronclient.exceptions.BusinessLogicException;
 import albergueperronclient.logic.BlackListManagerFactory;
 import albergueperronclient.logic.ILogin;
 import albergueperronclient.logic.ILoginFactory;
+import albergueperronclient.logic.IncidentManager;
+import albergueperronclient.logic.IncidentManagerFactory;
 import albergueperronclient.logic.PetManagerFactory;
+import albergueperronclient.logic.RoomManager;
 import albergueperronclient.logic.RoomManagerFactory;
 import albergueperronclient.logic.StayManagerFactory;
 import albergueperronclient.logic.UserManagerFactory;
+import albergueperronclient.logic.UsersManager;
 import albergueperronclient.modelObjects.Privilege;
 import albergueperronclient.modelObjects.UserBean;
 import static albergueperronclient.ui.controller.GenericController.LOGGER;
@@ -144,7 +148,7 @@ public class UIGuestFXMLController extends GenericController{
         txtName.textProperty().addListener(this::onTextChanged);
         
         //Sets the button methods when they are clicked
-        btnReturn.setOnAction(this::returnWindow);
+        btnReturn.setOnAction(this::returnToMenu);
         btnCancel.setOnAction(this::cancel);
         btnNewGuest.setOnAction(this::newGuest);
         btnInsertGuest.setOnAction(this::saveNewGuest);
@@ -160,6 +164,7 @@ public class UIGuestFXMLController extends GenericController{
             menuStay.setOnAction(this::goToStaysView);
             menuBlackList.setOnAction(this::goToBlackListView);
             menuRoom.setOnAction(this::goToRoomView);
+            menuIncidences.setOnAction(this::goToIncidentView);
             menuLogOut.setOnAction(this::logOut);
             menuExit.setOnAction(this::exit);
         
@@ -189,7 +194,7 @@ public class UIGuestFXMLController extends GenericController{
     /**
      * Sets the buttons and fields that will be visible, disable or editable at
      * the start of the window
-     * @param event WindowEvent: The listener of the window
+     * @param event WindowEvent: The listeadminner of the window
      */
     public void handleWindowShowing(WindowEvent event){
         btnCancel.setDisable(true);
@@ -201,6 +206,7 @@ public class UIGuestFXMLController extends GenericController{
         btnModifyGuest.setDisable(true);
         
         fieldChange(invisible); 
+        menuGuest.setDisable(true);
     }
     
     /**
@@ -553,27 +559,32 @@ public class UIGuestFXMLController extends GenericController{
      * @param event 
      */
     public void returnToMenu(ActionEvent event){
-        try{
-            FXMLLoader loader = new FXMLLoader(getClass()
-                    .getResource("/albergueperronclient/ui/fxml/UILogged.fxml"));
-            Parent root = loader.load();
-            //Get controller from the loader
-            UILogguedFXMLController menuController = loader.getController();
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Volver al Menú");
+        alert.setContentText("¿Desea volver al menú?");
+        Optional<ButtonType> result = alert.showAndWait();
+        if(result.get()==ButtonType.OK){
+            try{
+                FXMLLoader loader = new FXMLLoader(getClass()
+                        .getResource("/albergueperronclient/ui/fxml/UILoggedAdmin.fxml"));
+                Parent root = loader.load();
+                //Get controller from the loader
+                UILogguedFXMLController menuController = loader.getController();
         
-            //menuController.setLogicManager(UILogguedManagerFactory.getLoggedManager());
-            //Send the current stage for coming back later
-            //roomController.setPreviousStage(stage);
-            //Initialize the primary stage of the application
-            menuController.initStage(root);
-            //--TOFIX --> Decidir si esconder el stage o cerrarlo
-            stage.hide();
-            stage.close();
-        }catch(Exception e){
-            LOGGER.severe(e.getMessage());
-            showErrorAlert("Error al redirigir al menú.");
+                //menuController.setLogicManager(UILoggedManagerFactory.getLoggedManager());
+                //Send the current stage for coming back later
+                //roomController.setPreviousStage(stage);
+                //Initialize the primary stage of the application
+                menuController.initStage(root);
+
+                stage.close();
+            }catch(Exception e){
+                LOGGER.severe(e.getMessage());
+                showErrorAlert("Error al redirigir al menú.");
+            }
+        }else{
+            LOGGER.severe("Operación cancelada");
         }
-        //-- TOFIX
-        Platform.exit();
     }
     
     /*public void returnToPrevious(ActionEvent event){
@@ -752,6 +763,35 @@ public class UIGuestFXMLController extends GenericController{
         }
     }
 
+    /**
+     * Opens the incident view
+     * @param event 
+     */
+    public void goToIncidentView(ActionEvent event){
+        try{
+            //Get the logic manager object for the initial stage
+            IncidentManager incidentManager = IncidentManagerFactory.getIncidentManager();
+            UsersManager userManager = UserManagerFactory.createUserManager();
+            RoomManager roomManager = RoomManagerFactory.getRoomManager();
+            
+            //Load the fxml file
+            FXMLLoader loader = new FXMLLoader(getClass()
+                    .getResource("/albergueperronclient/ui/fxml/Incident.fxml"));
+            Parent root = loader.load();
+            //Get controller from the loader
+            IncidentFXMLController incidentController = loader.getController();
+            incidentController.setLogicManager(incidentManager, roomManager,
+                    userManager);
+            //Send the current stage for coming back later
+            //incidentController.setPreviousStage(stage);
+            //Initialize the primary stage of the application
+            incidentController.initStage(root);
+            stage.close();
+        }catch(Exception e){
+            LOGGER.severe(e.getMessage());
+            showErrorAlert("Error al redirigir a la vista de incidencias.");
+        }
+    }
      
      /*public void generateReport(ActionEvent event){
          try {

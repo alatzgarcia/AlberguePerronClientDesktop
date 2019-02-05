@@ -6,145 +6,91 @@
 package albergueperronclient.modelObjects;
 
 import java.io.Serializable;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author Diego
+ * @author ikerm
  */
-public class PetBean implements Serializable {
-
-    private static long serialVersionUID = 1L;
-    private Integer id;
-    private UserBean owner;
-    private String specie;
-    private String race;
-    private String name;
-    private String colour;
-    private String description;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    /**
-     * Gets the owner of the pet
-     * @return the owner
-     */
-    public UserBean getOwner() {
-        return owner;
-    }
-
-    /**
-     * Sets the owner of the pet
-     * @param owner the owner to set
-     */
-    public void setOwner(UserBean owner) {
-        this.owner = owner;
-    }
-
-    /**
-     * Get the specie of the pet
-     * @return the specie
-     */
-    public String getSpecie() {
-        return specie;
-    }
-
-    /**
-     * Sets the specie of the pet
-     * @param specie the specie to set
-     */
-    public void setSpecie(String specie) {
-        this.specie = specie;
-    }
-
-    /**
-     * Gets the race of the pet
-     * @return the race
-     */
-    public String getRace() {
-        return race;
-    }
-
-    /**
-     * Sets the race of the pet
-     * @param race the race to set
-     */
-    public void setRace(String race) {
-        this.race = race;
-    }
-
-    /**
-     * Gets the name of the pet
-     * @return the name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Sets the name of the name
-     * @param name the name to set
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     * Gets colour of teh pet
-     * @return the colour
-     */
-    public String getColour() {
-        return colour;
-    }
-
-    /**
-     * @param colour the colour to set
-     */
-    public void setColour(String colour) {
-        this.colour = colour;
-    }
-
-    /**
-     * @return the description
-     */
-    public String getDescription() {
-        return description;
-    }
-
-    /**
-     * @param description the description to set
-     */
-    public void setDescription(String description) {
-        this.description = description;
+@XmlRootElement(name="pet")
+public class PetBean implements Serializable{
+    private  SimpleIntegerProperty id;
+    private  SimpleObjectProperty<UserBean> owner;  
+    private  SimpleStringProperty specie;
+    private  SimpleStringProperty race;
+    private  SimpleStringProperty colour;
+    private  SimpleStringProperty description;
+    private  SimpleStringProperty name;
+    private  SimpleStringProperty dni;
+    
+    public PetBean(){
+           this.id=new SimpleIntegerProperty();
+           this.owner=new SimpleObjectProperty(new UserBean());
+           this.specie=new SimpleStringProperty("");
+           this.race=new SimpleStringProperty("");
+           this.colour=new SimpleStringProperty("");
+           this.description=new SimpleStringProperty("");
+           this.name=new SimpleStringProperty("");
+           this.dni = new SimpleStringProperty("");
     }
     
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (getId() != null ? getId().hashCode() : 0);
-        return hash;
+    public Integer getId(){
+        return this.id.get();
     }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof PetBean)) {
-            return false;
-        }
-        PetBean other = (PetBean) object;
-        if ((this.getId() == null && other.getId() != null) || (this.getId() != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+    public void setId(Integer id){
+        this.id.set(id);
     }
-
-    @Override
-    public String toString() {
-        return "alberguePerronServer.entity.Pet[ id=" + getId() + " ]";
+    
+    public UserBean getOwner(){
+        return this.owner.get();
     }
+    public void setOwner(UserBean owner){
+       this.owner.set(owner);
+    }
+    
+    public String getSpecie(){
+        return this.specie.get();
+    }
+    public void setSpecie(String specie){
+        this.specie.set(specie);
+    }
+    
+    public String getRace(){
+        return this.race.get();
+    }
+    public void setRace(String race){
+        this.race.set(race);
+    }
+    
+     public String getColour(){
+        return this.colour.get();
+    }
+    public void setColour(String colour){
+        this.colour.set(colour);
+    }
+    
+     public String getDescription(){
+        return this.description.get();
+    }
+    public void setDescription(String description){
+        this.description.set(description);
+    }
+    
+    public String getName(){
+        return this.name.get();
+    }
+    public void setName(String name){
+        this.name.set(name);
+    }
+    
+    public String getDni(){
+       return  this.dni.get();
+    }
+    public void setDni(String dni){
+        this.dni.set(dni);
+    }
+  
 }

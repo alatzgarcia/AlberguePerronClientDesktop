@@ -69,9 +69,10 @@
                   <MenuItem fx:id="menuGuests" mnemonicParsing="false" text="Huéspedes" />
                   <MenuItem fx:id="menuPets" mnemonicParsing="false" text="Mascotas" />
                   <MenuItem fx:id="menuIncidents" mnemonicParsing="false" text="Incidencias" />
-                  <MenuItem fx:id="menuStays" mnemonicParsing="false" text="Estancias" />
                   <MenuItem fx:id="menuBlackList" mnemonicParsing="false" text="Lista Negra" />
+                  <MenuItem fx:id="menuStays" mnemonicParsing="false" text="Estancias" />
                   <MenuItem fx:id="menuRoom" mnemonicParsing="false" text="Habitaciones" />
+                  <MenuItem fx:id="menuFTP" mnemonicParsing="false" text="FTP" />
                </items>
             </Menu>
             <Menu disable="true" mnemonicParsing="false">

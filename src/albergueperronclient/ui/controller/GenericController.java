@@ -45,8 +45,8 @@ public class GenericController {
     protected IRecovery recoveryManager;
     protected StaysManager staysManager;
     protected RoomManager roomsManager;
-    
     protected PetsManager petsManager;
+    
 
     /**
      * Shows an alert with an error message

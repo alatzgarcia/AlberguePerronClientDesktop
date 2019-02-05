@@ -565,24 +565,31 @@ public class IncidentFXMLController extends GenericController {
      * @param event 
      */
     public void returnToMenu(ActionEvent event){
-        try{
-            FXMLLoader loader = new FXMLLoader(getClass()
-                    .getResource("/albergueperronclient/ui/fxml/UILoggedAdmin.fxml"));
-            Parent root = loader.load();
-            //Get controller from the loader
-            UILogguedFXMLController menuController = loader.getController();
+        Alert alert = new Alert(AlertType.CONFIRMATION);
+        alert.setTitle("Volver al Menú");
+        alert.setContentText("¿Desea volver al menú?");
+        Optional<ButtonType> result = alert.showAndWait();
+        if(result.get()==ButtonType.OK){
+            try{
+                FXMLLoader loader = new FXMLLoader(getClass()
+                        .getResource("/albergueperronclient/ui/fxml/UILoggedAdmin.fxml"));
+                Parent root = loader.load();
+                //Get controller from the loader
+                UILogguedFXMLController menuController = loader.getController();
         
-            //menuController.setLogicManager(UILoggedManagerFactory.getLoggedManager());
-            //Send the current stage for coming back later
-            //roomController.setPreviousStage(stage);
-            //Initialize the primary stage of the application
-            menuController.initStage(root);
-            //--TOFIX --> Decidir si esconder el stage o cerrarlo
-            stage.hide();
-            stage.close();
-        }catch(Exception e){
-            LOGGER.severe(e.getMessage());
-            showErrorAlert("Error al redirigir al menú.");
+                //menuController.setLogicManager(UILoggedManagerFactory.getLoggedManager());
+                //Send the current stage for coming back later
+                //roomController.setPreviousStage(stage);
+                //Initialize the primary stage of the application
+                menuController.initStage(root);
+
+                stage.close();
+            }catch(Exception e){
+                LOGGER.severe(e.getMessage());
+                showErrorAlert("Error al redirigir al menú.");
+            }
+        }else{
+            LOGGER.severe("Operación cancelada");
         }
     }
     
@@ -640,7 +647,6 @@ public class IncidentFXMLController extends GenericController {
      * @param event 
      */
     public void goToGuestsView(ActionEvent event){
-        //calls the logicManager register functio
         try{
             FXMLLoader loader = new FXMLLoader(getClass()
                     .getResource("/albergueperronclient/ui/fxml/UIGuest.fxml"));
@@ -749,7 +755,6 @@ public class IncidentFXMLController extends GenericController {
             //roomController.setPreviousStage(stage);
             //Initialize the primary stage of the application
             roomController.initStage(root);
-            //--TOFIX --> Decidir si esconder el stage o cerrarlo
             stage.close();
         }catch(Exception e){
             LOGGER.severe(e.getMessage());

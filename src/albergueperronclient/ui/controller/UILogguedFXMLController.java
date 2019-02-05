@@ -108,7 +108,7 @@ public class UILogguedFXMLController extends GenericController {
     private MenuItem menuFTP;
     @FXML
     private MenuItem menuRoom;
-
+    
     /**
      * InitStage method for the UILogged view
      *
@@ -187,7 +187,7 @@ public class UILogguedFXMLController extends GenericController {
             //Get controller from the loader
             UIPetFXMLController petController = loader.getController();
 
-            petController.setPetsManager(petsManager);
+            petController.setPetsManager(petManager);
             //Initialize the primary stage of the application
             petController.initStage(root);
             stage.hide();
@@ -228,7 +228,7 @@ public class UILogguedFXMLController extends GenericController {
     public void openRoomsView(ActionEvent event) {
 
         FXMLLoader loader = new FXMLLoader(getClass()
-                .getResource("/albergueperronclient/ui/fxml/UIRoom.fxml"));
+                .getResource("/albergueperronclient/ui/fxml/Room.fxml"));
 
         try {
 
@@ -306,7 +306,7 @@ public class UILogguedFXMLController extends GenericController {
     public void openIncidentsView(ActionEvent event) {
 
         FXMLLoader loader = new FXMLLoader(getClass()
-                .getResource("/albergueperronclient/ui/fxml/UIncident.fxml"));
+                .getResource("/albergueperronclient/ui/fxml/Incident.fxml"));
         try {
             Parent root = loader.load();
 

@@ -131,6 +131,10 @@ public class UIStayFXMLController extends GenericController{
         menuExit.setOnAction(this::exit);
         menuRoom.setOnAction(this::goToRoom);
         
+        btnModify.setOnAction(this::stayModify);
+        btnDelete.setOnAction(this::deleteStay);
+        btnReturn.setOnAction(this::returnToMenu);
+        
         //Sets the columns the attributes to use
         columnGuests.setCellValueFactory(new PropertyValueFactory<>("guest"));
         columnRoom.setCellValueFactory(new PropertyValueFactory<>("room"));
@@ -176,9 +180,6 @@ public class UIStayFXMLController extends GenericController{
         fieldChange(visible);
         fieldChange(disable);
         
-        btnModify.setOnAction(this::stayModify);
-        btnDelete.setOnAction(this::deleteStay);
-        btnReturn.setOnAction(this::returnWindow);
         if (newValue!=null){
             StayBean stay=(StayBean)newValue;
             cbGuest.getSelectionModel().select(tableStay.getSelectionModel().getSelectedItem().getGuest());
@@ -349,6 +350,7 @@ public class UIStayFXMLController extends GenericController{
         
         btnNew.setOnAction(this::newStay);
         btnCancel.setOnAction(this::cancel);
+        menuStay.setDisable(true);
     }
     
     /**
@@ -460,24 +462,31 @@ public class UIStayFXMLController extends GenericController{
      * @param event 
      */
     public void returnToMenu(ActionEvent event){
-        try{
-            FXMLLoader loader = new FXMLLoader(getClass()
-                    .getResource("/albergueperronclient/ui/fxml/UILogged.fxml"));
-            Parent root = loader.load();
-            //Get controller from the loader
-            UILogguedFXMLController menuController = loader.getController();
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Volver al Menú");
+        alert.setContentText("¿Desea volver al menú?");
+        Optional<ButtonType> result = alert.showAndWait();
+        if(result.get()==ButtonType.OK){
+            try{
+                FXMLLoader loader = new FXMLLoader(getClass()
+                        .getResource("/albergueperronclient/ui/fxml/UILoggedAdmin.fxml"));
+                Parent root = loader.load();
+                //Get controller from the loader
+                UILogguedFXMLController menuController = loader.getController();
         
-            //menuController.setLogicManager(UILogguedManagerFactory.getLoggedManager());
-            //Send the current stage for coming back later
-            //roomController.setPreviousStage(stage);
-            //Initialize the primary stage of the application
-            menuController.initStage(root);
-            //--TOFIX --> Decidir si esconder el stage o cerrarlo
-            stage.hide();
-            stage.close();
-        }catch(Exception e){
-            LOGGER.severe(e.getMessage());
-            showErrorAlert("Error al redirigir al menú.");
+                //menuController.setLogicManager(UILoggedManagerFactory.getLoggedManager());
+                //Send the current stage for coming back later
+                //roomController.setPreviousStage(stage);
+                //Initialize the primary stage of the application
+                menuController.initStage(root);
+
+                stage.close();
+            }catch(Exception e){
+                LOGGER.severe(e.getMessage());
+                showErrorAlert("Error al redirigir al menú.");
+            }
+        }else{
+            LOGGER.severe("Operación cancelada");
         }
     }
     
@@ -636,7 +645,7 @@ public class UIStayFXMLController extends GenericController{
         try{
             //Get the logic manager object for the initial stage
             IncidentManager incidentManager = IncidentManagerFactory.getIncidentManager();
-            UsersManager userManager = UserManagerFactory.createUserManager();
+            //UsersManager userManager = UserManagerFactory.createUserManager();
             
             //Load the fxml file
             FXMLLoader loader = new FXMLLoader(getClass()
@@ -645,9 +654,9 @@ public class UIStayFXMLController extends GenericController{
             //Get controller from the loader
             IncidentFXMLController incidentController = loader.getController();
             incidentController.setLogicManager(incidentManager, roomsManager,
-                    userManager);
+                    usersManager);
             //Send the current stage for coming back later
-            incidentController.setPreviousStage(stage);
+            //incidentController.setPreviousStage(stage);
             //Initialize the primary stage of the application
             incidentController.initStage(root);
             //--TOFIX --> Decidir si esconder el stage o cerrarlo
@@ -655,14 +664,14 @@ public class UIStayFXMLController extends GenericController{
             stage.close();
         }catch(Exception e){
             LOGGER.severe(e.getMessage());
-            showErrorAlert("Error al redirigir a la vista de estancias.");
+            showErrorAlert("Error al redirigir a la vista de incidencias.");
         }
     }
     
     public void goToRoom(ActionEvent event){
         try{
             FXMLLoader loader = new FXMLLoader(getClass()
-                    .getResource("/albergueperronclient/ui/fxml/UIRoom.fxml"));
+                    .getResource("/albergueperronclient/ui/fxml/Room.fxml"));
             Parent root = loader.load();
             //Get controller from the loader
             RoomFXMLController roomController = loader.getController();

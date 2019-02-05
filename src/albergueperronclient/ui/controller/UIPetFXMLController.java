@@ -9,6 +9,7 @@ import albergueperronclient.exceptions.BusinessLogicException;
 import albergueperronclient.exceptions.ReadException;
 import albergueperronclient.logic.BlackListManagerFactory;
 import albergueperronclient.logic.IncidentManagerFactory;
+import albergueperronclient.logic.PetsManager;
 import albergueperronclient.logic.RoomManagerFactory;
 import albergueperronclient.logic.StayManagerFactory;
 import albergueperronclient.logic.UserManagerFactory;
@@ -108,9 +109,11 @@ public class UIPetFXMLController extends GenericController {
     private MenuItem menuLogOut;
     @FXML
     private MenuItem menuExit;
+    @FXML
+    private MenuItem menuPet;
     
-    private ObservableList<PetBean> petData=FXCollections.observableArrayList();
-    private ObservableList<UserBean> usersData=FXCollections.observableArrayList();
+    private ObservableList<PetBean> petData;
+    private ObservableList<UserBean> usersData;
     private PetBean pet;
     private Integer petId;
     private UserBean owner;
@@ -119,6 +122,7 @@ public class UIPetFXMLController extends GenericController {
     private int enable=3;
     private int disable=4;
     private int clean=5;
+    
     /**
      * Initializes the controller class.
      * @param root
@@ -230,6 +234,7 @@ public class UIPetFXMLController extends GenericController {
        txtColour.setPromptText("Introduce el color de tu mascota");
        txtEspecie.setPromptText("Introduce la especie de tu mascota");
        txtRaza.setPromptText("Introduce la raza de tu mascota");
+       menuPet.setDisable(true);
     }
     
     /**
@@ -452,7 +457,7 @@ public class UIPetFXMLController extends GenericController {
      */
     public void cancelPet (ActionEvent event){
          try{
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION.CONFIRMATION);
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Cancelar");
             alert.setContentText("¿Desea cancelar la operación?");    
             Optional<ButtonType> result = alert.showAndWait();
@@ -544,7 +549,7 @@ public class UIPetFXMLController extends GenericController {
     public void goToRoomView(ActionEvent event){
          try{
             FXMLLoader loader = new FXMLLoader(getClass()
-                    .getResource("/albergueperronclient/ui/fxml/UIRoom.fxml"));
+                    .getResource("/albergueperronclient/ui/fxml/Room.fxml"));
             Parent root = loader.load();
             //Get controller from the loader
             RoomFXMLController roomController = loader.getController();
@@ -617,7 +622,7 @@ public class UIPetFXMLController extends GenericController {
     public void goToIncidentsView(ActionEvent event){
         try{
             FXMLLoader loader = new FXMLLoader(getClass()
-                    .getResource("/signupsigninuidesktop/ui/fxml/IncidentFXMLController.fxml"));
+                    .getResource("/albergueperronclient/ui/fxml/Incident.fxml"));
             Parent root = loader.load();
             //Get controller from the loader
             IncidentFXMLController incidentsController = loader.getController();
@@ -663,32 +668,36 @@ public class UIPetFXMLController extends GenericController {
         Platform.exit();
     }
     
-    /**
-     * Return to previous view
-     * @param event 
-     */
-    public void returnToPrevious(ActionEvent event){
-        stage.close();
-        previousStage.show();
-    }
-    
 /**
      * Go to Logged view
      * @param event 
      */
     public void toLogged (ActionEvent event){
-        try{
-            Alert alert = new Alert(AlertType.CONFIRMATION);
-            alert.setTitle("Volver al Menú");
-            alert.setContentText("¿Desea volver al menú?");
-            Optional<ButtonType> result = alert.showAndWait();
-            if(result.get()==ButtonType.OK){
+        Alert alert = new Alert(AlertType.CONFIRMATION);
+        alert.setTitle("Volver al Menú");
+        alert.setContentText("¿Desea volver al menú?");
+        Optional<ButtonType> result = alert.showAndWait();
+        if(result.get()==ButtonType.OK){
+            try{
+                FXMLLoader loader = new FXMLLoader(getClass()
+                        .getResource("/albergueperronclient/ui/fxml/UILoggedAdmin.fxml"));
+                Parent root = loader.load();
+                //Get controller from the loader
+                UILogguedFXMLController menuController = loader.getController();
+        
+                //menuController.setLogicManager(UILoggedManagerFactory.getLoggedManager());
+                //Send the current stage for coming back later
+                //roomController.setPreviousStage(stage);
+                //Initialize the primary stage of the application
+                menuController.initStage(root);
+
                 stage.close();
-            }else{
-                LOGGER.severe("Operación cancelada");
+            }catch(Exception e){
+                LOGGER.severe(e.getMessage());
+                showErrorAlert("Error al redirigir al menú.");
             }
-        }catch(Exception e){
-           e.printStackTrace();
+        }else{
+            LOGGER.severe("Operación cancelada");
         }
     }
 }

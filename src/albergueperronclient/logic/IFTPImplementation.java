@@ -72,7 +72,8 @@ public class IFTPImplementation implements IFTP {
         ftp.addProtocolCommandListener(new PrintCommandListener(new PrintWriter(System.out)));
         try {
             ftp.connect(server, port);
-            ftp.enterLocalPassiveMode();
+            //ftp.enterLocalPassiveMode();
+             ftp.enterRemotePassiveMode();
             //login
             boolean login = ftp.login(user, pass);
 
@@ -83,6 +84,7 @@ public class IFTPImplementation implements IFTP {
             }
         } catch (Exception e) {
             LOGGER.severe(e.getMessage());
+            e.printStackTrace();
         }
 
     }

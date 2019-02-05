@@ -10,7 +10,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane id="ftpPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="albergueperronclient.ui.controller.FTPController">
+<AnchorPane id="ftpPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="albergueperronclient.ui.controller.FTPController">
    <children>
       <MenuBar layoutY="1.0" prefHeight="26.0" prefWidth="600.0">
          <menus>
@@ -19,8 +19,10 @@
                   <MenuItem fx:id="menuGuests" mnemonicParsing="false" text="Huéspedes" />
                   <MenuItem fx:id="menuPets" mnemonicParsing="false" text="Mascotas" />
                   <MenuItem fx:id="menuIncidence" mnemonicParsing="false" text="Incidencias" />
-                  <MenuItem fx:id="menuStay" mnemonicParsing="false" text="Estancias" />
                   <MenuItem fx:id="menuBlackList" mnemonicParsing="false" text="Lista Negra" />
+                  <MenuItem fx:id="menuStay" mnemonicParsing="false" text="Estancias" />
+                  <MenuItem fx:id="menuRoom" mnemonicParsing="false" text="Habitaciones" />
+                  <MenuItem fx:id="menuFTP" mnemonicParsing="false" text="FTP" />
                </items>
             </Menu>
             <Menu disable="true" mnemonicParsing="false">
