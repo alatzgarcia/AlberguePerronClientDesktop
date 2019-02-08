@@ -72,8 +72,8 @@ public class IFTPImplementation implements IFTP {
         ftp.addProtocolCommandListener(new PrintCommandListener(new PrintWriter(System.out)));
         try {
             ftp.connect(server, port);
-            //ftp.enterLocalPassiveMode();
-             ftp.enterRemotePassiveMode();
+            ftp.enterLocalPassiveMode();
+            // ftp.enterRemotePassiveMode();
             //login
             boolean login = ftp.login(user, pass);
 
@@ -97,32 +97,23 @@ public class IFTPImplementation implements IFTP {
      * @throws java.io.IOException
      */
     @Override
-    public MyFile uploadFile(String path) throws IOException{
+    public String uploadFile(String path) throws IOException{
 
-        MyFile filetoUP = null;
-
+        boolean subido=false;
         BufferedInputStream in = null;
         try {
             in = new BufferedInputStream(new FileInputStream(path));
-            //the user can choose a name for the file
-            TextInputDialog dialog = new TextInputDialog("");
-            dialog.setTitle("Subir archivo");
-            dialog.setContentText("Nombre del archivo");
-            Optional<String> result = dialog.showAndWait();
-            if (result.isPresent()) {
-                filetoUP = new MyFile();
-                filetoUP.setPath(ftp.printWorkingDirectory() + "/");
-                filetoUP.setName(result.get());
-                filetoUP.setFile(true);
-                ftp.storeFile(ftp.printWorkingDirectory() + "/" + result.get(), in);
-                in.close();
-            }
+ 
+            ftp.storeFile(ftp.printWorkingDirectory() + "/" + path, in);
+            in.close();
+            
+    
 
         } catch (FileNotFoundException ex) {
             LOGGER.severe(ex.getMessage());
         }
 
-        return filetoUP;
+         return ftp.printWorkingDirectory();
     }
 
     /**

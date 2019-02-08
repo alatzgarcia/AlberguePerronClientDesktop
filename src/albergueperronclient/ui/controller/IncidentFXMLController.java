@@ -64,6 +64,7 @@ import net.sf.jasperreports.view.JasperViewer;
 import java.util.Date;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 /**
@@ -187,6 +188,8 @@ public class IncidentFXMLController extends GenericController {
             stage.setResizable(false);
             //set window's events handlers
             stage.setOnShowing(this::handleWindowShowing);
+            //open the stage as modal
+            stage.initModality(Modality.APPLICATION_MODAL); 
             
             txtIncidentType.textProperty().addListener(this::onTextChanged);
             txtDescription.textProperty().addListener(this::onTextChanged);
@@ -305,60 +308,68 @@ public class IncidentFXMLController extends GenericController {
      * @param event 
      */
     public void createIncident(ActionEvent event){
-        try{
-            if(checkForData()){
-                IncidentBean newIncident = new IncidentBean();
-                newIncident.setDescription(txtDescription.getText());
-                List<UserBean> implicateds = lstImplicateds.getItems();
-                implicateds.add((UserBean)cbEmployee.getSelectionModel().getSelectedItem());
-                newIncident.setImplicateds(implicateds);
-                newIncident.setIncidentType(txtIncidentType.getText());
-                newIncident.setRoom((RoomBean)cbRoom.getSelectionModel().getSelectedItem());
-                Date date = Date.from(incidentDate.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());
-                newIncident.setDate(date);
-                incidentManager.createIncident(newIncident);
+        Alert alertConfirmation = new Alert(AlertType.CONFIRMATION);
+        alertConfirmation.setTitle("Creación de incidente");
+        alertConfirmation.setContentText("¿Desea crear el incidente?");
+        Optional<ButtonType> result = alertConfirmation.showAndWait();
+        if(result.get()==ButtonType.OK){
+            try{
+                if(checkForData()){
+                    IncidentBean newIncident = new IncidentBean();
+                    newIncident.setDescription(txtDescription.getText());
+                    List<UserBean> implicateds = lstImplicateds.getItems();
+                    implicateds.add((UserBean)cbEmployee.getSelectionModel().getSelectedItem());
+                    newIncident.setImplicateds(implicateds);
+                    newIncident.setIncidentType(txtIncidentType.getText());
+                    newIncident.setRoom((RoomBean)cbRoom.getSelectionModel().getSelectedItem());
+                    Date date = Date.from(incidentDate.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());
+                    newIncident.setDate(date);
+                    incidentManager.createIncident(newIncident);
             
-                btnCancel.setDisable(true);
-                btnInsert.setDisable(true);
-                btnInsert.setVisible(false);
-                btnNew.setDisable(false);
-                txtDescription.setText("");
-                txtDescription.setDisable(true);
-                txtIncidentType.setText("");
-                txtIncidentType.setDisable(true);
-                cbEmployee.getSelectionModel().clearSelection();
-                cbEmployee.setDisable(true);
-                lstImplicateds.setDisable(true);
-                cbRoom.getSelectionModel().selectFirst();
-                cbRoom.setDisable(true);
-                btnListAdd.setDisable(true);
-                btnListRemove.setDisable(true);
-                cbGuests.setDisable(true);
-                incidentDate.getEditor().clear();
-                incidentDate.setDisable(true);
+                    btnCancel.setDisable(true);
+                    btnInsert.setDisable(true);
+                    btnInsert.setVisible(false);
+                    btnNew.setDisable(false);
+                    txtDescription.setText("");
+                    txtDescription.setDisable(true);
+                    txtIncidentType.setText("");
+                    txtIncidentType.setDisable(true);
+                    cbEmployee.getSelectionModel().clearSelection();
+                    cbEmployee.setDisable(true);
+                    lstImplicateds.setDisable(true);
+                    cbRoom.getSelectionModel().selectFirst();
+                    cbRoom.setDisable(true);
+                    btnListAdd.setDisable(true);
+                    btnListRemove.setDisable(true);
+                    cbGuests.setDisable(true);
+                    incidentDate.getEditor().clear();
+                    incidentDate.setDisable(true);
             
-                tableIncidents.getItems().add(newIncident);
-                tableIncidents.setDisable(false); 
-                tableIncidents.refresh();
+                    tableIncidents.getItems().add(newIncident);
+                    tableIncidents.setDisable(false); 
+                    tableIncidents.refresh();
                 
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
                         alert.setTitle("Creación de incidencia");
                         alert.setContentText("Se ha creado la incidencia"
                                 + "con éxito.");        
                         alert.showAndWait();
-            } else{
-                Alert alert = new Alert(Alert.AlertType.WARNING);
+                } else{
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
                         alert.setTitle("Creación de incidencia");
                         alert.setContentText("Se requieren todos los datos "
                                 + "para poder crear la incidencia.");        
                         alert.showAndWait();
+                }
+            }catch(CreateException ce){
+                LOGGER.severe(ce.getMessage());
+                showErrorAlert("Error al crear el incidente.");
+            }catch(Exception ex){
+                LOGGER.severe(ex.getMessage());
+                showErrorAlert("Error. No se ha podido completar la operación.");
             }
-        }catch(CreateException ce){
-            LOGGER.severe(ce.getMessage());
-            showErrorAlert("Error al crear el incidente.");
-        }catch(Exception ex){
-            LOGGER.severe(ex.getMessage());
-            showErrorAlert("Error. No se ha podido completar la operación.");
+        }else{
+            LOGGER.severe("Operación cancelada");
         }
     }
     
@@ -367,7 +378,12 @@ public class IncidentFXMLController extends GenericController {
      * @param event 
      */
     public void disposeIncidentForm(ActionEvent event){
-        if(btnInsert.isVisible()){
+        Alert alertConfirmation = new Alert(AlertType.CONFIRMATION);
+        alertConfirmation.setTitle("Cancelar");
+        alertConfirmation.setContentText("¿Desea deshacer los cambios?");
+        Optional<ButtonType> result = alertConfirmation.showAndWait();
+        if(result.get()==ButtonType.OK){
+            if(btnInsert.isVisible()){
             btnNew.setDisable(false);
             cbEmployee.getSelectionModel().clearSelection();
             cbRoom.getSelectionModel().clearSelection();
@@ -387,23 +403,25 @@ public class IncidentFXMLController extends GenericController {
             incidentDate.setValue(localdate);
             btnDelete.setDisable(true);
         }
-        
-        btnSaveChanges.setDisable(true);
-        btnSaveChanges.setVisible(false);
-        btnInsert.setDisable(true);
-        btnInsert.setVisible(false);
-        btnCancel.setDisable(true);
-        btnNew.setDisable(false);
-        txtIncidentType.setDisable(true);
-        txtDescription.setDisable(true);
-        lstImplicateds.setDisable(true);
-        cbEmployee.setDisable(true);
-        cbRoom.setDisable(true);
-        btnListAdd.setDisable(true);
-        btnListRemove.setDisable(true);
-        cbGuests.setDisable(true);
-        tableIncidents.setDisable(false);
-        incidentDate.setDisable(true);
+            btnSaveChanges.setDisable(true);
+            btnSaveChanges.setVisible(false);
+            btnInsert.setDisable(true);
+            btnInsert.setVisible(false);
+            btnCancel.setDisable(true);
+            btnNew.setDisable(false);
+            txtIncidentType.setDisable(true);
+            txtDescription.setDisable(true);
+            lstImplicateds.setDisable(true);
+            cbEmployee.setDisable(true);
+            cbRoom.setDisable(true);
+            btnListAdd.setDisable(true);
+            btnListRemove.setDisable(true);
+            cbGuests.setDisable(true);
+            tableIncidents.setDisable(false);
+            incidentDate.setDisable(true);
+        }else{
+            LOGGER.severe("Operación cancelada");
+        }
    }
     
     /**
@@ -436,61 +454,69 @@ public class IncidentFXMLController extends GenericController {
      * @param event 
      */
     public void updateIncident(ActionEvent event){
-        try{
-            if(checkForData()){
-                IncidentBean incidentToModify = selectedIncident;
-                incidentToModify.setDescription(txtDescription.getText());
-                List<UserBean> implicateds = new ArrayList<UserBean>();
-                implicateds.addAll(lstImplicateds.getItems());
-                implicateds.add((UserBean)cbEmployee.getSelectionModel().getSelectedItem());
-                incidentToModify.setImplicateds(implicateds);
-                incidentToModify.setIncidentType(txtIncidentType.getText());
-                incidentToModify.setRoom((RoomBean)cbRoom.getSelectionModel().getSelectedItem());
+        Alert alertConfirmation = new Alert(AlertType.CONFIRMATION);
+        alertConfirmation.setTitle("Actualización de incidente");
+        alertConfirmation.setContentText("¿Desea actualizar el incidente?");
+        Optional<ButtonType> result = alertConfirmation.showAndWait();
+        if(result.get()==ButtonType.OK){
+            try{
+                if(checkForData()){
+                    IncidentBean incidentToModify = selectedIncident;
+                    incidentToModify.setDescription(txtDescription.getText());
+                    List<UserBean> implicateds = new ArrayList<UserBean>();
+                    implicateds.addAll(lstImplicateds.getItems());
+                    implicateds.add((UserBean)cbEmployee.getSelectionModel().getSelectedItem());
+                    incidentToModify.setImplicateds(implicateds);
+                    incidentToModify.setIncidentType(txtIncidentType.getText());
+                    incidentToModify.setRoom((RoomBean)cbRoom.getSelectionModel().getSelectedItem());
                 
-                Date date = Date.from(incidentDate.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());
-                //java.sql.Date date = java.sql.Date.valueOf(incidentDate.getValue());
-                incidentToModify.setDate(date);
+                    Date date = Date.from(incidentDate.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());
+                    //java.sql.Date date = java.sql.Date.valueOf(incidentDate.getValue());
+                    incidentToModify.setDate(date);
                 
-                incidentManager.updateIncident(incidentToModify);
+                    incidentManager.updateIncident(incidentToModify);
                 
-                btnCancel.setDisable(true);
-                btnSaveChanges.setDisable(true);
-                btnSaveChanges.setVisible(false);
-                txtDescription.setDisable(true);
-                txtIncidentType.setDisable(true);
-                cbEmployee.setDisable(true);
-                lstImplicateds.setDisable(true);
-                cbRoom.getSelectionModel().selectFirst();
-                cbRoom.setDisable(true);
-                btnListAdd.setDisable(true);
-                btnListRemove.setDisable(true);
-                cbGuests.setDisable(true);
-                btnNew.setDisable(false);
-                btnDelete.setDisable(false);
-                incidentDate.setDisable(true);
+                    btnCancel.setDisable(true);
+                    btnSaveChanges.setDisable(true);
+                    btnSaveChanges.setVisible(false);
+                    txtDescription.setDisable(true);
+                    txtIncidentType.setDisable(true);
+                    cbEmployee.setDisable(true);
+                    lstImplicateds.setDisable(true);
+                    cbRoom.getSelectionModel().selectFirst();
+                    cbRoom.setDisable(true);
+                    btnListAdd.setDisable(true);
+                    btnListRemove.setDisable(true);
+                    cbGuests.setDisable(true);
+                    btnNew.setDisable(false);
+                    btnDelete.setDisable(false);
+                    incidentDate.setDisable(true);
             
-                tableIncidents.refresh();
-                tableIncidents.setDisable(false);
+                    tableIncidents.refresh();
+                    tableIncidents.setDisable(false);
                 
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
                         alert.setTitle("Actualización de incidencia");
                         alert.setContentText("Se ha actualizado la incidencia"
                                 + "con éxito.");        
                         alert.showAndWait();
-            }
-            else{
-                Alert alert = new Alert(Alert.AlertType.WARNING);
+                }
+                else{
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
                         alert.setTitle("Actualización de incidencia");
                         alert.setContentText("Se requieren todos los datos "
                                 + "para poder actualizar la incidencia.");        
                         alert.showAndWait();
+                }
+            }catch(UpdateException ue){
+                LOGGER.severe(ue.getMessage());
+                showErrorAlert("Error al actualizar la incidencia.");
+            }catch(Exception ex){
+                LOGGER.severe(ex.getMessage());
+                showErrorAlert("Error. No se ha podido completar la operación.");
             }
-        }catch(UpdateException ue){
-            LOGGER.severe(ue.getMessage());
-            showErrorAlert("Error al actualizar la incidencia.");
-        }catch(Exception ex){
-            LOGGER.severe(ex.getMessage());
-            showErrorAlert("Error. No se ha podido completar la operación.");
+        }else{
+            LOGGER.severe("Operación cancelada");
         }
     }
     
@@ -499,21 +525,29 @@ public class IncidentFXMLController extends GenericController {
      * @param event 
      */
     public void deleteIncident(ActionEvent event){
-        try{
-            incidentManager.deleteIncident(selectedIncident.getId());
-            tableIncidents.getItems().remove(selectedIncident);
-            tableIncidents.refresh();
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        Alert alertConfirmation = new Alert(AlertType.CONFIRMATION);
+        alertConfirmation.setTitle("Eliminar incidente");
+        alertConfirmation.setContentText("¿Desea eliminar el incidente?");
+        Optional<ButtonType> result = alertConfirmation.showAndWait();
+        if(result.get()==ButtonType.OK){
+            try{
+                incidentManager.deleteIncident(selectedIncident.getId());
+                tableIncidents.getItems().remove(selectedIncident);
+                tableIncidents.refresh();
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
                         alert.setTitle("Eliminación de incidencia");
                         alert.setContentText("Se ha eliminado la incidencia "
                                 + "con éxito.");        
                         alert.showAndWait();
-        }catch(DeleteException de){
-            LOGGER.severe(de.getMessage());
-            showErrorAlert("Error al eliminar la incidencia.");
-        }catch(Exception ex){
-            LOGGER.severe(ex.getMessage());
-            showErrorAlert("Error. No se ha podido completar la operación.");
+            }catch(DeleteException de){
+                LOGGER.severe(de.getMessage());
+                showErrorAlert("Error al eliminar la incidencia.");
+            }catch(Exception ex){
+                LOGGER.severe(ex.getMessage());
+                showErrorAlert("Error. No se ha podido completar la operación.");
+            }
+        }else{
+            LOGGER.severe("Operación cancelada");
         }
     }
     
@@ -565,13 +599,8 @@ public class IncidentFXMLController extends GenericController {
      * @param event 
      */
     public void returnToMenu(ActionEvent event){
-        Alert alert = new Alert(AlertType.CONFIRMATION);
-        alert.setTitle("Volver al Menú");
-        alert.setContentText("¿Desea volver al menú?");
-        Optional<ButtonType> result = alert.showAndWait();
-        if(result.get()==ButtonType.OK){
             try{
-                FXMLLoader loader = new FXMLLoader(getClass()
+                /*FXMLLoader loader = new FXMLLoader(getClass()
                         .getResource("/albergueperronclient/ui/fxml/UILoggedAdmin.fxml"));
                 Parent root = loader.load();
                 //Get controller from the loader
@@ -581,16 +610,13 @@ public class IncidentFXMLController extends GenericController {
                 //Send the current stage for coming back later
                 //roomController.setPreviousStage(stage);
                 //Initialize the primary stage of the application
-                menuController.initStage(root);
+                menuController.initStage(root);*/
 
                 stage.close();
             }catch(Exception e){
                 LOGGER.severe(e.getMessage());
                 showErrorAlert("Error al redirigir al menú.");
             }
-        }else{
-            LOGGER.severe("Operación cancelada");
-        }
     }
     
     /**

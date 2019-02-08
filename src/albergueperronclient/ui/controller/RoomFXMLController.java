@@ -43,6 +43,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -118,6 +119,8 @@ public class RoomFXMLController extends GenericController {
             stage.setScene(scene);
             stage.setTitle("Room");
             stage.setResizable(false);
+            //open the stage as modal
+            stage.initModality(Modality.APPLICATION_MODAL);
             //set window's events handlers
             stage.setOnShowing(this::handleWindowShowing);
         
@@ -194,37 +197,45 @@ public class RoomFXMLController extends GenericController {
      * @param event 
      */
     public void updateRoom(ActionEvent event){
-        try{
-            if(checkForData()){
-                RoomBean roomToModify = selectedRoom;
-                roomToModify.setTotalSpace(Integer.parseInt(txtTotal.getText()));
-                roomToModify.setStatus((Status)cbStatus.getSelectionModel().getSelectedItem());
-                roomManager.updateRoom(roomToModify);
+        Alert alertConfirmation = new Alert(Alert.AlertType.CONFIRMATION);
+        alertConfirmation.setTitle("Actualizar");
+        alertConfirmation.setContentText("¿Desea actualizar los datos de la habitación?");
+        Optional<ButtonType> result = alertConfirmation.showAndWait();
+        if(result.get()==ButtonType.OK){
+            try{
+                if(checkForData()){
+                    RoomBean roomToModify = selectedRoom;
+                    roomToModify.setTotalSpace(Integer.parseInt(txtTotal.getText()));
+                    roomToModify.setStatus((Status)cbStatus.getSelectionModel().getSelectedItem());
+                    roomManager.updateRoom(roomToModify);
         
-                txtTotal.setDisable(true);
-                btnCancel.setDisable(true);
-                btnSaveChanges.setDisable(true);
-                cbStatus.setDisable(true);
-                btnModify.setDisable(false);
-                tableRoom.setDisable(false);
-                tableRoom.refresh();
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    txtTotal.setDisable(true);
+                    btnCancel.setDisable(true);
+                    btnSaveChanges.setDisable(true);
+                    cbStatus.setDisable(true);
+                    btnModify.setDisable(false);
+                    tableRoom.setDisable(false);
+                    tableRoom.refresh();
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
                         alert.setTitle("Actualización de habitación");
                         alert.setContentText("Se ha actualizado correctamente"
                                 + " la habitación.");        
                         alert.showAndWait();
-            }
-            else{
-                Alert alert = new Alert(Alert.AlertType.WARNING);
+                }
+                else{
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
                         alert.setTitle("Actualización de habitación");
                         alert.setContentText("Se requieren todos los datos "
                                 + "para poder actualizar la habitación.");        
                         alert.showAndWait();
+                }
+            }catch(UpdateException ue){
+                LOGGER.severe(ue.getMessage());
+            }catch(Exception ex){
+                LOGGER.severe(ex.getMessage());
             }
-        }catch(UpdateException ue){
-            LOGGER.severe(ue.getMessage());
-        }catch(Exception ex){
-            LOGGER.severe(ex.getMessage());
+        }else{
+            LOGGER.severe("Operación cancelada");
         }
     }
     
@@ -248,12 +259,20 @@ public class RoomFXMLController extends GenericController {
      * @param event 
      */
     public void disposeUpdateForm(ActionEvent event){
-        txtTotal.setDisable(true);
-        btnCancel.setDisable(true);
-        btnSaveChanges.setDisable(true);
-        cbStatus.setDisable(true);
-        btnModify.setDisable(false);
-        tableRoom.setDisable(false);
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Cancelar");
+        alert.setContentText("¿Desea deshacer los cambios?");
+        Optional<ButtonType> result = alert.showAndWait();
+        if(result.get()==ButtonType.OK){
+            txtTotal.setDisable(true);
+            btnCancel.setDisable(true);
+            btnSaveChanges.setDisable(true);
+            cbStatus.setDisable(true);
+            btnModify.setDisable(false);
+            tableRoom.setDisable(false);
+        }else{
+            LOGGER.severe("Operación cancelada");
+        }        
     }
     
     /**
@@ -261,13 +280,8 @@ public class RoomFXMLController extends GenericController {
      * @param event 
      */
     public void returnToMenu(ActionEvent event){
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Volver al Menú");
-        alert.setContentText("¿Desea volver al menú?");
-        Optional<ButtonType> result = alert.showAndWait();
-        if(result.get()==ButtonType.OK){
             try{
-                FXMLLoader loader = new FXMLLoader(getClass()
+                /*FXMLLoader loader = new FXMLLoader(getClass()
                         .getResource("/albergueperronclient/ui/fxml/UILoggedAdmin.fxml"));
                 Parent root = loader.load();
                 //Get controller from the loader
@@ -277,16 +291,13 @@ public class RoomFXMLController extends GenericController {
                 //Send the current stage for coming back later
                 //roomController.setPreviousStage(stage);
                 //Initialize the primary stage of the application
-                menuController.initStage(root);
+                menuController.initStage(root);*/
 
                 stage.close();
             }catch(Exception e){
                 LOGGER.severe(e.getMessage());
                 showErrorAlert("Error al redirigir al menú.");
             }
-        }else{
-            LOGGER.severe("Operación cancelada");
-        }
     }
     
     /**

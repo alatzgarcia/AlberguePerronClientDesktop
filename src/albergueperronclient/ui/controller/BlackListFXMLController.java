@@ -45,6 +45,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -141,6 +142,8 @@ public class BlackListFXMLController extends GenericController {
             stage.setScene(scene);
             stage.setTitle("BlackList");
             stage.setResizable(false);
+            //open the stage as modal
+            stage.initModality(Modality.APPLICATION_MODAL);
             //set window's events handlers
             stage.setOnShowing(this::handleWindowShowing);
         
@@ -244,6 +247,15 @@ public class BlackListFXMLController extends GenericController {
      * @param event 
      */
     public void addUserToBlackList(ActionEvent event){
+        Alert alertConfirmation = new Alert(Alert.AlertType.CONFIRMATION);
+        alertConfirmation.setTitle("Introducción de usuario");
+        alertConfirmation.setContentText("¿Desea introducir el usuario?");
+        Optional<ButtonType> result = alertConfirmation.showAndWait();
+        if(result.get()==ButtonType.OK){
+            
+        }else{
+            LOGGER.severe("Operación cancelada");
+        }
         try{
             if(checkForData()){                
                 if(cbUsers.getSelectionModel().getSelectedItem() instanceof UserBean){
@@ -314,27 +326,35 @@ public class BlackListFXMLController extends GenericController {
      * @param event 
      */
     public void disposeBlackListForm(ActionEvent event){
-        if(btnInsert.isVisible()){
-            txtReason.setText("");
+        Alert alertConfirmation = new Alert(Alert.AlertType.CONFIRMATION);
+        alertConfirmation.setTitle("Cancelar");
+        alertConfirmation.setContentText("¿Desea deshacer los cambios?");
+        Optional<ButtonType> result = alertConfirmation.showAndWait();
+        if(result.get()==ButtonType.OK){
+            if(btnInsert.isVisible()){
+                txtReason.setText("");
                 btnInsert.setDisable(true);
-            btnInsert.setVisible(false);
+                btnInsert.setVisible(false);
             
-            lblCbUsers.setVisible(false);
-            cbUsers.getSelectionModel().clearSelection();
-            cbUsers.setDisable(true);
-            cbUsers.setVisible(false);
-        } else {
-            txtReason.setText(selectedUser.getReason());
-            btnDelete.setDisable(true);
-            btnSaveChanges.setDisable(true);
-            btnSaveChanges.setVisible(false);
-            btnModify.setDisable(false);
-            btnDelete.setDisable(false);
+                lblCbUsers.setVisible(false);
+                cbUsers.getSelectionModel().clearSelection();
+                cbUsers.setDisable(true);
+                cbUsers.setVisible(false);
+            } else {
+                txtReason.setText(selectedUser.getReason());
+                btnDelete.setDisable(true);
+                btnSaveChanges.setDisable(true);
+                btnSaveChanges.setVisible(false);
+                btnModify.setDisable(false);
+                btnDelete.setDisable(false);
+            }
+            btnCancel.setDisable(true);
+            btnNew.setDisable(false);
+            txtReason.setDisable(true);
+            tableBlackList.setDisable(false);
+        }else{
+            LOGGER.severe("Operación cancelada");
         }
-        btnCancel.setDisable(true);
-        btnNew.setDisable(false);
-        txtReason.setDisable(true);
-        tableBlackList.setDisable(false);
     }
     
     /**
@@ -358,41 +378,49 @@ public class BlackListFXMLController extends GenericController {
      * @param event 
      */
     public void updateUserOnBlackList(ActionEvent event){
-        try{
+        Alert alertConfirmation = new Alert(Alert.AlertType.CONFIRMATION);
+        alertConfirmation.setTitle("Actualizar usuario");
+        alertConfirmation.setContentText("¿Desea actualizar el usuario?");
+        Optional<ButtonType> result = alertConfirmation.showAndWait();
+        if(result.get()==ButtonType.OK){
+            try{
             if(checkForData()){
                 UserBeanMongo userToModify = selectedUser;
                 userToModify.setReason(txtReason.getText());
                 blackListManager.updateUserOnBlackList(userToModify);
         
-                txtReason.setDisable(true);
-                btnCancel.setDisable(true);
-                btnSaveChanges.setDisable(true);
-                btnModify.setDisable(false);
-                btnDelete.setDisable(false);
-                btnNew.setDisable(false);
-                tableBlackList.setDisable(false);
-                tableBlackList.refresh();
+                    txtReason.setDisable(true);
+                    btnCancel.setDisable(true);
+                    btnSaveChanges.setDisable(true);
+                    btnModify.setDisable(false);
+                    btnDelete.setDisable(false);
+                    btnNew.setDisable(false);
+                    tableBlackList.setDisable(false);
+                    tableBlackList.refresh();
                 
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
                         alert.setTitle("Actualización de usuario");
                         alert.setContentText("Se ha actualizado correctamente"
                                 + "el usuario en la lista negra.");        
                         alert.showAndWait();
-            }
-            else{
-                Alert alert = new Alert(Alert.AlertType.WARNING);
+                }
+                else{
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
                         alert.setTitle("Actualización de usuario");
                         alert.setContentText("Se requieren todos los datos "
                                 + "para poder actualizar un usuario en la lista "
                                 + "negra.");        
                         alert.showAndWait();
+                }
+            }catch(UpdateException ue){
+                LOGGER.severe(ue.getMessage());
+                showErrorAlert("Error al actualizar los datos del usuario.");
+            }catch(Exception ex){
+                LOGGER.severe(ex.getMessage());
+                showErrorAlert("Error. No se ha podido completar la operación.");
             }
-        }catch(UpdateException ue){
-            LOGGER.severe(ue.getMessage());
-            showErrorAlert("Error al actualizar los datos del usuario.");
-        }catch(Exception ex){
-            LOGGER.severe(ex.getMessage());
-            showErrorAlert("Error. No se ha podido completar la operación.");
+        }else{
+            LOGGER.severe("Operación cancelada");
         }
     }
 
@@ -401,22 +429,30 @@ public class BlackListFXMLController extends GenericController {
      * @param event
     */
     public void deleteUserFromBlackList(ActionEvent event){
-        try{
-            blackListManager.deleteUserFromBlackList(selectedUser.getId());
-            tableBlackList.getItems().remove(selectedUser);
-            tableBlackList.refresh();
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        Alert alertConfirmation = new Alert(Alert.AlertType.CONFIRMATION);
+        alertConfirmation.setTitle("Borrado de usuario");
+        alertConfirmation.setContentText("¿Desea eliminar el usuario?");
+        Optional<ButtonType> result = alertConfirmation.showAndWait();
+        if(result.get()==ButtonType.OK){
+            try{
+                blackListManager.deleteUserFromBlackList(selectedUser.getId());
+                tableBlackList.getItems().remove(selectedUser);
+                tableBlackList.refresh();
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
                         alert.setTitle("Eliminación de usuario");
                         alert.setContentText("Se ha eliminado correctamente el "
                                 + "usuario de la lista "
                                 + "negra.");        
                         alert.showAndWait();
-        }catch(DeleteException de){
-            LOGGER.severe(de.getMessage());
-            showErrorAlert("Error al eliminar el usuario de la lista negra.");
-        }catch(Exception ex){
-            LOGGER.severe(ex.getMessage());
-            showErrorAlert("Error. No se ha podido completar la operación.");
+            }catch(DeleteException de){
+                LOGGER.severe(de.getMessage());
+                showErrorAlert("Error al eliminar el usuario de la lista negra.");
+            }catch(Exception ex){
+                LOGGER.severe(ex.getMessage());
+                showErrorAlert("Error. No se ha podido completar la operación.");
+            }
+        }else{
+            LOGGER.severe("Operación cancelada");
         }
     }
     
@@ -456,13 +492,8 @@ public class BlackListFXMLController extends GenericController {
      * @param event 
      */
     public void returnToMenu(ActionEvent event){
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Volver al Menú");
-        alert.setContentText("¿Desea volver al menú?");
-        Optional<ButtonType> result = alert.showAndWait();
-        if(result.get()==ButtonType.OK){
             try{
-                FXMLLoader loader = new FXMLLoader(getClass()
+                /*FXMLLoader loader = new FXMLLoader(getClass()
                         .getResource("/albergueperronclient/ui/fxml/UILoggedAdmin.fxml"));
                 Parent root = loader.load();
                 //Get controller from the loader
@@ -473,15 +504,12 @@ public class BlackListFXMLController extends GenericController {
                 //roomController.setPreviousStage(stage);
                 //Initialize the primary stage of the application
                 menuController.initStage(root);
-
+                */
                 stage.close();
             }catch(Exception e){
                 LOGGER.severe(e.getMessage());
                 showErrorAlert("Error al redirigir al menú.");
             }
-        }else{
-            LOGGER.severe("Operación cancelada");
-        }
     }
     
     /**

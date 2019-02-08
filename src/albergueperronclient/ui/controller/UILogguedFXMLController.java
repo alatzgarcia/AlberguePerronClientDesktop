@@ -190,7 +190,7 @@ public class UILogguedFXMLController extends GenericController {
             petController.setPetsManager(petManager);
             //Initialize the primary stage of the application
             petController.initStage(root);
-            stage.hide();
+           //stage.hide();
         } catch (IOException ex) {
             LOGGER.severe(ex.getMessage());
         } catch (BusinessLogicException ex) {
@@ -215,7 +215,7 @@ public class UILogguedFXMLController extends GenericController {
             guestController.setUsersManager(usersManager);
             //Initialize the primary stage of the application
             guestController.initStage(root);
-            stage.hide();
+            //stage.hide();
         } catch (IOException ex) {
             LOGGER.severe(ex.getMessage());
         }
@@ -240,7 +240,7 @@ public class UILogguedFXMLController extends GenericController {
             roomController.setLogicManager(roomManager);
             //Initialize the primary stage of the application
             roomController.initStage(root);
-            stage.hide();
+            //stage.hide();
 
         } catch (IOException ex) {
             LOGGER.severe(ex.getMessage());
@@ -266,7 +266,7 @@ public class UILogguedFXMLController extends GenericController {
 
             //Initialize the primary stage of the application
             stayController.initStage(root);
-            stage.hide();
+            //stage.hide();
         } catch (IOException ex) {
             LOGGER.severe(ex.getMessage());
         }
@@ -293,7 +293,7 @@ public class UILogguedFXMLController extends GenericController {
             //Initialize the primary stage of the application
             ftpController.initStage(root);
 
-            stage.hide();
+            //stage.hide();
         } catch (IOException ex) {
             LOGGER.severe(ex.getMessage());
         }
@@ -320,7 +320,7 @@ public class UILogguedFXMLController extends GenericController {
             //Initialize the primary stage of the application
             incidentController.initStage(root);
 
-            stage.hide();
+            //stage.hide();
         } catch (IOException ex) {
             LOGGER.severe(ex.getMessage());
         } catch (ReadException ex) {
@@ -348,7 +348,7 @@ public class UILogguedFXMLController extends GenericController {
             //Initialize the primary stage of the application
             blackListController.initStage(root);
 
-            stage.hide();
+            //stage.hide();
         } catch (IOException ex) {
             LOGGER.severe(ex.getMessage());
         }
