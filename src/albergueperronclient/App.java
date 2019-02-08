@@ -5,8 +5,11 @@
  */
 package albergueperronclient;
 
+import albergueperronclient.logic.IFTP;
+import albergueperronclient.logic.IFTPFactory;
 import albergueperronclient.logic.ILogin;
 import albergueperronclient.logic.ILoginFactory;
+import albergueperronclient.ui.controller.FTPController;
 
 import albergueperronclient.ui.controller.UILoginFXMLController;
 import java.util.logging.Logger;
