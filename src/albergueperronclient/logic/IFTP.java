@@ -7,6 +7,7 @@ package albergueperronclient.logic;
 
 import albergueperronclient.exceptions.FTPException;
 import albergueperronclient.modelObjects.MyFile;
+import java.io.File;
 import java.io.IOException;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -23,7 +24,7 @@ public interface IFTP {
     
     public boolean deleteFile(String name)throws IOException;
     
-    public void downloadFile(String file)throws IOException;
+    public boolean downloadFile(String file,File selectedDir)throws IOException;
 
     public MyFile createDirectory()throws IOException;
     

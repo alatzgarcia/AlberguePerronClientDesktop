@@ -102,7 +102,8 @@ public class IFTPImplementation implements IFTP {
         boolean subido=false;
         BufferedInputStream in = null;
         try {
-            in = new BufferedInputStream(new FileInputStream(path));
+            LOGGER.info(ftp.printWorkingDirectory());
+            in = new BufferedInputStream(new FileInputStream(ftp.printWorkingDirectory() + "/" +path));
  
             ftp.storeFile(ftp.printWorkingDirectory() + "/" + path, in);
             in.close();
@@ -111,6 +112,9 @@ public class IFTPImplementation implements IFTP {
 
         } catch (FileNotFoundException ex) {
             LOGGER.severe(ex.getMessage());
+            
+        }catch (Exception ex){
+            ex.printStackTrace();
         }
 
          return ftp.printWorkingDirectory();
@@ -129,15 +133,15 @@ public class IFTPImplementation implements IFTP {
             if (ftp.deleteFile(name)) {
 
                 deleted = true;
-                Alert alert = new Alert(
-                        Alert.AlertType.INFORMATION, "Borrado correctamente");
+              
             } else {
                 LOGGER.info("No se ha podido eliminar el fichero.");
-                Alert alert = new Alert(
-                        Alert.AlertType.INFORMATION, "No se ha podido borrar");
+                
             }
         } catch (IOException ex) {
             LOGGER.severe(ex.getMessage());
+        }catch(Exception e){
+            e.printStackTrace();
         }
         return deleted;
     }
@@ -148,41 +152,28 @@ public class IFTPImplementation implements IFTP {
      * @param name The name of the file
      */
     @Override
-    public void downloadFile(String name) throws IOException {
-
-        //choose a directory to download the file to locally
-        DirectoryChooser dirChooser = new DirectoryChooser();
-        dirChooser.setTitle("Open Resource File");
-        Window ownerWindow = null;
-
-        File selectedDir = dirChooser.showDialog(ownerWindow);
-
+    public boolean downloadFile(String name, File selectedDir) throws IOException {
+        boolean download= false;
         BufferedOutputStream out = null;
         try {
-            //choose the name of the file
-            TextInputDialog dialog = new TextInputDialog("");
-            dialog.setTitle("Descargar archivo");
-            dialog.setContentText("Nombre del archivo");
-            Optional<String> result = dialog.showAndWait();
-            if (result.isPresent()) {
-                out = new BufferedOutputStream(
-                        new FileOutputStream(selectedDir + "/" + result.get()));
+            out = new BufferedOutputStream(
+                        new FileOutputStream(selectedDir + "/" + name));
 
-                if (ftp.retrieveFile(name, out)) {
-                    LOGGER.info("Descargado correctamente…..");
-                    Alert alert = new Alert(
-                            Alert.AlertType.INFORMATION, "Descargado correctamente");
-                } else {
-                    Alert alert = new Alert(Alert.AlertType.ERROR, "Error en la descarga");
-                }
-                out.close();
+            if (ftp.retrieveFile(name, out)) {
+                LOGGER.info("Descargado correctamente…..");
+                download=true;
+                 
+            } else {
+               LOGGER.info("No se ha podido descargar el fichero.");
             }
+                out.close();
+            
         } catch (FileNotFoundException ex) {
             LOGGER.severe(ex.getMessage());
         } catch (IOException ex) {
             LOGGER.severe(ex.getMessage());
         }
-
+        return download;
     }
 
     /**

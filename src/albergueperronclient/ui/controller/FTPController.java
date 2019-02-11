@@ -45,8 +45,10 @@ import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 
 /**
@@ -281,13 +283,22 @@ public class FTPController extends GenericController {
                 //get the parent tree item of the item selected
                 TreeItem<MyFile> parent = treeItem.getParent();
                 //delete the file
-                ftpManager.deleteFile(treeItem.getValue().getName());
-                //remove the tree item from the parent item
-                parent.getChildren().remove(treeItem);
-                treeFile.refresh();
-                Alert alert2 = new Alert(Alert.AlertType.INFORMATION,
-                        "El archivo se ha borrado correctamente");
-                alert2.show();
+                boolean deleted =ftpManager.deleteFile(treeItem.getValue().getName());
+                
+                if(deleted){
+                    //remove the tree item from the parent item
+                    parent.getChildren().remove(treeItem);
+                    treeFile.refresh();
+                     Alert alert1 = new Alert(
+                        Alert.AlertType.INFORMATION, "Borrado correctamente");
+                     alert1.show();
+                }else{
+                     Alert alert2 = new Alert(
+                        Alert.AlertType.INFORMATION, "No se ha podido borrar");
+                     alert2.show();
+                }
+                
+               
 
             }
         } catch (IOException ex) {
@@ -304,12 +315,24 @@ public class FTPController extends GenericController {
      */
     public void download(ActionEvent event) {
         try {
+            //choose a directory to download the file to locally
+            DirectoryChooser dirChooser = new DirectoryChooser();
+            dirChooser.setTitle("Open Resource File");
+            Window ownerWindow = null;
+
+            File selectedDir = dirChooser.showDialog(ownerWindow);
             TreeItem<MyFile> treeItem
                     = (TreeItem<MyFile>) treeFile.getSelectionModel().getSelectedItem();
-            ftpManager.downloadFile(treeItem.getValue().getName());
-            Alert alert2 = new Alert(Alert.AlertType.INFORMATION,
-                    "El archivo se ha descargado correctamente");
-            alert2.show();
+            boolean download =ftpManager.downloadFile(treeItem.getValue().getName(),selectedDir);
+            if(download){
+                Alert alert = new Alert(
+                        Alert.AlertType.INFORMATION, "Descargado correctamente");
+                alert.show();
+            }else{
+                Alert alert2 = new Alert(Alert.AlertType.ERROR, "Error en la descarga");
+                alert2.show();
+            }
+         
 
         } catch (IOException ex) {
             LOGGER.severe(ex.getMessage());
