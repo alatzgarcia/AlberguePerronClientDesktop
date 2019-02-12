@@ -41,6 +41,7 @@ import static albergueperronclient.ui.controller.GenericController.LOGGER;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.stage.Stage;
 
@@ -55,40 +56,40 @@ public class UILogguedFXMLController extends GenericController {
      * Button to open the view with all the guests
      */
     @FXML
-    private Button btnGuest;
+    private Menu btnGuest;
 
     /**
      * Button to open the view with all the pets
      */
     @FXML
-    private Button btnPet;
+    private Menu btnPet;
 
     /**
      * Button to open the view with all the incidences
      */
     @FXML
-    private Button btnIncidences;
+    private Menu btnIncidences;
 
     /**
      * Button to open the view with all the stays
      */
     @FXML
-    private Button btnStay;
+    private Menu btnStay;
     /**
      * Button to open the view with all the rooms
      */
     @FXML
-    private Button btnRoom;
+    private Menu btnRoom;
     /**
      * Button to open the FTP client
      */
     @FXML
-    private Button btnFTP;
+    private Menu btnFTP;
     /**
      * Button to open the blackList
      */
     @FXML
-    private Button btnBlackList;
+    private Menu btnBlackList;
 
     @FXML
     private MenuItem menuGuest;
@@ -122,7 +123,6 @@ public class UILogguedFXMLController extends GenericController {
         stage.setResizable(false);
 
         stage.setOnShowing(this::handleWindowShowing);
-
         btnGuest.setOnAction(this::openGuestsView);
         btnPet.setOnAction(this::openPetsView);
         btnIncidences.setOnAction(this::openIncidentsView);

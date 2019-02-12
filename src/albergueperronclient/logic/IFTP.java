@@ -20,23 +20,25 @@ import javafx.scene.control.TreeView;
 public interface IFTP {
 
    
-    public boolean uploadFile(String text)throws IOException;
+    public boolean uploadFile(String path, String name)throws IOException;
     
     public boolean deleteFile(String name)throws IOException;
     
     public boolean downloadFile(String file,File selectedDir)throws IOException;
 
-    public MyFile createDirectory()throws IOException;
+    public boolean createDirectory(String name)throws IOException;
     
-    public void connect() throws FTPException;
+    public String connect() throws FTPException;
 
     public void disconnect();
 
-    public void deleteDirectory(String name)throws IOException;
+    public boolean deleteDirectory(String name)throws IOException;
     
     public void buildTree(TreeItem treeNode) throws IOException;
 
     public void changeDirectory(String path);
 
     public void setTreeFile(TreeView treeFile)throws IOException;
+
+    public String getWorkingDirectory();
 }

@@ -63,7 +63,7 @@ public class FTPController extends GenericController {
      * Path of the local file choosen
      */
     @FXML
-    private TextField txtConect;
+    private Text txtConnect;
     /**
      * Button to upload a file
      */
@@ -150,10 +150,11 @@ public class FTPController extends GenericController {
         menuLogOut.setOnAction(this::logOut);
         menuExit.setOnAction(this::exit);
         treeFile.getSelectionModel().selectedItemProperty().addListener(this::itemSelected);
-
+        String url=null;
         //Connect to the ftp server
         try {
-            ftpManager.connect();
+            url=ftpManager.connect();
+            
         } catch (FTPException ex) {
             LOGGER.severe(ex.getMessage());
             showErrorAlert("Error de conexión");
@@ -173,7 +174,7 @@ public class FTPController extends GenericController {
         // start building the file tree
         ftpManager.buildTree(rootItem);
         ftpManager.setTreeFile(treeFile);
-
+        txtConnect.setText(url);
         stage.setScene(scene);
         //Show primary window
 
@@ -232,29 +233,30 @@ public class FTPController extends GenericController {
                     new FileChooser.ExtensionFilter("All Files", "*.*"));
             File selectedFile = fileChooser.showOpenDialog(stage);
             if (selectedFile != null) {
-                subido = ftpManager.uploadFile(selectedFile.getName());
+                subido = ftpManager.uploadFile(selectedFile.getPath(),selectedFile.getName());
                 file = new MyFile();
-                file.setPath(itemSelected.getValue().getPath() + "/");
+                file.setPath(ftpManager.getWorkingDirectory() + "/");
                 file.setName(selectedFile.getName());
                 file.setFile(true);
-            }
-            
-            if (subido) {
-        
-                
-                //create a treeitem with the new file
-                TreeItem<MyFile> fileToUpload = new TreeItem<MyFile>(
-                        file, new ImageView(new Image(getClass().getResourceAsStream("/albergueperronclient/file.png"))));
-                //add it to the selected tree item
-                itemSelected.getChildren().add(fileToUpload);
 
-                treeFile.refresh();
-                Alert alert = new Alert(Alert.AlertType.INFORMATION,
-                        "El archivo se ha subido correctamente");
-                alert.show();
-            } else {
-                showErrorAlert("Error en la subida");
 
+                if (subido) {
+
+
+                    //create a treeitem with the new file
+                    TreeItem<MyFile> fileToUpload = new TreeItem<MyFile>(
+                            file, new ImageView(new Image(getClass().getResourceAsStream("/albergueperronclient/file.png"))));
+                    //add it to the selected tree item
+                    itemSelected.getChildren().add(fileToUpload);
+
+                    treeFile.refresh();
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION,
+                            "El archivo se ha subido correctamente");
+                    alert.show();
+                } else {
+                    showErrorAlert("Error en la subida");
+
+                }
             }
 
         } catch (IOException ex) {
@@ -292,9 +294,7 @@ public class FTPController extends GenericController {
                         Alert.AlertType.INFORMATION, "Borrado correctamente");
                      alert1.show();
                 }else{
-                     Alert alert2 = new Alert(
-                        Alert.AlertType.INFORMATION, "No se ha podido borrar");
-                     alert2.show();
+                     showErrorAlert("No se ha borrado correctamente");
                 }
                 
                
@@ -328,8 +328,7 @@ public class FTPController extends GenericController {
                         Alert.AlertType.INFORMATION, "Descargado correctamente");
                 alert.show();
             }else{
-                Alert alert2 = new Alert(Alert.AlertType.ERROR, "Error en la descarga");
-                alert2.show();
+                showErrorAlert("Error en la descarga");
             }
          
 
@@ -349,18 +348,37 @@ public class FTPController extends GenericController {
     public void createDir(ActionEvent event) {
         try {
             TreeItem<MyFile> itemSelected
-                    = (TreeItem<MyFile>) treeFile.getSelectionModel().getSelectedItem();
+                        = (TreeItem<MyFile>) treeFile.getSelectionModel().getSelectedItem();
+             //choose the name of the directory
+            TextInputDialog dialog = new TextInputDialog("");
+            dialog.setTitle("Nueva carpeta");
+            dialog.setHeaderText("Nueva carpeta");
+            dialog.setContentText("Introduzca el nombre del directorio:");
 
-            MyFile file = ftpManager.createDirectory();
-            //Create a tree item with the new directory
-            TreeItem<MyFile> directoryToCreate = new TreeItem<MyFile>(file, new ImageView(new Image(getClass().
-                    getResourceAsStream("/albergueperronclient/root.png"))));
-            //add the new tree item to the item selected
-            itemSelected.getChildren().add(directoryToCreate);
-            treeFile.refresh();
-            Alert alert2 = new Alert(Alert.AlertType.INFORMATION,
-                    "El directorio se ha creado correctamente");
-            alert2.show();
+            Optional<String> result = dialog.showAndWait();
+            if (result.isPresent()) {
+               
+                
+                boolean created=ftpManager.createDirectory(result.get());
+                if(created){
+                    MyFile dir = new MyFile();
+                    dir.setPath(ftpManager.getWorkingDirectory() + "/" + result.get());
+                    dir.setName(result.get());
+                    dir.setFile(false);
+
+                    //Create a tree item with the new directory
+                    TreeItem<MyFile> directoryToCreate = new TreeItem<MyFile>(dir, new ImageView(new Image(getClass().
+                            getResourceAsStream("/albergueperronclient/root.png"))));
+                    //add the new tree item to the item selected
+                    itemSelected.getChildren().add(directoryToCreate);
+                    treeFile.refresh();
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION,
+                            "El directorio se ha creado correctamente");
+                    alert.show();
+                }else{
+                    showErrorAlert("Error al crear directorio");
+                }
+            }
 
         } catch (IOException ex) {
             LOGGER.severe(ex.getMessage());
@@ -453,32 +471,7 @@ public class FTPController extends GenericController {
     public void goBack(ActionEvent event) {
         ftpManager.disconnect();
         stage.hide();
-        Alert alert = new Alert(AlertType.CONFIRMATION);
-        alert.setTitle("Volver al Menú");
-        alert.setContentText("¿Desea volver al menú?");
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK) {
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass()
-                        .getResource("/albergueperronclient/ui/fxml/UILoggedAdmin.fxml"));
-                Parent root = loader.load();
-                //Get controller from the loader
-                UILogguedFXMLController menuController = loader.getController();
 
-                //menuController.setLogicManager(UILoggedManagerFactory.getLoggedManager());
-                //Send the current stage for coming back later
-                //roomController.setPreviousStage(stage);
-                //Initialize the primary stage of the application
-                menuController.initStage(root);
-
-                stage.close();
-            } catch (Exception e) {
-                LOGGER.severe(e.getMessage());
-                showErrorAlert("Error al redirigir al menú.");
-            }
-        } else {
-            LOGGER.severe("Operación cancelada");
-        }
 
     }
 
@@ -622,11 +615,13 @@ public class FTPController extends GenericController {
 
     public void logOut(ActionEvent event) {
         try {
+            
             Alert alert = new Alert(AlertType.CONFIRMATION);
             alert.setTitle("Cerrar Sesión");
             alert.setContentText("¿Desea cerrar sesion?");
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get() == ButtonType.OK) {
+                ftpManager.disconnect();
                 stage.close();
                 try {
                     //Get the logic manager object for the initial stage
@@ -664,12 +659,14 @@ public class FTPController extends GenericController {
      */
     public void exit(ActionEvent event) {
         try {
+            
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Cerrar aplicación");
             alert.setContentText("¿Desea salir de la aplicación?");
 
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get() == ButtonType.OK) {
+                ftpManager.disconnect();
                 LOGGER.info("Exiting the application.");
                 stage.close();
                 Platform.exit();
@@ -681,5 +678,7 @@ public class FTPController extends GenericController {
             showErrorAlert("Error al intentar cerrar la aplicación.");
         }
     }
+
+    
 
 }

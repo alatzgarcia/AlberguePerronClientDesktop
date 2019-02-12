@@ -160,9 +160,11 @@ public class UILoginFXMLController extends GenericController {
                     LOGGER.severe(ex.getMessage());
                 }
           
-           } else if (user != null||user.getPrivilege() != Privilege.ADMIN) {
+           } else if (user != null&&user.getPrivilege() != Privilege.ADMIN) {
                 showErrorAlert("Tiene que ser administrador para acceder");
-            }
+            }else {
+               lblUsernameError.setText("Error en el inicio de sesión");
+           }
 
         
         }   catch (BusinessLogicException ble) {

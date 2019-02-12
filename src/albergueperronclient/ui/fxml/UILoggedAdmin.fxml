@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane fx:id="loggedPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="albergueperronclient.ui.controller.UILogguedFXMLController">
+<AnchorPane fx:id="loggedPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="625.0" prefWidth="1185.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="albergueperronclient.ui.controller.UILogguedFXMLController">
    <children>
-      <MenuBar layoutY="2.0" prefHeight="26.0" prefWidth="1279.0">
+      <MenuBar fx:id="menu" layoutY="2.0" prefHeight="29.0" prefWidth="1177.0">
         <menus>
           <Menu mnemonicParsing="false" text="Navegación">
             <items>
@@ -21,9 +20,37 @@
                   <MenuItem fx:id="menuFTP" mnemonicParsing="false" text="FTP" />
             </items>
           </Menu>
+            <Menu fx:id="btnGuest" mnemonicParsing="false" text="Huespedes">
+               <items>
+                  <MenuItem mnemonicParsing="false" text="Abrir" />
+               </items></Menu>
+            <Menu fx:id="btnPet" mnemonicParsing="false" text="Mascotas">
+               <items>
+                  <MenuItem mnemonicParsing="false" text="Abrir" />
+               </items></Menu>
+            <Menu fx:id="btnIncidences" mnemonicParsing="false" text="Incidencias">
+               <items>
+                  <MenuItem mnemonicParsing="false" text="Abrir" />
+               </items></Menu>
+            <Menu fx:id="btnBlackList" mnemonicParsing="false" text="Lista Negra">
+               <items>
+                  <MenuItem mnemonicParsing="false" text="Abrir" />
+               </items></Menu>
+            <Menu fx:id="btnStay" mnemonicParsing="false" text="Estancias">
+               <items>
+                  <MenuItem mnemonicParsing="false" text="Abrir" />
+               </items></Menu>
+            <Menu fx:id="btnRoom" mnemonicParsing="false" text="Habitaciones">
+               <items>
+                  <MenuItem mnemonicParsing="false" text="Abrir" />
+               </items></Menu>
+            <Menu fx:id="btnFTP" mnemonicParsing="false" text="FTP">
+               <items>
+                  <MenuItem mnemonicParsing="false" text="Abrir" />
+               </items></Menu>
             <Menu disable="true" mnemonicParsing="false">
                <graphic>
-                  <AnchorPane prefHeight="19.0" prefWidth="1028.0" />
+                  <AnchorPane prefHeight="19.0" prefWidth="354.0" />
                </graphic>
             </Menu>
           <Menu mnemonicParsing="false" text="Cerrar">
@@ -34,12 +61,5 @@
           </Menu>
         </menus>
       </MenuBar>
-      <Button fx:id="btnGuest" layoutX="130.0" layoutY="211.0" mnemonicParsing="false" prefHeight="116.0" prefWidth="207.0" text="Huéspedes" />
-      <Button fx:id="btnPet" layoutX="409.0" layoutY="212.0" mnemonicParsing="false" prefHeight="116.0" prefWidth="207.0" text="Mascotas" />
-      <Button fx:id="btnIncidences" layoutX="679.0" layoutY="212.0" mnemonicParsing="false" prefHeight="116.0" prefWidth="207.0" text="Incidencias" />
-      <Button fx:id="btnBlackList" layoutX="950.0" layoutY="212.0" mnemonicParsing="false" prefHeight="116.0" prefWidth="207.0" text="Lista Negra" />
-      <Button fx:id="btnStay" layoutX="126.0" layoutY="423.0" mnemonicParsing="false" prefHeight="116.0" prefWidth="207.0" text="Estancias" />
-      <Button fx:id="btnRoom" layoutX="405.0" layoutY="424.0" mnemonicParsing="false" prefHeight="116.0" prefWidth="207.0" text="Habitaciones" />
-      <Button fx:id="btnFTP" layoutX="675.0" layoutY="424.0" mnemonicParsing="false" prefHeight="116.0" prefWidth="207.0" text="FTP" />
    </children>
 </AnchorPane>

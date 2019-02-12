@@ -46,7 +46,7 @@
       <TreeView fx:id="treeFile" layoutX="36.0" layoutY="94.0" prefHeight="273.0" prefWidth="360.0" />
       <Separator layoutX="424.0" layoutY="44.0" orientation="VERTICAL" prefHeight="333.0" prefWidth="7.0" />
       <Button fx:id="btnDeleteF" disable="true" layoutX="448.0" layoutY="143.0" mnemonicParsing="false" prefHeight="37.0" prefWidth="122.0" style="-fx-background-color: #42A5F5;" text="Borrar fichero" />
-      <Text fx:id="txtConec" layoutX="36.0" layoutY="56.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="366.2177734375">
+      <Text fx:id="txtConnect" layoutX="36.0" layoutY="56.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="366.2177734375">
          <font>
             <Font name="System Italic" size="14.0" />
          </font>

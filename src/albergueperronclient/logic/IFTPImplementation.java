@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextInputDialog;
@@ -56,8 +57,9 @@ public class IFTPImplementation implements IFTP {
      * @throws FTPException Exception login in the FTP server
      */
     @Override
-    public void connect() throws FTPException {
+    public String connect() throws FTPException {
 
+        String url="Conectado";
         String server = ResourceBundle.getBundle("albergueperronclient.config.parameters")
                 .getString("FTPServer");
         int port = Integer.parseInt(ResourceBundle.getBundle("albergueperronclient.config.parameters")
@@ -79,6 +81,7 @@ public class IFTPImplementation implements IFTP {
 
             if (login) {
                 ftp.setFileType(FTP.BINARY_FILE_TYPE);
+                url="Conectado a: "+server+":"+port+"/";
             } else {
                 throw new FTPException();
             }
@@ -86,7 +89,7 @@ public class IFTPImplementation implements IFTP {
             LOGGER.severe(e.getMessage());
             e.printStackTrace();
         }
-
+        return url;
     }
 
     /**
@@ -97,24 +100,22 @@ public class IFTPImplementation implements IFTP {
      * @throws java.io.IOException
      */
     @Override
-    public boolean uploadFile(String path) throws IOException{
+    public boolean uploadFile(String path, String name) throws IOException{
 
         boolean subido=false;
         BufferedInputStream in = null;
         try {
             LOGGER.info(ftp.printWorkingDirectory());
-            in = new BufferedInputStream(new FileInputStream(ftp.printWorkingDirectory() + "/" +path));
+            in = new BufferedInputStream(new FileInputStream(path));
  
-            subido=ftp.storeFile(ftp.printWorkingDirectory() + "/" + path, in);
+            subido=ftp.storeFile(ftp.printWorkingDirectory() + "/" + name, in);
             in.close();
             
-    
-
         } catch (FileNotFoundException ex) {
             LOGGER.severe(ex.getMessage());
             
         }catch (Exception ex){
-            ex.printStackTrace();
+             LOGGER.severe(ex.getMessage());
         }
 
          return subido;
@@ -182,29 +183,17 @@ public class IFTPImplementation implements IFTP {
      * @return The file
      */
     @Override
-    public MyFile createDirectory() throws IOException{
-        MyFile dir = new MyFile();
+    public boolean createDirectory(String name) throws IOException{
+        boolean created = false;
         try {
+             created=ftp.makeDirectory(name);
 
-            //choose the name of the directory
-            TextInputDialog dialog = new TextInputDialog("");
-            dialog.setTitle("Nueva carpeta");
-            dialog.setHeaderText("Nueva carpeta");
-            dialog.setContentText("Introduzca el nombre del directorio:");
-
-            Optional<String> result = dialog.showAndWait();
-            if (result.isPresent()) {
-                dir.setPath(ftp.printWorkingDirectory() + '/' + result.get());
-                dir.setName(result.get());
-                dir.setFile(false);
-                ftp.makeDirectory(result.get());
-
-            }
+            
 
         } catch (IOException ex) {
             LOGGER.severe(ex.getMessage());
         }
-        return dir;
+        return created;
     }
 
     /**
@@ -213,12 +202,14 @@ public class IFTPImplementation implements IFTP {
      * @param path The path of the directory
      */
     @Override
-    public void deleteDirectory(String path) throws IOException{
+    public boolean deleteDirectory(String path) throws IOException{
+        boolean deleted=false;
         try {
-            ftp.removeDirectory(path);
+            deleted= ftp.removeDirectory(path);
         } catch (IOException ex) {
             LOGGER.severe(ex.getMessage());
         }
+       return deleted;         
     }
 
     /**
@@ -296,6 +287,17 @@ public class IFTPImplementation implements IFTP {
         } catch (IOException ex) {
             LOGGER.severe(ex.getMessage());
         }
+    }
+
+    @Override
+    public String getWorkingDirectory() {
+        String workingDirectory = null;
+        try {
+            workingDirectory= ftp.printWorkingDirectory();
+        } catch (IOException ex) {
+            Logger.getLogger(IFTPImplementation.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return workingDirectory;
     }
 
 }
