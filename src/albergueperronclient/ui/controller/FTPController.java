@@ -219,8 +219,9 @@ public class FTPController extends GenericController {
     public void upload(ActionEvent event) {
         //boolean subido = false;
         MyFile file = null;
-        String workingDirectory=null;
-        
+        boolean subido=false;
+         TreeItem<MyFile> itemSelected
+                        = (TreeItem<MyFile>) treeFile.getSelectionModel().getSelectedItem();
         try {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Open Resource File");
@@ -231,17 +232,15 @@ public class FTPController extends GenericController {
                     new FileChooser.ExtensionFilter("All Files", "*.*"));
             File selectedFile = fileChooser.showOpenDialog(stage);
             if (selectedFile != null) {
-                workingDirectory = ftpManager.uploadFile(selectedFile.getName());
+                subido = ftpManager.uploadFile(selectedFile.getName());
                 file = new MyFile();
-                file.setPath(workingDirectory + "/");
+                file.setPath(itemSelected.getValue().getPath() + "/");
                 file.setName(selectedFile.getName());
                 file.setFile(true);
             }
             
-            if (workingDirectory!=null) {
-
-                TreeItem<MyFile> itemSelected
-                        = (TreeItem<MyFile>) treeFile.getSelectionModel().getSelectedItem();
+            if (subido) {
+        
                 
                 //create a treeitem with the new file
                 TreeItem<MyFile> fileToUpload = new TreeItem<MyFile>(
@@ -254,7 +253,7 @@ public class FTPController extends GenericController {
                         "El archivo se ha subido correctamente");
                 alert.show();
             } else {
-                showErrorAlert("Elija un archivo local para subir");
+                showErrorAlert("Error en la subida");
 
             }
 

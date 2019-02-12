@@ -20,7 +20,7 @@ import javafx.scene.control.TreeView;
 public interface IFTP {
 
    
-    public String uploadFile(String text)throws IOException;
+    public boolean uploadFile(String text)throws IOException;
     
     public boolean deleteFile(String name)throws IOException;
     

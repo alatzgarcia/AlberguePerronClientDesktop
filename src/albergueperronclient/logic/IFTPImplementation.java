@@ -97,7 +97,7 @@ public class IFTPImplementation implements IFTP {
      * @throws java.io.IOException
      */
     @Override
-    public String uploadFile(String path) throws IOException{
+    public boolean uploadFile(String path) throws IOException{
 
         boolean subido=false;
         BufferedInputStream in = null;
@@ -105,7 +105,7 @@ public class IFTPImplementation implements IFTP {
             LOGGER.info(ftp.printWorkingDirectory());
             in = new BufferedInputStream(new FileInputStream(ftp.printWorkingDirectory() + "/" +path));
  
-            ftp.storeFile(ftp.printWorkingDirectory() + "/" + path, in);
+            subido=ftp.storeFile(ftp.printWorkingDirectory() + "/" + path, in);
             in.close();
             
     
@@ -117,7 +117,7 @@ public class IFTPImplementation implements IFTP {
             ex.printStackTrace();
         }
 
-         return ftp.printWorkingDirectory();
+         return subido;
     }
 
     /**
