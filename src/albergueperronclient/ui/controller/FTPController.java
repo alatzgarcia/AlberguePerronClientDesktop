@@ -38,8 +38,6 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.Image;
@@ -58,10 +56,15 @@ import javafx.stage.WindowEvent;
 public class FTPController extends GenericController {
 
     /**
+     * The button to search for a local file
+     */
+    @FXML
+    private Button btnSearch;
+    /**
      * Path of the local file choosen
      */
     @FXML
-    private TextField txtConect;
+    private Text txtFile;
     /**
      * Button to upload a file
      */
@@ -134,6 +137,7 @@ public class FTPController extends GenericController {
         //Set window's events handlers
         stage.setOnShowing(this::handleWindowShowing);
 
+        btnSearch.setOnAction(this::search);
         btnUpload.setOnAction(this::upload);
         btnDeleteF.setOnAction(this::delete);
         btnDownload.setOnAction(this::download);
@@ -187,7 +191,7 @@ public class FTPController extends GenericController {
      */
     private void handleWindowShowing(WindowEvent event) {
 
-        btnUpload.setDisable(false);
+        btnUpload.setDisable(true);
         btnUpload.setMnemonicParsing(true);
         btnUpload.setText("_Subir");
         btnDeleteF.setDisable(true);
@@ -210,43 +214,45 @@ public class FTPController extends GenericController {
     }
 
     /**
+     * Action event handler for search button.
+     *
+     * @param event The ActionEvent object for the event.
+     */
+    public void search(ActionEvent event) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open Resource File");
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Text Files", "*.txt"),
+                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif"),
+                new FileChooser.ExtensionFilter("Audio Files", "*.wav", "*.mp3", "*.aac"),
+                new FileChooser.ExtensionFilter("All Files", "*.*"));
+        File selectedFile = fileChooser.showOpenDialog(stage);
+        if (selectedFile != null) {
+            //set the path of the local file
+            txtFile.setText(selectedFile.getPath());
+        }
+
+    }
+
+    /**
      * Action event handler for the upload button.
      *
      * @param event The ActionEvent object for the event.
      */
     public void upload(ActionEvent event) {
-        //boolean subido = false;
-        MyFile file = null;
-        String workingDirectory=null;
-        
         try {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Open Resource File");
-            fileChooser.getExtensionFilters().addAll(
-                    new FileChooser.ExtensionFilter("Text Files", "*.txt"),
-                    new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif"),
-                    new FileChooser.ExtensionFilter("Audio Files", "*.wav", "*.mp3", "*.aac"),
-                    new FileChooser.ExtensionFilter("All Files", "*.*"));
-            File selectedFile = fileChooser.showOpenDialog(stage);
-            if (selectedFile != null) {
-                workingDirectory = ftpManager.uploadFile(selectedFile.getName());
-                file = new MyFile();
-                file.setPath(workingDirectory + "/");
-                file.setName(selectedFile.getName());
-                file.setFile(true);
-            }
-            
-            if (workingDirectory!=null) {
-
+            //if there is local file selected
+            if (!txtFile.getText().equals("")) {
                 TreeItem<MyFile> itemSelected
                         = (TreeItem<MyFile>) treeFile.getSelectionModel().getSelectedItem();
-                
+                MyFile file = ftpManager.uploadFile(txtFile.getText());
+
                 //create a treeitem with the new file
                 TreeItem<MyFile> fileToUpload = new TreeItem<MyFile>(
                         file, new ImageView(new Image(getClass().getResourceAsStream("/albergueperronclient/file.png"))));
                 //add it to the selected tree item
                 itemSelected.getChildren().add(fileToUpload);
-
+                txtFile.setText("");
                 treeFile.refresh();
                 Alert alert = new Alert(Alert.AlertType.INFORMATION,
                         "El archivo se ha subido correctamente");
@@ -255,7 +261,6 @@ public class FTPController extends GenericController {
                 showErrorAlert("Elija un archivo local para subir");
 
             }
-
         } catch (IOException ex) {
             LOGGER.severe(ex.getMessage());
             showErrorAlert("Error en la subida");
@@ -435,14 +440,14 @@ public class FTPController extends GenericController {
         alert.setTitle("Volver al Menú");
         alert.setContentText("¿Desea volver al menú?");
         Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK) {
-            try {
+        if(result.get()==ButtonType.OK){
+            try{
                 FXMLLoader loader = new FXMLLoader(getClass()
                         .getResource("/albergueperronclient/ui/fxml/UILoggedAdmin.fxml"));
                 Parent root = loader.load();
                 //Get controller from the loader
                 UILogguedFXMLController menuController = loader.getController();
-
+        
                 //menuController.setLogicManager(UILoggedManagerFactory.getLoggedManager());
                 //Send the current stage for coming back later
                 //roomController.setPreviousStage(stage);
@@ -450,113 +455,111 @@ public class FTPController extends GenericController {
                 menuController.initStage(root);
 
                 stage.close();
-            } catch (Exception e) {
+            }catch(Exception e){
                 LOGGER.severe(e.getMessage());
                 showErrorAlert("Error al redirigir al menú.");
             }
-        } else {
+        }else{
             LOGGER.severe("Operación cancelada");
         }
 
     }
 
     public void openGuestsView(ActionEvent event) {
-        try {
+        try{
             FXMLLoader loader = new FXMLLoader(getClass()
                     .getResource("/albergueperronclient/ui/fxml/UIGuest.fxml"));
             Parent root = loader.load();
             //Get controller from the loader
             UIGuestFXMLController guestController = loader.getController();
-
+        
             guestController.setUsersManager(UserManagerFactory.createUserManager());
             //Send the current stage for coming back later
             guestController.setPreviousStage(stage);
             //Initialize the primary stage of the application
             guestController.initStage(root);
             stage.close();
-        } catch (Exception e) {
+        }catch(Exception e){
             LOGGER.severe(e.getMessage());
             showErrorAlert("Error al redirigir a la vista de huéspedes.");
         }
     }
 
     public void openPetsView(ActionEvent event) {
-        try {
+        try{
             FXMLLoader loader = new FXMLLoader(getClass()
                     .getResource("/albergueperronclient/ui/fxml/UIPet.fxml"));
             Parent root = loader.load();
             //Get controller from the loader
             UIPetFXMLController petController = loader.getController();
-
+        
             petController.setPetsManager(PetManagerFactory.createPetManager());
             //Send the current stage for coming back later
             petController.setPreviousStage(stage);
             //Initialize the primary stage of the application
             petController.initStage(root);
             stage.close();
-        } catch (Exception e) {
+        }catch(Exception e){
             LOGGER.severe(e.getMessage());
             showErrorAlert("Error al redirigir a la vista de mascotas.");
         }
     }
 
     public void openStaysView(ActionEvent event) {
-        try {
+        try{
             FXMLLoader loader = new FXMLLoader(getClass()
                     .getResource("/albergueperronclient/ui/fxml/UIStay.fxml"));
             Parent root = loader.load();
             //Get controller from the loader
             UIStayFXMLController stayController = loader.getController();
-
+        
             stayController.setStaysManager(StayManagerFactory.createStayManager());
             //Send the current stage for coming back later
             stayController.setPreviousStage(stage);
             //Initialize the primary stage of the application
             stayController.initStage(root);
             stage.close();
-        } catch (Exception e) {
+        }catch(Exception e){
             LOGGER.severe(e.getMessage());
             showErrorAlert("Error al redirigir a la vista de estancias.");
         }
     }
-
+    
     /**
      * Opens the blacklist view
-     *
-     * @param event
+     * @param event 
      */
-    public void openBlackListView(ActionEvent event) {
-        try {
+    public void openBlackListView(ActionEvent event){
+        try{
             FXMLLoader loader = new FXMLLoader(getClass()
                     .getResource("/albergueperronclient/ui/fxml/UIBlackList.fxml"));
             Parent root = loader.load();
             //Get controller from the loader
             BlackListFXMLController blackListController = loader.getController();
-
+        
             blackListController.setLogicManager(BlackListManagerFactory.getBlackListManager(), UserManagerFactory.createUserManager());
             //Send the current stage for coming back later
             blackListController.setPreviousStage(stage);
             //Initialize the primary stage of the application
             blackListController.initStage(root);
             stage.close();
-        } catch (Exception e) {
+        }catch(Exception e){
             LOGGER.severe(e.getMessage());
             showErrorAlert("Error al redirigir a la vista de la lista negra.");
         }
     }
-
+    
     /**
      * Opens the incident view
-     *
-     * @param event
+     * @param event 
      */
-    public void openIncidentView(ActionEvent event) {
-        try {
+    public void openIncidentView(ActionEvent event){
+        try{
             //Get the logic manager object for the initial stage
             IncidentManager incidentManager = IncidentManagerFactory.getIncidentManager();
             UsersManager userManager = UserManagerFactory.createUserManager();
             RoomManager roomManager = RoomManagerFactory.getRoomManager();
-
+            
             //Load the fxml file
             FXMLLoader loader = new FXMLLoader(getClass()
                     .getResource("/albergueperronclient/ui/fxml/Incident.fxml"));
@@ -570,7 +573,7 @@ public class FTPController extends GenericController {
             //Initialize the primary stage of the application
             incidentController.initStage(root);
             stage.close();
-        } catch (Exception e) {
+        }catch(Exception e){
             LOGGER.severe(e.getMessage());
             showErrorAlert("Error al redirigir a la vista de estancias.");
         }

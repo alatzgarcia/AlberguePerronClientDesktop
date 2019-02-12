@@ -281,14 +281,14 @@ public class UILogguedFXMLController extends GenericController {
         FXMLLoader loader = new FXMLLoader(getClass()
                 .getResource("/albergueperronclient/ui/fxml/UIFTP.fxml"));
 
-        IFTP ftpManager = IFTPFactory.getIFTPImplementation();
+        IFTP ftpManager1 = IFTPFactory.getIFTPImplementation();
 
         try {
             Parent root = loader.load();
 
             //Get controller from the loader
             FTPController ftpController = loader.getController();
-            ftpController.setFtpManager(ftpManager);
+            ftpController.setFtpManager(ftpManager1);
 
             //Initialize the primary stage of the application
             ftpController.initStage(root);
