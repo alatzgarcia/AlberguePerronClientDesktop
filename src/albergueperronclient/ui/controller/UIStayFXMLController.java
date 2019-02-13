@@ -18,6 +18,7 @@ import albergueperronclient.logic.RoomManagerFactory;
 import albergueperronclient.logic.StayManagerFactory;
 import albergueperronclient.logic.UserManagerFactory;
 import albergueperronclient.logic.UsersManager;
+import albergueperronclient.modelObjects.Privilege;
 import albergueperronclient.modelObjects.RoomBean;
 import albergueperronclient.modelObjects.StayBean;
 import albergueperronclient.modelObjects.UserBean;
@@ -56,7 +57,8 @@ import org.eclipse.persistence.jpa.jpql.parser.DateTime;
  *
  * @author Diego
  */
-public class UIStayFXMLController extends GenericController{
+public class UIStayFXMLController extends GenericController {
+
     @FXML
     private TableView<StayBean> tableStay;
     @FXML
@@ -101,28 +103,29 @@ public class UIStayFXMLController extends GenericController{
     private ComboBox<UserBean> cbGuest;
     @FXML
     private ComboBox<RoomBean> cbRoom;
-    
+
     private ObservableList<StayBean> staysData;
     private ObservableList<UserBean> guests;
     private ObservableList<RoomBean> rooms;
     private StayBean stay;
-    private final int visible=1;
-    private final int invisible=2;
-    private final int enable=3;
-    private final int disable=4;
-    private final int clean=5;
+    private final int visible = 1;
+    private final int invisible = 2;
+    private final int enable = 3;
+    private final int disable = 4;
+    private final int clean = 5;
+
     /**
      * Initializes the controller class.
      */
-     public void initStage(Parent root) {
+    public void initStage(Parent root) {
         Scene scene = new Scene(root);
-        stage=new Stage();
+        stage = new Stage();
         stage.setScene(scene);
         stage.setTitle("Estancias");
         stage.setResizable(false);
-        
+
         stage.setOnShowing(this::handleWindowShowing);
-        
+
         menuGuest.setOnAction(this::goToGuestsView);
         menuPet.setOnAction(this::goToPetsView);
         menuStay.setOnAction(this::goToStaysView);
@@ -130,102 +133,109 @@ public class UIStayFXMLController extends GenericController{
         menuLogOut.setOnAction(this::logOut);
         menuExit.setOnAction(this::exit);
         menuRoom.setOnAction(this::goToRoom);
-        
+
         btnModify.setOnAction(this::stayModify);
         btnDelete.setOnAction(this::deleteStay);
         btnReturn.setOnAction(this::returnToMenu);
-        
+
         //Sets the columns the attributes to use
         columnGuests.setCellValueFactory(new PropertyValueFactory<>("guest"));
         columnRoom.setCellValueFactory(new PropertyValueFactory<>("room"));
-        columnDate.setCellValueFactory(new PropertyValueFactory<>("date"));
-        
-        try{
+        columnDate.setCellValueFactory(new PropertyValueFactory<>("dateParsed"));
+
+        try {
             //Create an observable lis for the users
             staysData = FXCollections.observableArrayList(staysManager.getAllStays());
             //Set the observable data
             tableStay.setItems(staysData);
-            
+
             //Create the interfaces
-            usersManager=UserManagerFactory.createUserManager();
-            roomsManager=RoomManagerFactory.getRoomManager();
-            
+            usersManager = UserManagerFactory.createUserManager();
+            roomsManager = RoomManagerFactory.getRoomManager();
+
             //Insert the data at cbs
-            guests=FXCollections.observableArrayList(usersManager.getAllUsers());
-            rooms=FXCollections.observableArrayList(roomsManager.findRoomsWithAvailableSpace());
-            
+            guests = FXCollections.observableArrayList(usersManager.findUsersByPrivilege(Privilege.USER));
+            rooms = FXCollections.observableArrayList(roomsManager.findRoomsWithAvailableSpace());
+
             //Insert the combo
             cbGuest.setItems(guests);
             cbRoom.setItems(rooms);
-        }catch(BusinessLogicException ble){
+        } catch (BusinessLogicException ble) {
             LOGGER.severe(ble.getMessage());
-        }catch(ReadException re){
+        } catch (ReadException re) {
             LOGGER.severe(re.getMessage());
         }
-        
+
         //Sets the selection listener
         tableStay.getSelectionModel().selectedItemProperty().addListener(this::handleUserTableFocus);
-        
+
         stage.show();
-       
+
     }
-    
+
     /**
      * Controls the buttons and the fields when the focus of the table changes
+     *
      * @param observable ObservableValue:
      * @param oldValue Object: The old value of the object modified
      * @param newValue Object: The new value of the object modified
      */
-    public void handleUserTableFocus(ObservableValue observable, Object oldValue, Object newValue){
+    public void handleUserTableFocus(ObservableValue observable, Object oldValue, Object newValue) {
         fieldChange(visible);
         fieldChange(disable);
-        
-        if (newValue!=null){
-            StayBean stay=(StayBean)newValue;
+
+        if (newValue != null) {
+            StayBean stay = (StayBean) newValue;
             cbGuest.getSelectionModel().select(tableStay.getSelectionModel().getSelectedItem().getGuest());
             cbRoom.getSelectionModel().select(tableStay.getSelectionModel().getSelectedItem().getRoom());
-            Date dateToShow=tableStay.getSelectionModel().getSelectedItem().getDate();
+            Date dateToShow = tableStay.getSelectionModel().getSelectedItem().getDate();
             LocalDate date = dateToShow.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             datePicker.setValue(date);
             //datePicker.setValue(tableStay.getSelectionModel().getSelectedItem().getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
             //datePicker.setValue(LocalDate.from(tableStay.getSelectionModel().getSelectedItem().getDate().));
-            
+
             //Enables the correspondent buttons
             btnDelete.setDisable(false);
             btnModify.setDisable(false);
             btnNew.setDisable(false);
+        } else {
+            btnDelete.setDisable(true);
+            btnModify.setDisable(true);
         }
     }
+
     /**
      * Deletes the selected entire stay
-     * @param event 
+     *
+     * @param event
      */
-    public void deleteStay(ActionEvent event){
-        try{
+    public void deleteStay(ActionEvent event) {
+        try {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION.CONFIRMATION);
             alert.setTitle("Borrar");
-            alert.setContentText("¿Desea borrar la estancia?");    
+            alert.setContentText("¿Desea borrar la estancia?");
             Optional<ButtonType> result = alert.showAndWait();
-            if(result.get()== ButtonType.OK){
+            if (result.get() == ButtonType.OK) {
                 staysManager.deleteStay(tableStay.getSelectionModel().getSelectedItem().getId().toString());
                 tableStay.getItems().remove(tableStay.getSelectionModel().getSelectedItem());
                 tableStay.refresh();
                 finishOperation();
-            }else if(result.get()==ButtonType.CANCEL){
+            } else if (result.get() == ButtonType.CANCEL) {
                 alert.close();
             }
-        }catch(BusinessLogicException ble){
-            LOGGER.info("Delete failed "+ble.getMessage());
-        }catch(Exception e){
-            LOGGER.info("Error"+e.getMessage());
-        }   
+        } catch (BusinessLogicException ble) {
+            LOGGER.info("Delete failed " + ble.getMessage());
+        } catch (Exception e) {
+            LOGGER.info("Error" + e.getMessage());
+        }
     }
-    
+
     /**
      * Enables the buttons, comboboxes and DatePicker for the update.
+     *
      * @param event ActionEvent: The listener of the button
      */
-    public void stayModify(ActionEvent event){
+    public void stayModify(ActionEvent event) {
         btnSaveChanges.setVisible(true);
         btnSaveChanges.setDisable(false);
         btnCancel.setDisable(false);
@@ -235,41 +245,43 @@ public class UIStayFXMLController extends GenericController{
         tableStay.setDisable(true);
         fieldChange(enable);
         fieldChange(visible);
-        
+
         btnSaveChanges.setOnAction(this::saveStayChanges);
     }
-    
+
     /**
      * Updates a Stay with the inserted data
+     *
      * @param event ActionEvent: The listener of the button
      */
-    public void saveStayChanges(ActionEvent event){
+    public void saveStayChanges(ActionEvent event) {
         btnDelete.setDisable(true);
         btnModify.setDisable(true);
         btnInsert.setDisable(true);
-        try{
-                staysManager.updateStay(getStayFromFields());
-                tableStay.getItems().remove(tableStay.getSelectionModel().getSelectedItem());
-                tableStay.getItems().add(stay);
-                tableStay.refresh();
-                Alert alert = new Alert(Alert.AlertType.INFORMATION.INFORMATION);
-                alert.setTitle("Modificado");
-                alert.setContentText("Se modificó la estancia "+ tableStay.getSelectionModel().getSelectedItem().getId());    
-                Optional<ButtonType> result = alert.showAndWait();
-                if(result.get()== ButtonType.OK){
-                    finishOperation();
-                    alert.close();                    
-                }
-            }catch(BusinessLogicException ble){
-                LOGGER.info("The update failed "+ble.getMessage());
+        try {
+            staysManager.updateStay(getStayFromFields());
+            tableStay.getItems().remove(tableStay.getSelectionModel().getSelectedItem());
+            tableStay.getItems().add(stay);
+            tableStay.refresh();
+            Alert alert = new Alert(Alert.AlertType.INFORMATION.INFORMATION);
+            alert.setTitle("Modificado");
+            alert.setContentText("Se modificó la estancia " + tableStay.getSelectionModel().getSelectedItem().getId());
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == ButtonType.OK) {
+                finishOperation();
+                alert.close();
             }
+        } catch (BusinessLogicException ble) {
+            LOGGER.info("The update failed " + ble.getMessage());
+        }
     }
-    
+
     /**
      * Enables the buttons, comboboxes and DatePicker for the new stay.
+     *
      * @param event ActionEvent: The listener of the button
      */
-    public void newStay(ActionEvent event){
+    public void newStay(ActionEvent event) {
         btnInsert.setVisible(true);
         btnInsert.setDisable(false);
         btnModify.setDisable(true);
@@ -282,52 +294,54 @@ public class UIStayFXMLController extends GenericController{
         fieldChange(enable);
         fieldChange(visible);
     }
-    
+
     /**
      * Creates a Stay with the inserted data
+     *
      * @param event ActionEvent: The listener of the button
      */
-    public void saveNewStay(ActionEvent event){
+    public void saveNewStay(ActionEvent event) {
         if (datePicker.getValue() == null
                 || cbGuest.getSelectionModel().getSelectedItem() == null
                 || cbRoom.getSelectionModel().getSelectedItem() == null) {
             Alert alert = new Alert(Alert.AlertType.ERROR.ERROR);
             alert.setTitle("Error");
-            alert.setContentText("Comprueba los campos");    
+            alert.setContentText("Comprueba los campos");
             Optional<ButtonType> result = alert.showAndWait();
-            if(result.get()== ButtonType.OK){
-                alert.close();  
+            if (result.get() == ButtonType.OK) {
+                alert.close();
             }
         } else if (datePicker.getValue() != null
                 && cbGuest.getSelectionModel().getSelectedItem() != null
                 && cbRoom.getSelectionModel().getSelectedItem() != null) {
-            try{
-            staysManager.createStay(getStayFromFields());
-            tableStay.getItems().add(stay);
-            tableStay.refresh();
-            Alert alert = new Alert(Alert.AlertType.INFORMATION.INFORMATION);
-            alert.setTitle("Crear estancia");
-            alert.setContentText("La estancia fue creada");    
-            Optional<ButtonType> result = alert.showAndWait();
-            if(result.get()== ButtonType.OK){
-                finishOperation();
-                alert.close();  
+            try {
+                staysManager.createStay(getStayFromFields());
+                tableStay.getItems().add(stay);
+                tableStay.refresh();
+                Alert alert = new Alert(Alert.AlertType.INFORMATION.INFORMATION);
+                alert.setTitle("Crear estancia");
+                alert.setContentText("La estancia fue creada");
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.get() == ButtonType.OK) {
+                    finishOperation();
+                    alert.close();
+                }
+            } catch (BusinessLogicException ble) {
+                LOGGER.info("The create failed " + ble.getMessage());
+            } catch (Exception e) {
+                LOGGER.info("The create failed " + e.getMessage());
             }
-        }catch(BusinessLogicException ble){
-            LOGGER.info("The create failed "+ble.getMessage());
-        }catch(Exception e){
-            LOGGER.info("The create failed "+e.getMessage());
         }
-        }
-        
+
     }
-    
+
     /**
      * Sets the buttons and fields that will be visible, disable or editable at
      * the start of the window
+     *
      * @param event WindowEvent: The listener of the window
      */
-    public void handleWindowShowing(WindowEvent event){
+    public void handleWindowShowing(WindowEvent event) {
         btnNew.setVisible(true);
         btnNew.setDisable(false);
         btnCancel.setVisible(true);
@@ -347,19 +361,20 @@ public class UIStayFXMLController extends GenericController{
         fieldChange(clean);
         fieldChange(disable);
         fieldChange(invisible);
-        
+
         btnNew.setOnAction(this::newStay);
         btnCancel.setOnAction(this::cancel);
         menuStay.setDisable(true);
     }
-    
+
     /**
      * Method that controls the field, comboboxes or datepicker where the data
      * will be inserted or selected
+     *
      * @param change int: The valor of wanted modification of the fields
      */
-     public void fieldChange(int change){
-        switch(change){
+    public void fieldChange(int change) {
+        switch (change) {
             case 1:
                 //Sets visbles all the fields of the window
                 cbGuest.setVisible(true);
@@ -393,55 +408,57 @@ public class UIStayFXMLController extends GenericController{
                 break;
         }
     }
-    
-     /**
-      * Gets all the from the fields and it put them into a StayBean Object
-      * @return stay
-      */
-    private StayBean getStayFromFields(){
-        stay= new StayBean();
+
+    /**
+     * Gets all the from the fields and it put them into a StayBean Object
+     *
+     * @return stay
+     */
+    private StayBean getStayFromFields() {
+        stay = new StayBean();
         try {
-            Date date=Date.from(datePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());
-            
+            Date date = Date.from(datePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant());
+
             LOGGER.info(date.toString());
             stay.setDate(date);
             stay.setGuest(cbGuest.getSelectionModel().getSelectedItem());
             stay.setRoom(cbRoom.getSelectionModel().getSelectedItem());
-            if(tableStay.getSelectionModel().getSelectedItem().getId()!=null){
+            if (tableStay.getSelectionModel().getSelectedItem().getId() != null) {
                 stay.setId(tableStay.getSelectionModel().getSelectedItem().getId());
-            }else{
+            } else {
                 stay.setId(9999);
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             LOGGER.severe(e.getMessage());
-        }  
+        }
         return stay;
     }
-    
+
     /**
      * The method that cancels the creating or updating data insert
+     *
      * @param event ActionEvent: The listener of the button
      */
-    public void cancel(ActionEvent event){
-        try{
+    public void cancel(ActionEvent event) {
+        try {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION.CONFIRMATION);
             alert.setTitle("Cancelar");
-            alert.setContentText("¿Desea cancelar la operación?");    
+            alert.setContentText("¿Desea cancelar la operación?");
             Optional<ButtonType> result = alert.showAndWait();
-            if(result.get()== ButtonType.OK){
+            if (result.get() == ButtonType.OK) {
                 finishOperation();
-            }else if(result.get()==ButtonType.CANCEL){
+            } else if (result.get() == ButtonType.CANCEL) {
                 alert.close();
             }
-        } catch(Exception ex){
+        } catch (Exception ex) {
             LOGGER.severe(ex.getMessage());
         }
     }
-    
+
     /**
      * This method return all the buttons to the initial status
      */
-    public void finishOperation(){
+    public void finishOperation() {
         tableStay.getSelectionModel().clearSelection();
         tableStay.setDisable(false);
         fieldChange(invisible);
@@ -456,51 +473,35 @@ public class UIStayFXMLController extends GenericController{
         tableStay.setDisable(false);
         btnDelete.setDisable(true);
     }
-    
+
     /**
      * Returns to the menu view
-     * @param event 
+     *
+     * @param event
      */
-    public void returnToMenu(ActionEvent event){
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Volver al Menú");
-        alert.setContentText("¿Desea volver al menú?");
-        Optional<ButtonType> result = alert.showAndWait();
-        if(result.get()==ButtonType.OK){
-            try{
-                FXMLLoader loader = new FXMLLoader(getClass()
-                        .getResource("/albergueperronclient/ui/fxml/UILoggedAdmin.fxml"));
-                Parent root = loader.load();
-                //Get controller from the loader
-                UILogguedFXMLController menuController = loader.getController();
-        
-                //menuController.setLogicManager(UILoggedManagerFactory.getLoggedManager());
-                //Send the current stage for coming back later
-                //roomController.setPreviousStage(stage);
-                //Initialize the primary stage of the application
-                menuController.initStage(root);
+    public void returnToMenu(ActionEvent event) {
 
-                stage.close();
-            }catch(Exception e){
-                LOGGER.severe(e.getMessage());
-                showErrorAlert("Error al redirigir al menú.");
-            }
-        }else{
-            LOGGER.severe("Operación cancelada");
+        try {
+            stage.close();
+        } catch (Exception e) {
+            LOGGER.severe(e.getMessage());
+            showErrorAlert("Error al redirigir al menú.");
         }
+
     }
-    
+
     /**
      * Logs out, sending the user to the login page
-     * @param event 
+     *
+     * @param event
      */
-    public void logOut(ActionEvent event){
-        try{
+    public void logOut(ActionEvent event) {
+        try {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Cerrar Sesión");
-            alert.setContentText("¿Desea cerrar sesion?");        
+            alert.setContentText("¿Desea cerrar sesion?");
             Optional<ButtonType> result = alert.showAndWait();
-            if(result.get()== ButtonType.OK){
+            if (result.get() == ButtonType.OK) {
                 stage.close();
                 try {
                     //Get the logic manager object for the initial stage
@@ -523,130 +524,136 @@ public class UIStayFXMLController extends GenericController{
                 } catch (Exception e) {
                     LOGGER.severe(e.getMessage());
                 }
-            }else{
+            } else {
                 LOGGER.info("Logout cancelled.");
-            } 
-        }catch(Exception ex){
+            }
+        } catch (Exception ex) {
             LOGGER.severe(ex.getMessage());
         }
     }
-    
+
     /**
      * Method to exit the application
+     *
      * @param event
      */
-    public void exit(ActionEvent event){
+    public void exit(ActionEvent event) {
         Platform.exit();
     }
-    
+
     /**
      * Opens the guest view
-     * @param event 
+     *
+     * @param event
      */
-    public void goToGuestsView(ActionEvent event){
+    public void goToGuestsView(ActionEvent event) {
         //calls the logicManager register functio
-        try{
+        try {
             FXMLLoader loader = new FXMLLoader(getClass()
                     .getResource("/albergueperronclient/ui/fxml/UIGuest.fxml"));
             Parent root = loader.load();
             //Get controller from the loader
             UIGuestFXMLController guestController = loader.getController();
-        
+
             guestController.setUsersManager(UserManagerFactory.createUserManager());
             //Send the current stage for coming back later
             guestController.setPreviousStage(stage);
             //Initialize the primary stage of the application
             guestController.initStage(root);
             stage.close();
-        }catch(Exception e){
+        } catch (Exception e) {
             LOGGER.severe(e.getMessage());
             showErrorAlert("Error al redirigir a la vista de huéspedes.");
         }
     }
-    
+
     /**
      * Opens the pet view
-     * @param event 
+     *
+     * @param event
      */
-    public void goToPetsView(ActionEvent event){
-         try{
-           FXMLLoader loader = new FXMLLoader(getClass()
+    public void goToPetsView(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass()
                     .getResource("/albergueperronclient/ui/fxml/UIPet.fxml"));
             Parent root = loader.load();
             //Get controller from the loader
             UIPetFXMLController petController = loader.getController();
-        
+
             petController.setPetsManager(PetManagerFactory.createPetManager());
             //Send the current stage for coming back later
             petController.setPreviousStage(stage);
             //Initialize the primary stage of the application
             petController.initStage(root);
             stage.close();
-        }catch(Exception e){
+        } catch (Exception e) {
             LOGGER.severe(e.getMessage());
             showErrorAlert("Error al redirigir a la vista de mascotas.");
         }
     }
-    
+
     /**
      * Opens the stay view
-     * @param event 
+     *
+     * @param event
      */
-    public void goToStaysView(ActionEvent event){
-        try{
+    public void goToStaysView(ActionEvent event) {
+        try {
             FXMLLoader loader = new FXMLLoader(getClass()
                     .getResource("/albergueperronclient/ui/fxml/UIStay.fxml"));
             Parent root = loader.load();
             //Get controller from the loader
             UIStayFXMLController stayController = loader.getController();
-        
+
             stayController.setStaysManager(StayManagerFactory.createStayManager());
             //Send the current stage for coming back later
             stayController.setPreviousStage(stage);
             //Initialize the primary stage of the application
             stayController.initStage(root);
             stage.close();
-        }catch(Exception e){
+        } catch (Exception e) {
             LOGGER.severe(e.getMessage());
             showErrorAlert("Error al redirigir a la vista de estancias.");
         }
     }
-    
+
     /**
      * Opens the blacklist view
-     * @param event 
+     *
+     * @param event
      */
-    public void goToBlackListView(ActionEvent event){
-        try{
+    public void goToBlackListView(ActionEvent event) {
+        try {
             FXMLLoader loader = new FXMLLoader(getClass()
                     .getResource("/albergueperronclient/ui/fxml/UIBlackList.fxml"));
             Parent root = loader.load();
             //Get controller from the loader
             BlackListFXMLController blackListController = loader.getController();
-        
-            blackListController.setLogicManager(BlackListManagerFactory.getBlackListManager()
-                    ,UserManagerFactory.createUserManager());
+
+            blackListController.setLogicManager(BlackListManagerFactory.getBlackListManager(),
+                     UserManagerFactory.createUserManager());
             //Send the current stage for coming back later
             blackListController.setPreviousStage(stage);
             //Initialize the primary stage of the application
             blackListController.initStage(root);
             stage.close();
-        }catch(Exception e){
+        } catch (Exception e) {
             LOGGER.severe(e.getMessage());
             showErrorAlert("Error al redirigir a la vista de la lista negra.");
         }
     }
-    
+
     /**
      * Opens the incident view
-     * @param event 
+     *
+     * @param event
      */
-    public void goToIncidentView(ActionEvent event){
-        try{
+    public void goToIncidentView(ActionEvent event) {
+        try {
             //Get the logic manager object for the initial stage
             IncidentManager incidentManager = IncidentManagerFactory.getIncidentManager();
             //UsersManager userManager = UserManagerFactory.createUserManager();
-            
+
             //Load the fxml file
             FXMLLoader loader = new FXMLLoader(getClass()
                     .getResource("/albergueperronclient/ui/fxml/Incident.fxml"));
@@ -662,20 +669,20 @@ public class UIStayFXMLController extends GenericController{
             //--TOFIX --> Decidir si esconder el stage o cerrarlo
             stage.hide();
             stage.close();
-        }catch(Exception e){
+        } catch (Exception e) {
             LOGGER.severe(e.getMessage());
             showErrorAlert("Error al redirigir a la vista de incidencias.");
         }
     }
-    
-    public void goToRoom(ActionEvent event){
-        try{
+
+    public void goToRoom(ActionEvent event) {
+        try {
             FXMLLoader loader = new FXMLLoader(getClass()
                     .getResource("/albergueperronclient/ui/fxml/Room.fxml"));
             Parent root = loader.load();
             //Get controller from the loader
             RoomFXMLController roomController = loader.getController();
-        
+
             roomController.setLogicManager(RoomManagerFactory.getRoomManager());
             //Send the current stage for coming back later
             roomController.setPreviousStage(stage);
@@ -684,14 +691,15 @@ public class UIStayFXMLController extends GenericController{
             //--TOFIX --> Decidir si esconder el stage o cerrarlo
             stage.hide();
             stage.close();
-        }catch(Exception e){
+        } catch (Exception e) {
             LOGGER.severe(e.getMessage());
             showErrorAlert("Error al redirigir a la vista de la lista negra.");
         }
     }
-    
+
     /**
      * Returns to the last window
+     *
      * @param event ActionEvent The listenr of the button
      */
     public void returnWindow(ActionEvent event) {

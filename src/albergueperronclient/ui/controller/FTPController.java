@@ -117,6 +117,8 @@ public class FTPController extends GenericController {
     private MenuItem menuFTP;
 
     private TreeItem<MyFile> rootItem;
+    
+    private String url=null;
 
     /**
      * Method for initializing FTP Stage.
@@ -150,11 +152,11 @@ public class FTPController extends GenericController {
         menuLogOut.setOnAction(this::logOut);
         menuExit.setOnAction(this::exit);
         treeFile.getSelectionModel().selectedItemProperty().addListener(this::itemSelected);
-        String url=null;
+        
         //Connect to the ftp server
         try {
             url=ftpManager.connect();
-            
+           
         } catch (FTPException ex) {
             LOGGER.severe(ex.getMessage());
             showErrorAlert("Error de conexión");
@@ -164,7 +166,7 @@ public class FTPController extends GenericController {
         MyFile rootF = new MyFile();
         rootF.setPath("/");
         rootF.setFile(false);
-        rootF.setName("root");
+        rootF.setName("/");
         rootItem = new TreeItem<MyFile>(rootF, new ImageView(new Image(getClass().getResourceAsStream("/albergueperronclient/root.png"))));
         rootItem.setExpanded(true);
 
@@ -174,7 +176,7 @@ public class FTPController extends GenericController {
         // start building the file tree
         ftpManager.buildTree(rootItem);
         ftpManager.setTreeFile(treeFile);
-        txtConnect.setText(url);
+        txtConnect.setText(url+rootItem.getValue().getPath());
         stage.setScene(scene);
         //Show primary window
 
@@ -433,6 +435,7 @@ public class FTPController extends GenericController {
             Object newValue) {
 
         if (newValue == null) {
+            txtConnect.setText(url+rootItem.getValue().getPath());
             //if an item is deselected the buttons are disabled
             btnCrear.setDisable(true);
             btnDeleteD.setDisable(true);
@@ -444,6 +447,7 @@ public class FTPController extends GenericController {
             TreeItem<MyFile> selectedItem = (TreeItem<MyFile>) newValue;
             //get the path
             String path = selectedItem.getValue().getPath();
+            txtConnect.setText(url+selectedItem.getValue().getPath());
             ftpManager.changeDirectory(path);
             if (selectedItem.getValue().isFile()) {
                 btnCrear.setDisable(true);

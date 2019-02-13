@@ -5,9 +5,9 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane fx:id="loggedPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="625.0" prefWidth="1185.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="albergueperronclient.ui.controller.UILogguedFXMLController">
+<AnchorPane fx:id="loggedPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="523.0" prefWidth="973.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="albergueperronclient.ui.controller.UILogguedFXMLController">
    <children>
-      <MenuBar fx:id="menu" layoutY="2.0" prefHeight="29.0" prefWidth="1177.0">
+      <MenuBar fx:id="menu" layoutY="2.0" prefHeight="29.0" prefWidth="972.0">
         <menus>
           <Menu mnemonicParsing="false" text="Navegación">
             <items>
@@ -50,7 +50,7 @@
                </items></Menu>
             <Menu disable="true" mnemonicParsing="false">
                <graphic>
-                  <AnchorPane prefHeight="19.0" prefWidth="354.0" />
+                  <AnchorPane prefHeight="19.0" prefWidth="258.0" />
                </graphic>
             </Menu>
           <Menu mnemonicParsing="false" text="Cerrar">

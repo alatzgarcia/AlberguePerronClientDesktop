@@ -59,7 +59,7 @@ public class IFTPImplementation implements IFTP {
     @Override
     public String connect() throws FTPException {
 
-        String url="Conectado";
+        String url = "";
         String server = ResourceBundle.getBundle("albergueperronclient.config.parameters")
                 .getString("FTPServer");
         int port = Integer.parseInt(ResourceBundle.getBundle("albergueperronclient.config.parameters")
@@ -81,7 +81,7 @@ public class IFTPImplementation implements IFTP {
 
             if (login) {
                 ftp.setFileType(FTP.BINARY_FILE_TYPE);
-                url="Conectado a: "+server+":"+port+"/";
+                url = "Conectado a: " + server + ":" + port;
             } else {
                 throw new FTPException();
             }
@@ -100,25 +100,25 @@ public class IFTPImplementation implements IFTP {
      * @throws java.io.IOException
      */
     @Override
-    public boolean uploadFile(String path, String name) throws IOException{
+    public boolean uploadFile(String path, String name) throws IOException {
 
-        boolean subido=false;
+        boolean subido = false;
         BufferedInputStream in = null;
         try {
             LOGGER.info(ftp.printWorkingDirectory());
             in = new BufferedInputStream(new FileInputStream(path));
- 
-            subido=ftp.storeFile(ftp.printWorkingDirectory() + "/" + name, in);
+
+            subido = ftp.storeFile(ftp.printWorkingDirectory() + "/" + name, in);
             in.close();
-            
+
         } catch (FileNotFoundException ex) {
             LOGGER.severe(ex.getMessage());
-            
-        }catch (Exception ex){
-             LOGGER.severe(ex.getMessage());
+
+        } catch (Exception ex) {
+            LOGGER.severe(ex.getMessage());
         }
 
-         return subido;
+        return subido;
     }
 
     /**
@@ -128,20 +128,20 @@ public class IFTPImplementation implements IFTP {
      * @return if the file has been deleted or not
      */
     @Override
-    public boolean deleteFile(String name) throws IOException{
+    public boolean deleteFile(String name) throws IOException {
         boolean deleted = false;
         try {
             if (ftp.deleteFile(name)) {
 
                 deleted = true;
-              
+
             } else {
                 LOGGER.info("No se ha podido eliminar el fichero.");
-                
+
             }
         } catch (IOException ex) {
             LOGGER.severe(ex.getMessage());
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return deleted;
@@ -154,21 +154,21 @@ public class IFTPImplementation implements IFTP {
      */
     @Override
     public boolean downloadFile(String name, File selectedDir) throws IOException {
-        boolean download= false;
+        boolean download = false;
         BufferedOutputStream out = null;
         try {
             out = new BufferedOutputStream(
-                        new FileOutputStream(selectedDir + "/" + name));
+                    new FileOutputStream(selectedDir + "/" + name));
 
             if (ftp.retrieveFile(name, out)) {
                 LOGGER.info("Descargado correctamente…..");
-                download=true;
-                 
+                download = true;
+
             } else {
-               LOGGER.info("No se ha podido descargar el fichero.");
+                LOGGER.info("No se ha podido descargar el fichero.");
             }
-                out.close();
-            
+            out.close();
+
         } catch (FileNotFoundException ex) {
             LOGGER.severe(ex.getMessage());
         } catch (IOException ex) {
@@ -183,12 +183,10 @@ public class IFTPImplementation implements IFTP {
      * @return The file
      */
     @Override
-    public boolean createDirectory(String name) throws IOException{
+    public boolean createDirectory(String name) throws IOException {
         boolean created = false;
         try {
-             created=ftp.makeDirectory(name);
-
-            
+            created = ftp.makeDirectory(name);
 
         } catch (IOException ex) {
             LOGGER.severe(ex.getMessage());
@@ -202,21 +200,21 @@ public class IFTPImplementation implements IFTP {
      * @param path The path of the directory
      */
     @Override
-    public boolean deleteDirectory(String path) throws IOException{
-        boolean deleted=false;
+    public boolean deleteDirectory(String path) throws IOException {
+        boolean deleted = false;
         try {
-            deleted= ftp.removeDirectory(path);
+            deleted = ftp.removeDirectory(path);
         } catch (IOException ex) {
             LOGGER.severe(ex.getMessage());
         }
-       return deleted;         
+        return deleted;
     }
 
     /**
      * Method to disconnect the FTP client
      */
     @Override
-    public void disconnect(){
+    public void disconnect() {
         try {
             ftp.logout();
             ftp.disconnect();
@@ -281,7 +279,7 @@ public class IFTPImplementation implements IFTP {
      * @param path the path
      */
     @Override
-    public void changeDirectory(String path){
+    public void changeDirectory(String path) {
         try {
             ftp.changeWorkingDirectory(path);
         } catch (IOException ex) {
@@ -293,7 +291,7 @@ public class IFTPImplementation implements IFTP {
     public String getWorkingDirectory() {
         String workingDirectory = null;
         try {
-            workingDirectory= ftp.printWorkingDirectory();
+            workingDirectory = ftp.printWorkingDirectory();
         } catch (IOException ex) {
             Logger.getLogger(IFTPImplementation.class.getName()).log(Level.SEVERE, null, ex);
         }

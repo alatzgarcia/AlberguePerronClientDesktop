@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package albergueperronclient.ui.controller;
+
 
 
 
@@ -25,7 +25,8 @@ import static org.testfx.matcher.control.TextInputControlMatchers.hasText;
 public class FTPControllerIT extends ApplicationTest{
     
     
-    @Override public void start(Stage primaryStage) throws Exception{
+    @Override 
+    public void start(Stage primaryStage) throws Exception{
         new App().start(primaryStage);
     }
     /**

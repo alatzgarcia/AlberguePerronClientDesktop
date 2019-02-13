@@ -158,7 +158,7 @@ public class UILoginFXMLControllerIT extends ApplicationTest{
      * again when the pfPassword passwordfield's text goes back to being
      * too short again
      */
-    @Ignore
+    
     @Test
     public void test09_BtnLoginDisablesOnShortPassword(){
         clickOn("#txtUsername");
@@ -249,7 +249,7 @@ public class UILoginFXMLControllerIT extends ApplicationTest{
         clickOn("#txtUsername");
         write("admin1111");
         clickOn("#pfPassword");
-        write("904c1d6574");
+        write("469d35f031");
         verifyThat("#btnLogin", isEnabled());
         clickOn("#btnLogin");
         verifyThat("#loggedPane", isVisible());

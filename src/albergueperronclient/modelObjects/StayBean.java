@@ -6,8 +6,12 @@
 package albergueperronclient.modelObjects;
 
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -25,6 +29,8 @@ public class StayBean implements Serializable {
     private SimpleObjectProperty<UserBean> guest;
     private SimpleObjectProperty<RoomBean> room;
     private SimpleObjectProperty<Date> date;
+    
+    private SimpleStringProperty dateParsed;
 
     /**
      * Empty constructor for the stay
@@ -115,6 +121,19 @@ public class StayBean implements Serializable {
     public void setDate(Date date) {
         this.date.set(date);
     }
+
+    public String getDateParsed() throws ParseException {
+        //String dateAux=getDate().toString();
+        SimpleDateFormat sdf= new SimpleDateFormat("dd/MM/yyyy");
+        String aux= sdf.format(getDate());
+        return aux;
+    }
+
+    public void setDateParsed(String dateParsed) {
+        this.dateParsed.set(dateParsed);
+    }
+    
+    
     
     @Override
     public int hashCode() {
@@ -147,6 +166,11 @@ public class StayBean implements Serializable {
      */
     @Override
     public String toString() {
-        return getId().toString();
+        try {
+            return getDateParsed().toString();
+        } catch (ParseException ex) {
+            Logger.getLogger(StayBean.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
     }
 }
